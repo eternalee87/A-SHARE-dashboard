@@ -327,31 +327,32 @@ function showToast(msg, type) {
 // Refresh function
 function doRefresh() {
   var btn = document.getElementById('btnRefresh');
-  if (!IS_LOCAL_SERVER) {
-    showToast('⚠️ 本地服务器未启动，请运行 python server.py 后刷新', 'error');
-    return;
-  }
-  btn.disabled = true;
-  btn.textContent = '⏳ 刷新中...';
-  showToast('🔄 正在拉取最新数据...', 'info');
-  
-  fetch(API_BASE + '/api/refresh')
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
-      if (result.success) {
-        showToast('✅ 刷新成功！数据已更新至 ' + (result.data_date || ''), 'success');
-        setTimeout(function() { location.reload(); }, 1000);
-      } else {
-        showToast('❌ 刷新失败: ' + (result.error || '未知错误'), 'error');
+  if (IS_LOCAL_SERVER) {
+    btn.disabled = true;
+    btn.textContent = '⏳ 刷新中...';
+    showToast('🔄 正在拉取最新数据...', 'info');
+    fetch(API_BASE + '/api/refresh')
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        if (result.success) {
+          showToast('✅ 刷新成功！数据已更新至 ' + (result.data_date || ''), 'success');
+          setTimeout(function() { location.reload(); }, 1000);
+        } else {
+          showToast('❌ 刷新失败: ' + (result.error || '未知错误'), 'error');
+          btn.disabled = false;
+          btn.textContent = '🔄 刷新';
+        }
+      })
+      .catch(function(e) {
+        showToast('❌ 连接失败: 本地服务器未启动 (python server.py)', 'error');
         btn.disabled = false;
         btn.textContent = '🔄 刷新';
-      }
-    })
-    .catch(function(e) {
-      showToast('❌ 连接失败: 本地服务器未启动 (python server.py)', 'error');
-      btn.disabled = false;
-      btn.textContent = '🔄 刷新';
-    });
+      });
+  } else {
+    // GitHub Pages mode: reload page to get latest deployed version
+    showToast('🔄 正在获取最新数据...', 'info');
+    location.reload(true);
+  }
 }
 
 // Auto-check freshness on load (only on local server)
@@ -377,6 +378,42 @@ if (IS_LOCAL_SERVER) {
     }
   });
 }
+
+// ===== VERSION POLLING (for GitHub Pages auto-update) =====
+// GitHub Pages serves static files; we poll version.json to detect new deployments
+var BUILD_TIME = '__BUILD_TIME__';
+(function() {
+  // Set initial build timestamp
+  var freshnessEl = document.getElementById('freshness');
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '__BUILD_TIME__') {
+    freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
+  }
+
+  // Poll version.json every 5 minutes to check for updates
+  function checkVersion() {
+    fetch('version.json?' + Date.now(), { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(v) {
+        if (v.version && v.version !== localStorage.getItem('last_version')) {
+          if (localStorage.getItem('last_version')) {
+            // New version detected! Show notification and auto-reload
+            showToast('🆕 数据已更新至 ' + (v.updated || v.version) + '，即将刷新...', 'success');
+            localStorage.setItem('last_version', v.version);
+            setTimeout(function() { location.reload(); }, 2000);
+          } else {
+            localStorage.setItem('last_version', v.version);
+          }
+        }
+      })
+      .catch(function() {
+        // version.json not yet deployed — normal for first visit
+      });
+  }
+
+  // Check immediately, then every 5 minutes
+  checkVersion();
+  setInterval(checkVersion, 5 * 60 * 1000);
+})();
 
 Chart.defaults.color = '#8b949e';
 Chart.defaults.borderColor = '#30363d';
@@ -433,11 +470,14 @@ new Chart(document.getElementById('chartRoll'), {
 </body>
 </html>'''
 
-# Replace placeholders — simple, no f-string escaping issues
+# Replace placeholders
+from datetime import datetime
 overall = data['overall']
+build_time = datetime.now().strftime('%m-%d %H:%M')
 html = html_template.replace('__OVERALL__', overall)
 html = html.replace('__STATUS__', data['overall_label'])
 html = html.replace('__ADVICE__', data['overall_desc'])
+html = html.replace('__BUILD_TIME__', build_time)
 
 with open(os.path.join(BASE, 'dashboard.html'), 'w', encoding='utf-8') as f:
     f.write(html)

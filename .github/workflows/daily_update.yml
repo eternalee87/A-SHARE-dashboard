@@ -1,9 +1,10 @@
-name: Daily Dashboard Update
+name: Hourly Dashboard Update
 
 on:
   schedule:
-    # 北京时间 16:30 (UTC 08:30) — A股收盘后
-    - cron: '30 8 * * 1-5'
+    # 每小时执行（北京时间 8:00-18:00，即 UTC 0:00-10:00，周一至周五）
+    # 即使非交易时段也跑，最多是多拉一次无变化的数据
+    - cron: '0 0-10 * * 1-5'
   workflow_dispatch:  # 手动触发
   push:
     paths:
@@ -30,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: pip install akshare pandas numpy
 
-      - name: Fetch latest data
+      - name: Fetch latest data (Tencent source)
         run: python fetch_data.py
 
       - name: Generate JSON data
@@ -42,9 +43,13 @@ jobs:
       - name: Copy dashboard.html to index.html (for GitHub Pages)
         run: cp dashboard.html index.html
 
+      - name: Update version timestamp
+        run: |
+          echo "{\"version\":\"$(date -u +%Y%m%d-%H%M%S)\",\"updated\":\"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')\"}" > version.json
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/style_indices_v2.csv dashboard_data.json dashboard_data.js dashboard.html index.html
-          git diff --staged --quiet || (git commit -m "Auto update $(date +%Y-%m-%d)" && git push)
+          git add data/style_indices_v2.csv dashboard_data.json dashboard_data.js dashboard.html index.html version.json
+          git diff --staged --quiet || (git commit -m "Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" && git push)
