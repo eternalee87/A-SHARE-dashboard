@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.mplcache/
+
+# Data files (generated, not committed — but we DO commit the final ones for Pages)
+# dashboard_data.json and dashboard_data.js are generated but committed for Pages
+
+# Local lib (not needed on GitHub Actions, pip installs deps)
+lib/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Old analysis outputs
+charts_v2/*.png
+*.png

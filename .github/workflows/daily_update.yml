@@ -1,0 +1,50 @@
+name: Daily Dashboard Update
+
+on:
+  schedule:
+    # 北京时间 16:30 (UTC 08:30) — A股收盘后
+    - cron: '30 8 * * 1-5'
+  workflow_dispatch:  # 手动触发
+  push:
+    paths:
+      - 'fetch_data.py'
+      - 'gen_data.py'
+      - 'build_html.py'
+      - '.github/workflows/daily_update.yml'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install akshare pandas numpy
+
+      - name: Fetch latest data
+        run: python fetch_data.py
+
+      - name: Generate JSON data
+        run: python gen_data.py
+
+      - name: Build HTML dashboard
+        run: python build_html.py
+
+      - name: Copy dashboard.html to index.html (for GitHub Pages)
+        run: cp dashboard.html index.html
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/style_indices_v2.csv dashboard_data.json dashboard_data.js dashboard.html index.html
+          git diff --staged --quiet || (git commit -m "Auto update $(date +%Y-%m-%d)" && git push)

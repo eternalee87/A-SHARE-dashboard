@@ -1,0 +1,2 @@
+# 双击运行即可刷新全部数据
+refresh_dashboard.bat
