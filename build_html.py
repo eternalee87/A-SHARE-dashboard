@@ -70,11 +70,6 @@ canvas { max-height: 280px; }
 .stage-row.active { border-left-color: #e67e22; background: rgba(230,126,34,0.06); }
 .stage-row.passed { border-left-color: #e74c3c; }
 .stage-row .stage-num { width: 24px; font-weight: bold; flex-shrink: 0; }
-.refresh-btn { display: inline-block; padding: 8px 16px; border-radius: 6px; border: 1px solid #30363d; background: #21262d; color: #c9d1d9; cursor: pointer; font-size: 13px; margin-left: 10px; transition: all 0.2s; }
-.refresh-btn:hover { background: #30363d; border-color: #58a6ff; }
-.refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.refresh-btn.spinning { animation: spin 1s linear infinite; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .freshness { font-size: 11px; color: #8b949e; margin-top: 2px; }
 .freshness.stale { color: #e67e22; }
 .freshness.fresh { color: #2ecc71; }
@@ -92,12 +87,9 @@ canvas { max-height: 280px; }
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
     <div style="font-size:13px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
   </div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <button class="refresh-btn" id="btnRefresh" onclick="doRefresh()" title="刷新数据">🔄 刷新</button>
-    <div>
-      <div class="status-badge __OVERALL__" id="statusBadge">__STATUS__</div>
-      <div style="text-align:right;font-size:12px;color:#8b949e;margin-top:4px;" id="headerCounts"></div>
-    </div>
+  <div>
+    <div class="status-badge __OVERALL__" id="statusBadge">__STATUS__</div>
+    <div style="text-align:right;font-size:12px;color:#8b949e;margin-top:4px;" id="headerCounts"></div>
   </div>
 </div>
 
@@ -322,37 +314,6 @@ function showToast(msg, type) {
   t.textContent = msg;
   t.className = 'toast ' + type + ' show';
   setTimeout(function() { t.className = 'toast'; }, 3000);
-}
-
-// Refresh function
-function doRefresh() {
-  var btn = document.getElementById('btnRefresh');
-  if (IS_LOCAL_SERVER) {
-    btn.disabled = true;
-    btn.textContent = '⏳ 刷新中...';
-    showToast('🔄 正在拉取最新数据...', 'info');
-    fetch(API_BASE + '/api/refresh')
-      .then(function(r) { return r.json(); })
-      .then(function(result) {
-        if (result.success) {
-          showToast('✅ 刷新成功！数据已更新至 ' + (result.data_date || ''), 'success');
-          setTimeout(function() { location.reload(); }, 1000);
-        } else {
-          showToast('❌ 刷新失败: ' + (result.error || '未知错误'), 'error');
-          btn.disabled = false;
-          btn.textContent = '🔄 刷新';
-        }
-      })
-      .catch(function(e) {
-        showToast('❌ 连接失败: 本地服务器未启动 (python server.py)', 'error');
-        btn.disabled = false;
-        btn.textContent = '🔄 刷新';
-      });
-  } else {
-    // GitHub Pages mode: reload page to get latest deployed version
-    showToast('🔄 正在获取最新数据...', 'info');
-    location.reload(true);
-  }
 }
 
 // Auto-check freshness on load (only on local server)
