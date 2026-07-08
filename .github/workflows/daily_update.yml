@@ -3,9 +3,8 @@ name: Hourly Dashboard Update
 on:
   schedule:
     # 每小时执行（北京时间 8:00-18:00，即 UTC 0:00-10:00，周一至周五）
-    # 即使非交易时段也跑，最多是多拉一次无变化的数据
     - cron: '0 0-10 * * 1-5'
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
   push:
     paths:
       - 'fetch_data.py'
@@ -29,9 +28,13 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install akshare pandas numpy
+        run: |
+          pip install akshare pandas numpy
+          pip install tushare || echo "tushare install failed (will use akshare only)"
 
-      - name: Fetch latest data (Tencent source)
+      - name: Fetch latest data
+        env:
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         run: python fetch_data.py
 
       - name: Generate JSON data

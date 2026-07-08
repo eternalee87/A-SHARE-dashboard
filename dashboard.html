@@ -327,11 +327,11 @@ if (IS_LOCAL_SERVER) {
 
 // ===== VERSION POLLING (for GitHub Pages auto-update) =====
 // GitHub Pages serves static files; we poll version.json to detect new deployments
-var BUILD_TIME = '07-08 16:05';
+var BUILD_TIME = '07-08 16:15';
 (function() {
   // Set initial build timestamp
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-08 16:05') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-08 16:15') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
