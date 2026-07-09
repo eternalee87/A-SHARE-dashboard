@@ -330,10 +330,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-09 07:27';
+var BUILD_TIME = '07-09 16:45';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-09 07:27') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-09 16:45') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
