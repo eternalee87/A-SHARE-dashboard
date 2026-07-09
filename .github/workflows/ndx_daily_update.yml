@@ -1,0 +1,52 @@
+name: NDX DCA Daily Update
+
+on:
+  schedule:
+    # 每交易日北京时间 6:30 (美股收盘后), UTC 22:30
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ndx_dca/ndx_fetch_data.py'
+      - 'ndx_dca/ndx_gen_data.py'
+      - 'ndx_dca/ndx_build_html.py'
+      - '.github/workflows/ndx_daily_update.yml'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy requests
+
+      - name: Fetch NDX/VIX/CNN data
+        run: python ndx_dca/ndx_fetch_data.py
+
+      - name: Generate valuation & DCA signal
+        run: python ndx_dca/ndx_gen_data.py
+
+      - name: Build HTML dashboard
+        run: python ndx_dca/ndx_build_html.py
+
+      - name: Update version timestamp
+        run: |
+          echo "{\"version\":\"$(date -u +%Y%m%d-%H%M%S)\",\"updated\":\"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')\"}" > ndx_dca/version.json
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json
+          git diff --staged --quiet || (git commit -m "NDX DCA Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" && git push)

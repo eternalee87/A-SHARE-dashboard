@@ -9,6 +9,9 @@ __pycache__/
 # Local lib (not needed on GitHub Actions, pip installs deps)
 lib/
 
+# NDX DCA local cache
+ndx_dca/data/yfcache/
+
 # IDE
 .vscode/
 .idea/
