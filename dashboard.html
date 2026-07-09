@@ -329,28 +329,29 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-09 14:20';
+var BUILD_TIME = '07-09 14:59';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-09 14:20') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-09 14:59') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
+
+  var initialVersion = localStorage.getItem('last_version');
 
   function checkVersion() {
     fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
       .then(function(r) { return r.json(); })
       .then(function(v) {
-        var storedVersion = localStorage.getItem('last_version');
-        localStorage.setItem('last_version', v.version);
-        // Previous version stored and it changed → reload
-        if (storedVersion && v.version !== storedVersion) {
-          showToast('🆕 数据已更新，即将刷新...', 'success');
-          setTimeout(function() { location.reload(true); }, 1500);
+        // First visit: just store version, don't reload
+        if (!initialVersion) {
+          initialVersion = v.version;
+          localStorage.setItem('last_version', v.version);
           return;
         }
-        // Page data is older than server version → reload
-        if (v.updated && DATA.date < v.updated.slice(0, 10)) {
-          showToast('🆕 发现新数据(' + v.updated.slice(0,10) + ')...', 'success');
+        // Version changed → new deployment → reload
+        if (v.version !== localStorage.getItem('last_version')) {
+          localStorage.setItem('last_version', v.version);
+          showToast('🆕 数据已更新，刷新中...', 'success');
           setTimeout(function() { location.reload(true); }, 1000);
         }
       })
@@ -358,7 +359,7 @@ var BUILD_TIME = '07-09 14:20';
   }
 
   checkVersion();
-  setInterval(checkVersion, 3 * 60 * 1000);
+  setInterval(checkVersion, 5 * 60 * 1000);
 })();
 
 Chart.defaults.color = '#8b949e';

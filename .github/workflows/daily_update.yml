@@ -46,9 +46,10 @@ jobs:
       - name: Copy dashboard.html to index.html (for GitHub Pages)
         run: cp dashboard.html index.html
 
-      - name: Update version timestamp
+      - name: Update version (based on data date, not build time)
         run: |
-          echo "{\"version\":\"$(date -u +%Y%m%d-%H%M%S)\",\"updated\":\"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')\"}" > version.json
+          DATA_DATE=$(python3 -c "import json; d=json.load(open('dashboard_data.json')); print(d['date'])")
+          echo "{\"version\":\"$DATA_DATE\",\"updated\":\"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')\"}" > version.json
 
       - name: Commit and push if changed
         run: |
