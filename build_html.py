@@ -88,6 +88,7 @@ canvas { max-height: 280px; }
 <div class="header __OVERALL__" id="header">
   <div>
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
+    <div style="font-size:11px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
     <div style="font-size:13px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
   </div>
   <div>
