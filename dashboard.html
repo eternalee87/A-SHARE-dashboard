@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="dashboard_data.js"></script>
@@ -325,40 +328,37 @@ if (IS_LOCAL_SERVER) {
   });
 }
 
-// ===== VERSION POLLING (for GitHub Pages auto-update) =====
-// GitHub Pages serves static files; we poll version.json to detect new deployments
-var BUILD_TIME = '07-08 09:01';
+// ===== VERSION POLLING (auto-detect new deployments) =====
+var BUILD_TIME = '07-09 14:20';
 (function() {
-  // Set initial build timestamp
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-08 09:01') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-09 14:20') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
-  // Poll version.json every 5 minutes to check for updates
   function checkVersion() {
-    fetch('version.json?' + Date.now(), { cache: 'no-store' })
+    fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
       .then(function(r) { return r.json(); })
       .then(function(v) {
-        if (v.version && v.version !== localStorage.getItem('last_version')) {
-          if (localStorage.getItem('last_version')) {
-            // New version detected! Show notification and auto-reload
-            showToast('🆕 数据已更新至 ' + (v.updated || v.version) + '，即将刷新...', 'success');
-            localStorage.setItem('last_version', v.version);
-            setTimeout(function() { location.reload(); }, 2000);
-          } else {
-            localStorage.setItem('last_version', v.version);
-          }
+        var storedVersion = localStorage.getItem('last_version');
+        localStorage.setItem('last_version', v.version);
+        // Previous version stored and it changed → reload
+        if (storedVersion && v.version !== storedVersion) {
+          showToast('🆕 数据已更新，即将刷新...', 'success');
+          setTimeout(function() { location.reload(true); }, 1500);
+          return;
+        }
+        // Page data is older than server version → reload
+        if (v.updated && DATA.date < v.updated.slice(0, 10)) {
+          showToast('🆕 发现新数据(' + v.updated.slice(0,10) + ')...', 'success');
+          setTimeout(function() { location.reload(true); }, 1000);
         }
       })
-      .catch(function() {
-        // version.json not yet deployed — normal for first visit
-      });
+      .catch(function() {});
   }
 
-  // Check immediately, then every 5 minutes
   checkVersion();
-  setInterval(checkVersion, 5 * 60 * 1000);
+  setInterval(checkVersion, 3 * 60 * 1000);
 })();
 
 Chart.defaults.color = '#8b949e';
