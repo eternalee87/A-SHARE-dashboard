@@ -197,14 +197,16 @@ start_dt = datetime.strptime(START_DATE, '%Y-%m-%d').date()
 
 # Only record if today >= start date and is a trading day (NDX has data)
 last_ndx_date = ndx.index[-1].strftime('%Y-%m-%d')
-is_trading_day = today_str == last_ndx_date
+last_ndx_dt = ndx.index[-1]
 
-print(f"Today: {today_str}, Last NDX date: {last_ndx_date}, Trading day: {is_trading_day}")
+print(f"Today: {today_str}, Last NDX date: {last_ndx_date}")
 print(f"Start date: {START_DATE}, Started: {today_date >= start_dt}")
 
 # ==================== RECORD TODAY'S INVESTMENT ====================
+# Use the latest NDX data date (yesterday's close or today's)
+# Record if: data date >= start date AND not yet in history
 existing_dates = hist_df.index.strftime('%Y-%m-%d').tolist() if len(hist_df) > 0 else []
-should_record = (today_date >= start_dt) and is_trading_day and (today_str not in existing_dates)
+should_record = (last_ndx_date >= START_DATE) and (last_ndx_date not in existing_dates)
 
 if should_record:
     shares = dca_amount / ndx_cur
@@ -222,7 +224,7 @@ if should_record:
         'market_value': cum_shares * ndx_cur,
         'pnl': cum_shares * ndx_cur - cum_invested,
         'return_rate': (cum_shares * ndx_cur / cum_invested - 1) * 100 if cum_invested > 0 else 0,
-    }], index=[pd.Timestamp(today_str)])
+    }], index=[pd.Timestamp(last_ndx_date)])
 
     hist_df = pd.concat([hist_df, new_row])
     hist_df.index.name = 'date'
@@ -329,7 +331,7 @@ else:
 output = {
     'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
     'last_trading_day': last_ndx_date,
-    'is_trading_day': is_trading_day,
+    'is_trading_day': len(hist_df) > 0 and hist_df.index[-1].strftime('%Y-%m-%d') == last_ndx_date,
 
     # Current values
     'ndx': round(float(ndx_cur), 2),
