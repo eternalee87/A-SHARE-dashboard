@@ -200,7 +200,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     ['上证>MA120(半年线)', DATA.above_ma120, DATA.sh_index.toFixed(0)+' vs '+DATA.ma120.toFixed(0)],
     ['上证>MA60(季线)', DATA.above_ma60, DATA.sh_index.toFixed(0)+' vs '+DATA.ma60.toFixed(0)],
     ['上证>MA20(月线)', DATA.above_ma20, DATA.sh_index.toFixed(0)+' vs '+DATA.ma20.toFixed(0)],
-    ['MA多头排列', DATA.ma_bull, 'MA60>MA120>MA250' + (DATA.ma_bull?' ✓':' ✗')],
+    ['MA60>MA120>MA250', DATA.ma_bull, '未形成死叉' + (DATA.ma_bull?' ✓':' ✗')],
     ['回撤<15%', Math.abs(DATA.drawdown)<0.15, '当前'+(DATA.drawdown*100).toFixed(1)+'%'],
   ];
   var html = '';
@@ -247,7 +247,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
 // ===== STAGE CHAIN =====
 (function() {
   var stages = [
-    [0, '牛市健康', 'MA多头,成长主导', DATA.ma_bull],
+    [0, '牛市健康', '未死叉,成长主导', DATA.ma_bull],
     [1, '⚠️ 过热', '距MA250>25%', Math.abs(DATA.sh_index/DATA.ma250-1)>0.25],
     [2, '🔶 拐头', '跌破MA20', !DATA.above_ma20],
     [3, '🔴 中期转弱', '跌破MA60', !DATA.above_ma60],
