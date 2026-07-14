@@ -70,14 +70,14 @@ canvas { max-height: 280px; }
 </head>
 <body>
 
-<div class="header ORANGE" id="header">
+<div class="header RED" id="header">
   <div>
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
     <div style="font-size:11px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
     <div style="font-size:13px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
   </div>
   <div>
-    <div class="status-badge ORANGE" id="statusBadge">中期走弱</div>
+    <div class="status-badge RED" id="statusBadge">熊市特征</div>
     <div style="text-align:right;font-size:12px;color:#8b949e;margin-top:4px;" id="headerCounts"></div>
   </div>
 </div>
@@ -129,7 +129,7 @@ canvas { max-height: 280px; }
     <div id="riskFlags"></div>
     <div style="margin-top:12px;">
       <h3>💡 操作建议</h3>
-      <div class="advice-box ORANGE" id="adviceBox">仓位降至30-50%,转防御(大盘价值),密切关注年线得失</div>
+      <div class="advice-box RED" id="adviceBox">仓位<30%或空仓,仅保留防御底仓,等待底部信号</div>
     </div>
   </div>
   <div class="card">
@@ -330,10 +330,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-14 09:26';
+var BUILD_TIME = '07-14 10:25';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-14 09:26') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-14 10:25') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 

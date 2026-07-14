@@ -150,10 +150,8 @@ if __name__ == '__main__':
     df_new = fetch_all(start=fetch_start, end=today_str)
 
     if existing is not None and len(df_new) > 0:
-        new_start = df_new.index[0]
-        old_part = existing[existing.index < new_start]
-        combined = pd.concat([old_part, df_new])
-        combined = combined[~combined.index.duplicated(keep='last')]
+        # Keep existing historical data, fill with new where available
+        combined = existing.combine_first(df_new)
         combined = combined.sort_index()
         print(f"\n合并: {len(combined)} 行")
         df_final = combined
