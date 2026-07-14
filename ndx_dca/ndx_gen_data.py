@@ -224,42 +224,72 @@ last_ndx_dt = ndx.index[-1]
 print(f"Today: {today_str}, Last NDX date: {last_ndx_date}")
 print(f"Start date: {START_DATE}, Started: {today_date >= start_dt}")
 
-# ==================== RECORD TODAY'S INVESTMENT ====================
-# Use the latest NDX data date (yesterday's close or today's)
-# Record if: data date >= start date AND not yet in history
-existing_dates = hist_df.index.strftime('%Y-%m-%d').tolist() if len(hist_df) > 0 else []
-should_record = (last_ndx_date >= START_DATE) and (last_ndx_date not in existing_dates)
+# ==================== RECORD ALL UNRECORDED INVESTMENTS ====================
+# Get all trading dates >= START_DATE that have both NDX and VIX
+all_trade_dates = common_dates[common_dates >= START_DATE]
+existing_dates = set(hist_df.index.strftime('%Y-%m-%d').tolist()) if len(hist_df) > 0 else set()
 
-if should_record:
-    shares = dca_amount / ndx_cur
+missed_dates = []
+for dt in all_trade_dates:
+    ds = dt.strftime('%Y-%m-%d')
+    if ds not in existing_dates:
+        missed_dates.append((dt, ds))
+
+if missed_dates:
+    print(f"\n📋 发现 {len(missed_dates)} 个未记录的交易日，正在补录...")
+    
+    new_rows = []
     prev_invested = hist_df['dca_amount'].sum() if len(hist_df) > 0 else 0
     prev_shares = hist_df['shares_bought'].sum() if len(hist_df) > 0 else 0
-    cum_invested = prev_invested + dca_amount
-    cum_shares = prev_shares + shares
-
-    new_row = pd.DataFrame([{
-        'ndx_close': ndx_cur,
-        'dca_amount': dca_amount,
-        'shares_bought': shares,
-        'cumulative_invested': cum_invested,
-        'cumulative_shares': cum_shares,
-        'market_value': cum_shares * ndx_cur,
-        'pnl': cum_shares * ndx_cur - cum_invested,
-        'return_rate': (cum_shares * ndx_cur / cum_invested - 1) * 100 if cum_invested > 0 else 0,
-    }], index=[pd.Timestamp(last_ndx_date)])
-
-    hist_df = pd.concat([hist_df, new_row])
+    
+    for dt, ds in missed_dates:
+        ndx_val = float(ndx.loc[dt])
+        shares = dca_amount / ndx_val
+        prev_invested += dca_amount
+        prev_shares += shares
+        
+        cum_shares = prev_shares
+        cum_invested = prev_invested
+        
+        new_rows.append({
+            'ndx_close': ndx_val,
+            'dca_amount': dca_amount,
+            'shares_bought': shares,
+            'cumulative_invested': cum_invested,
+            'cumulative_shares': cum_shares,
+            'market_value': cum_shares * ndx_val,
+            'pnl': cum_shares * ndx_val - cum_invested,
+            'return_rate': (cum_shares * ndx_val / cum_invested - 1) * 100 if cum_invested > 0 else 0,
+        })
+        print(f"  ✅ {ds} | NDX={ndx_val:,.2f} | 定投 {dca_amount:,} CNY → {shares:.6f} 份 | 累计 {cum_invested:,.0f} CNY")
+    
+    hist_df_new = pd.DataFrame(new_rows, index=[pd.Timestamp(ds) for _, ds in missed_dates])
+    hist_df = pd.concat([hist_df, hist_df_new])
     hist_df.index.name = 'date'
-    hist_df.to_csv(HISTORY_CSV, float_format='%.6f')
-    print(f"\n✅ 记录今日定投: {dca_amount:,} CNY → {shares:.6f} 份 NDX")
-    print(f"   累计投入: {cum_invested:,.0f} CNY, 累计份额: {cum_shares:.6f}")
+    hist_df = hist_df.sort_index()
+else:
+    print(f"\n✅ 所有交易日已记录")
 
-# For summary: calculate based on history + potential new record
+# ==================== RECOMPUTE CUMULATIVE ====================
+# Always recompute from scratch — guards against stale values after backfill
 if len(hist_df) > 0:
-    total_invested = hist_df['dca_amount'].sum()
-    total_shares = hist_df['shares_bought'].sum()
+    hist_df = hist_df.sort_index()
+    cum_inv = 0.0
+    cum_sh = 0.0
+    for idx in hist_df.index:
+        cum_inv += hist_df.loc[idx, 'dca_amount']
+        cum_sh += hist_df.loc[idx, 'shares_bought']
+        nv = hist_df.loc[idx, 'ndx_close']
+        hist_df.loc[idx, 'cumulative_invested'] = cum_inv
+        hist_df.loc[idx, 'cumulative_shares'] = cum_sh
+        hist_df.loc[idx, 'market_value'] = cum_sh * nv
+        hist_df.loc[idx, 'pnl'] = cum_sh * nv - cum_inv
+        hist_df.loc[idx, 'return_rate'] = (cum_sh * nv / cum_inv - 1) * 100 if cum_inv > 0 else 0
+    hist_df.to_csv(HISTORY_CSV, float_format='%.6f')
+    total_invested = cum_inv
+    total_shares = cum_sh
     last_record_date = hist_df.index[-1].strftime('%Y-%m-%d')
-    print(f"  Total invested: {total_invested:,.0f} CNY")
+    print(f"\n  Total invested: {total_invested:,.0f} CNY")
     print(f"  Total shares: {total_shares:.4f}")
     print(f"  Last record: {last_record_date}")
 else:
@@ -301,7 +331,7 @@ def calc_max_drawdown(series):
     dd = (series / peak) - 1
     return float(dd.min())
 
-# Portfolio max drawdown
+# Portfolio max drawdown — use recomputed cumulative values from hist_df
 if len(hist_df) > 0 and total_invested > 0:
     portfolio_values = hist_df['cumulative_shares'] * hist_df['ndx_close']
     portfolio_max_dd = calc_max_drawdown(portfolio_values)

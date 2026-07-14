@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-14 11:52:38",
+ "generated_at": "2026-07-14 15:23:48",
  "last_trading_day": "2026-07-13",
  "is_trading_day": true,
  "ndx": 29264.1,
@@ -26,11 +26,11 @@
  "target_total": 5000000,
  "target_years": 10,
  "start_date": "2026-07-10",
- "total_invested": 2000.0,
- "total_shares": 0.068343,
- "current_value": 2000.0,
- "pnl": -0.0,
- "return_rate": -0.0,
+ "total_invested": 4000.0,
+ "total_shares": 0.135401,
+ "current_value": 3962.0,
+ "pnl": -38.0,
+ "return_rate": -0.94,
  "ndx_return_since_start": -1.88,
  "ndx_start_value": 29825.11,
  "portfolio_max_dd": 0.0,
@@ -1852,12 +1852,15 @@
   1.1151364844999665
  ],
  "hist_ts": [
+  "2026-07-10",
   "2026-07-13"
  ],
  "hist_invested": [
-  2000.0
+  2000.0,
+  4000.0
  ],
  "hist_values": [
-  1999.9963863
+  2000.0122263800001,
+  3962.3884040999997
  ]
 }
