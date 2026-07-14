@@ -246,7 +246,7 @@ body {{
         <div class="metric-card">
             <div class="metric-header">
                 <span class="metric-name">📈 NDX 100 指数</span>
-                <span class="metric-score score-{'neg' if d['score_daily_change']<0 else 'pos'}{abs(d['score_daily_change'])}">日变动 {d['ndx_change_pct']:+.2f}%</span>
+                <span style="font-size:0.75rem;color:{ndx_color(d['ndx_change_pct'])};font-weight:700;">日变动 {d['ndx_change_pct']:+.2f}%</span>
             </div>
             <div class="metric-value" style="color: {ndx_color(d['ndx_change_pct'])};">{fmt(d['ndx'], 2)}</div>
             <div class="metric-detail">MA200: {fmt(d['ndx_ma200'], 2)} · 比率: {d['ndx_ma200_ratio']:.4f}</div>
@@ -320,7 +320,7 @@ body {{
         </div>
         <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:{d['valuation_color']};">{d['composite_score']:+.2f} — {d['valuation_label']}</div>
         <div style="font-size:0.7rem;color:#64748b;margin-top:4px;">
-            日变动({d['score_daily_change']:+d}) + VIX({d['score_vix']:+d}) + MA200({d['score_ma200']:+d}) + CNN({d['score_cnn']:+d}) → 综合 {d['composite_score']:+.2f}
+            VIX({d['score_vix']:+d}) + NDX/MA200({d['score_ma200']:+d}) + CNN({d['score_cnn']:+d}) → 综合 {d['composite_score']:+.2f}
         </div>
     </div>
 
@@ -402,7 +402,7 @@ body {{
     <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
         <h3 style="font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">📝 模型说明</h3>
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
-            <strong>四因子估值模型：</strong>综合 NDX 日涨跌幅、VIX 恐慌指数、NDX/MA200 趋势偏离、CNN 恐慌贪婪指数，每项评分 -3(极度低估) ~ +3(严重高估)，等权平均得出综合评分。<br>
+            <strong>三因子分位值模型：</strong>对 VIX 恐慌指数、NDX/MA200 趋势偏离、CNN 恐慌贪婪指数分别计算其历史分位值排名（1990年至今全历史），每项按分位映射到 [-3, +3] 评分，等权平均得出综合评分。分位值模型自适应市场水位变化，不受单日噪音干扰。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
             <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。
