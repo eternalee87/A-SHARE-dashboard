@@ -401,17 +401,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-<<<<<<< HEAD
-var BUILD_TIME = '07-16 12:04';
+var BUILD_TIME = '07-16 14:02';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 12:04') {
-=======
-var BUILD_TIME = '07-16 04:01';
-(function() {
-  var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 04:01') {
->>>>>>> a3b57192539b4c2bac79766be95848c92b1f77f2
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 14:02') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
