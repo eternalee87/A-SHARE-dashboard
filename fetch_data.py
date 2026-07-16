@@ -99,8 +99,8 @@ def fetch_all(start='20130101', end='20260710'):
                 src = 'sina'
                 # Smart check: if Sina's latest data is older than TX, use TX
                 from datetime import datetime, timedelta
-                yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y%m%d')
-                if s.index[-1].strftime('%Y%m%d') < yesterday:
+                today_str = datetime.now().strftime('%Y%m%d')
+                if s.index[-1].strftime('%Y%m%d') < today_str:
                     tx_s = fetch_tx(name, symbol, start, end)
                     if tx_s is not None and len(tx_s) > 0 and tx_s.index[-1] > s.index[-1]:
                         tx_s = tx_s[tx_s.index >= s.index[0]]  # only recent data from TX

@@ -5,5 +5,12 @@
     "first_seen_iteration": 1,
     "last_seen_iteration": 1,
     "count": 1
+  },
+  {
+    "fingerprint": "task",
+    "summary": "四维全部验证通过：",
+    "first_seen_iteration": 2,
+    "last_seen_iteration": 2,
+    "count": 1
   }
 ]
