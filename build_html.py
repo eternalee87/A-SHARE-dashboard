@@ -232,8 +232,8 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     var name = order[i], v = ytd[name]*100, w = Math.min(Math.abs(v)*3, 100);
     html += '<div class="bar-row">' +
       '<span class="name">'+name+'</span>' +
-      '<span class="bar-wrap"><span class="bar-fill" style="width:'+w+'%;background:'+(v>=0?'#2ecc71':'#e74c3c')+'"></span></span>' +
-      '<span class="bar-val" style="color:'+(v>=0?'#2ecc71':'#e74c3c')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span>' +
+      '<span class="bar-wrap"><span class="bar-fill" style="width:'+w+'%;background:'+(v>=0?'#e74c3c':'#2ecc71')+'"></span></span>' +
+      '<span class="bar-val" style="color:'+(v>=0?'#e74c3c':'#2ecc71')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span>' +
     '</div>';
   }
   document.getElementById('ytdBars').innerHTML = html;
@@ -292,7 +292,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     html += '<tr style="border-top:1px solid #21262d;">' +
       '<td style="padding:4px;">'+name+'</td>' +
       '<td style="text-align:right;padding:4px;">'+val+'</td>' +
-      '<td style="text-align:right;padding:4px;color:'+(y>=0?'#2ecc71':'#e74c3c')+'">'+(y>=0?'+':'')+y.toFixed(1)+'%</td>' +
+      '<td style="text-align:right;padding:4px;color:'+(y>=0?'#e74c3c':'#2ecc71')+'">'+(y>=0?'+':'')+y.toFixed(1)+'%</td>' +
     '</tr>';
   }
   html += '</table>';
@@ -311,9 +311,9 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   var summary = ef.summary || {};
   
   // Build table header
-  var html = '<div style="margin-bottom:2px;font-size:12px;color:#8b949e;">🏛️ 国家队ETF份额变化 (亿份)</div>';
-  html += '<table style="width:100%;font-size:11px;border-collapse:collapse;">';
-  html += '<tr style="color:#8b949e;font-size:10px;">';
+  var html = '<div style="margin-bottom:2px;font-size:12px;color:#8b949e;"> ETF份额变化 (亿份)</div>';
+  html += '<table style="width:100%;font-size:13px;border-collapse:collapse;">';
+  html += '<tr style="color:#8b949e;font-size:11px;">';
   html += '<th style="text-align:left;padding:2px 4px;">ETF</th>';
   for (var di = 0; di < dates.length; di++) {
     var ds = dates[di]; var label = ds.slice(5); // MM-DD
@@ -328,15 +328,15 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   for (var i = 0; i < daily.length; i++) {
     var r = daily[i];
     html += '<tr style="border-top:1px solid #21262d;">';
-    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:10px;">'+r.code+'</span> '+r.name+'</td>';
+    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:12px;">'+r.code+'</span> '+r.name+'</td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di]; var v = r[ds] || 0;
-      var color = v > 2 ? '#2ecc71' : (v < -2 ? '#e74c3c' : '#c9d1d9');
+      var color = v > 2 ? '#e74c3c' : (v < -2 ? '#2ecc71' : '#c9d1d9');
       html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(v>=0?'+':'')+v.toFixed(1)+'</td>';
     }
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d3>=0?'#2ecc71':'#e74c3c')+'">'+(r.d3>=0?'+':'')+r.d3.toFixed(1)+'</td>';
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d5>=0?'#2ecc71':'#e74c3c')+'">'+(r.d5>=0?'+':'')+r.d5.toFixed(1)+'</td>';
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d10>=0?'#2ecc71':'#e74c3c')+'">'+(r.d10>=0?'+':'')+r.d10.toFixed(1)+'</td>';
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d3>=0?'#e74c3c':'#2ecc71')+'">'+(r.d3>=0?'+':'')+r.d3.toFixed(1)+'</td>';
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d5>=0?'#e74c3c':'#2ecc71')+'">'+(r.d5>=0?'+':'')+r.d5.toFixed(1)+'</td>';
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d10>=0?'#e74c3c':'#2ecc71')+'">'+(r.d10>=0?'+':'')+r.d10.toFixed(1)+'</td>';
     html += '</tr>';
   }
   
@@ -345,12 +345,12 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   html += '<td style="padding:2px 4px;">合计</td>';
   for (var di = 0; di < dates.length; di++) {
     var ds = dates[di]; var sv = summary[ds] || 0;
-    var color = sv > 10 ? '#2ecc71' : (sv < -10 ? '#e74c3c' : '#c9d1d9');
+    var color = sv > 10 ? '#e74c3c' : (sv < -10 ? '#2ecc71' : '#c9d1d9');
     html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
   }
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d3>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d3>=0?'+':'')+(summary.d3||0).toFixed(1)+'</td>';
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d5>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d5>=0?'+':'')+(summary.d5||0).toFixed(1)+'</td>';
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d10>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d10>=0?'+':'')+(summary.d10||0).toFixed(1)+'</td>';
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d3>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d3>=0?'+':'')+(summary.d3||0).toFixed(1)+'</td>';
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d5>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d5>=0?'+':'')+(summary.d5||0).toFixed(1)+'</td>';
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d10>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d10>=0?'+':'')+(summary.d10||0).toFixed(1)+'</td>';
   html += '</tr>';
   html += '</table>';
   
