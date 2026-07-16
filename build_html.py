@@ -310,27 +310,24 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   var daily = ef.daily;
   var summary = ef.summary || {};
   
-  // Helper: format cell with shares and money
-  function fmtCell(sv, mv, threshold) {
+  // Helper: format cell with money only
+  function fmtMoney(mv, threshold) {
     threshold = threshold || 2;
-    var c = sv > threshold ? '#e74c3c' : (sv < -threshold ? '#2ecc71' : '#c9d1d9');
-    var sign = sv >= 0 ? '+' : '';
-    var sLine = sign + sv.toFixed(1) + '亿份';
-    var mLine = (mv >= 0 ? '+' : '') + mv.toFixed(1) + '亿';
-    return '<span style=\"color:'+c+';font-size:13px;\">'+sLine+'</span><br><span style=\"color:'+c+';font-size:10px;opacity:0.7;\">'+mLine+'</span>';
+    var c = mv > threshold ? '#e74c3c' : (mv < -threshold ? '#2ecc71' : '#c9d1d9');
+    return '<span style=\"color:'+c+';font-size:13px;\">'+(mv>=0?'+':'')+mv.toFixed(1)+'亿</span>';
   }
   
-  var html = '<div style=\"margin-bottom:4px;font-size:13px;color:#8b949e;\"> ETF份额与金额变化 (亿)</div>';
+  var html = '<div style=\"margin-bottom:4px;font-size:13px;color:#8b949e;\"> ETF净申购金额 (亿元)</div>';
   html += '<table style=\"width:100%;font-size:13px;border-collapse:collapse;\">';
   html += '<tr style=\"color:#8b949e;font-size:12px;\">';
   html += '<th style=\"text-align:left;padding:3px 5px;\">ETF</th>';
   for (var di = 0; di < dates.length; di++) {
     var label = dates[di].slice(5);
-    html += '<th style=\"text-align:right;padding:3px 4px;\">'+label+'</th>';
+    html += '<th style=\"text-align:right;padding:3px 6px;\">'+label+'</th>';
   }
-  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">3日</th>';
-  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">5日</th>';
-  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">10日</th>';
+  html += '<th style=\"text-align:right;padding:3px 6px;color:#58a6ff;\">3日</th>';
+  html += '<th style=\"text-align:right;padding:3px 6px;color:#58a6ff;\">5日</th>';
+  html += '<th style=\"text-align:right;padding:3px 6px;color:#58a6ff;\">10日</th>';
   html += '</tr>';
   
   for (var i = 0; i < daily.length; i++) {
@@ -339,11 +336,11 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     html += '<td style=\"padding:3px 5px;\"><span style=\"color:#58a6ff;font-size:13px;\">'+r.code+'</span> <span style=\"font-size:12px;\">'+r.name+'</span></td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di];
-      html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r[ds+'_s']||0, r[ds+'_m']||0, 2)+'</td>';
+      html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r[ds+'_m']||0, 1)+'</td>';
     }
-    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d3_s||0, r.d3_m||0, 5)+'</td>';
-    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d5_s||0, r.d5_m||0, 5)+'</td>';
-    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d10_s||0, r.d10_m||0, 5)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d3_m||0, 3)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d5_m||0, 3)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d10_m||0, 3)+'</td>';
     html += '</tr>';
   }
   
@@ -352,11 +349,11 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   html += '<td style=\"padding:3px 5px;\">合计</td>';
   for (var di = 0; di < dates.length; di++) {
     var ds = dates[di];
-    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary[ds+'_s']||0, summary[ds+'_m']||0, 10)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary[ds+'_m']||0, 5)+'</td>';
   }
-  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d3_s||0, summary.d3_m||0, 10)+'</td>';
-  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d5_s||0, summary.d5_m||0, 10)+'</td>';
-  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d10_s||0, summary.d10_m||0, 10)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d3_m||0, 5)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d5_m||0, 5)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d10_m||0, 5)+'</td>';
   html += '</tr>';
   html += '</table>';
   

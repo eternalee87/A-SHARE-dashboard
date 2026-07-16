@@ -153,27 +153,26 @@ if os.path.exists(etf_flow_path):
     totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
     totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
     
-    # Anomaly detection (based on shares)
-    total_d5_s = totals['d5_s']
+    # Anomaly detection (based on money)
     total_d5_m = totals.get('d5_m', 0)
-    if total_d5_s > 50:
+    if total_d5_m > 200:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_s:.0f}亿份(约{total_d5_m:.0f}亿)→大举托底"
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_m:.0f}亿→大举托底"
         risk_flags.append(etf_data['alert_msg'])
-    elif total_d5_s > 20:
+    elif total_d5_m > 80:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_s:.0f}亿份(约{total_d5_m:.0f}亿)→持续买入"
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_m:.0f}亿→持续买入"
         risk_flags.append(etf_data['alert_msg'])
-    elif total_d5_s < -20:
+    elif total_d5_m < -80:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5_s):.0f}亿份→减持回收"
+        etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5_m):.0f}亿→减持回收"
         risk_flags.append(etf_data['alert_msg'])
     
-    # Check individual ETFs (based on shares)
+    # Check individual ETFs (based on money)
     for r in etf_data['daily']:
-        if abs(r['d3_s']) > 15:
-            direction = '买入' if r['d3_s'] > 0 else '卖出'
-            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3_s']):.0f}亿"
+        if abs(r['d3_m']) > 50:
+            direction = '买入' if r['d3_m'] > 0 else '卖出'
+            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3_m']):.0f}亿"
             if msg not in risk_flags:
                 risk_flags.append(msg)
     
