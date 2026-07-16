@@ -106,24 +106,31 @@ if os.path.exists(etf_flow_path):
     etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
     etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
     
-    # ETF approximate price estimates (from benchmarks in style CSV)
+    # ETF real prices from spot market
+    etf_prices = {}
+    try:
+        spot = ak.fund_etf_spot_em()
+        for _, row in spot.iterrows():
+            etf_prices[str(row['代码'])] = float(row['最新价'])
+    except:
+        pass
+    
+    # Fallback price estimates
     last_row = df.iloc[-1]
     bm = {k: round(last_row[k], 0) for k in BENCHMARKS}
-    ETF_PRICE = {
-        '510300': bm['沪深300']/1000, '510310': bm['沪深300']/1000,
-        '510330': bm['沪深300']/1000, '159919': bm['沪深300']/1000,
-        '510050': bm['上证50']/1000,
-        '510500': bm['中证500']/1000,
-        '512100': bm['中证1000']/1000, '159845': bm['中证1000']/1000,
-        '159915': bm['创业板指']/1000, '159949': bm['创业板指']/1000,
-        '588000': 1.25, '588080': 1.25,
-        '510180': bm['沪深300']/1000,
-        '510880': bm['中证红利']/1000, '512890': bm['中证红利']/1000,
-        '512880': 1.10,
+    FALLBACK_PRICE = {
+        '510300': 4.8, '510310': 4.5, '510330': 4.8, '159919': 4.8,
+        '510050': 3.0, '510500': 8.0,
+        '512100': 3.1, '159845': 3.1,
+        '159915': 2.4, '159949': 1.1,
+        '588000': 1.9, '588080': 1.4,
+        '510180': 4.0,
+        '510880': 3.5, '512890': 1.7,
+        '512880': 1.1,
     }
     
     for i, code in enumerate(etf_codes):
-        price = ETF_PRICE.get(code, 1.0)
+        price = etf_prices.get(code, FALLBACK_PRICE.get(code, 1.0))
         row = {'code': code, 'name': etf_names[i], 'price': round(price, 2)}
         for d in last_dates:
             ds = str(d)[:10]
