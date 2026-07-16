@@ -61,37 +61,61 @@ rets_60={st:round(r180[st].iloc[-1]/r180[st].iloc[-60]-1,4) for st in STYLES}
 rets_20={st:round(r180[st].iloc[-1]/r180[st].iloc[-20]-1,4) for st in STYLES}
 best_60=max(rets_60,key=rets_60.get); worst_60=min(rets_60,key=rets_60.get)
 
-# Risk flags
+# Risk flags (内生风险信号，不含国家队)
 risk_flags=[]
 if abs(sz_dd)>0.15: risk_flags.append(f"回撤{abs(sz_dd):.0%}超过15%阈值")
 if sz_cur<sz_ma60: risk_flags.append("上证跌破MA60(季线)")
 if sz_cur<sz_ma120: risk_flags.append("上证跌破MA120(半年线)")
 if sz_cur<sz_ma250: risk_flags.append("上证跌破MA250(年线)")
-if lv_vs_lg>0.05: risk_flags.append(f"大盘价值持续跑赢成长({lv_vs_lg:+.1%})→防御模式")
+# 价值/成长极端分化检测: 绝对值>10%触发
+vg_spread = abs(lv_vs_lg)
+if vg_spread > 0.10:
+    direction = '价值跑赢' if lv_vs_lg > 0 else '成长跑赢'
+    risk_flags.append(f"价值/成长极端分化({direction}{vg_spread:+.0%})→不稳定信号")
 
-# Breakdown count
+# Breakdown count v2
 bd=0
-if sz_cur<sz_ma60: bd+=1
-if sz_cur<sz_ma120: bd+=2
-if sz_cur<sz_ma250: bd+=3
-if not (sz_ma60>sz_ma120>sz_ma250): bd+=1
+if sz_cur<sz_ma20: bd+=1        # 跌破月线
+if sz_cur<sz_ma60: bd+=2        # 跌破季线
+if sz_cur<sz_ma120: bd+=3       # 跌破半年线
+if sz_cur<sz_ma250: bd+=4       # 跌破年线
+if not (sz_ma60>sz_ma120>sz_ma250): bd+=1  # 中期均线死叉
 if abs(sz_dd)>0.15: bd+=2
 if abs(sz_dd)>0.25: bd+=2
-if lv_vs_lg>0.05: bd+=1
+if vg_spread > 0.10: bd+=2      # 风格极端分化(绝对值)
 rf_count=len(risk_flags)
 
-if bd<=1 and rf_count<=1: overall='GREEN'
-elif bd<=3 and rf_count<=2: overall='YELLOW'
-elif bd<=5 or sz_cur>=sz_ma250: overall='ORANGE'
+# === 仓位评级 v2 ===
+# 国家队信号独立计算，不影响颜色评级
+national_team_active = False  # 由ETF段填充
+
+if bd==0 and rf_count==0: overall='GREEN'
+elif bd<=2 and rf_count<=1: overall='YELLOW'
+elif bd<=4 and sz_cur>=sz_ma120: overall='ORANGE'
 else: overall='RED'
 
 status_labels={'GREEN':'牛市健康','YELLOW':'牛市调整','ORANGE':'中期走弱','RED':'熊市特征'}
-status_desc={
-    'GREEN':'维持牛市思维,持有强势风格,可适度追涨',
-    'YELLOW':'牛市调整中,控制仓位60-80%,关注MA120支撑,减仓弱风格',
-    'ORANGE':'仓位降至30-50%,转防御(大盘价值),密切关注年线得失',
-    'RED':'仓位<30%或空仓,仅保留防御底仓,等待底部信号'
-}
+
+# 仓位建议: 基础区间 + 国家队"降落伞"微调
+position_base = {'GREEN':(80,100), 'YELLOW':(60,80), 'ORANGE':(30,50), 'RED':(0,30)}
+p_lo, p_hi = position_base[overall]
+# 安全阀: 若 bd>=4 且站上年线, 硬性截断上限至20%
+if bd>=4 and sz_cur>=sz_ma250:
+    p_hi = min(p_hi, 20)
+
+def build_advice(overall, p_lo, p_hi, nt_active):
+    advice = {
+        'GREEN': f'仓位{p_lo}-{p_hi}%,持有强势风格,可适度追涨',
+        'YELLOW': f'仓位降至{p_lo}-{p_hi}%,关注MA120支撑,减仓弱风格',
+        'ORANGE': f'仓位降至{p_lo}-{p_hi}%,转防御(大盘价值),密切关注年线得失',
+        'RED': f'仓位控制在{p_lo}-{p_hi}%,仅保留防御底仓,等待底部信号'
+    }[overall]
+    if nt_active:
+        advice += ' [国家队托底中,可偏向区间上限]'
+    return advice
+
+status_desc = {level: build_advice(level, *position_base[level], False) for level in position_base}
+# 初始值(ETF段会更新)
 
 # ETF 国家队份额跟踪 @gen_data.py
 etf_flow_path = os.path.join(BASE, 'data', 'etf_flow.csv')
@@ -165,33 +189,44 @@ if os.path.exists(etf_flow_path):
     totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
     totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
     
-    # Anomaly detection (based on money)
+    # Anomaly detection — 国家队信号 = 降落伞机制
     total_d5_m = totals.get('d5_m', 0)
     if total_d5_m > 200:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_m:.0f}亿→大举托底"
-        risk_flags.append(etf_data['alert_msg'])
+        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→大举托底"
+        national_team_active = True
     elif total_d5_m > 80:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_m:.0f}亿→持续买入"
-        risk_flags.append(etf_data['alert_msg'])
+        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续买入"
+        national_team_active = True
     elif total_d5_m < -80:
         etf_data['alert'] = True
         etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5_m):.0f}亿→减持回收"
+    # 国家队独立标签加入显示(用🪂区分)
+    if etf_data['alert']:
         risk_flags.append(etf_data['alert_msg'])
     
-    # Check individual ETFs (based on money)
+    # Check individual ETFs (based on money) — also 🪂
     for r in etf_data['daily']:
-        if abs(r['d3_m']) > 50:
+        if abs(r['d3_m']) > 30:
             direction = '买入' if r['d3_m'] > 0 else '卖出'
-            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3_m']):.0f}亿"
+            msg = f"🪂 {r['code']} {r['name']} 3日{direction}{abs(r['d3_m']):.0f}亿"
             if msg not in risk_flags:
                 risk_flags.append(msg)
     
     etf_data['summary'] = totals
     etf_data['dates'] = [str(d)[:10] for d in last_dates]
 
-rf_count = len(risk_flags)
+# rf_count 只计内生风险(不含🪂国家队)
+rf_count = len([f for f in risk_flags if not f.startswith('🪂')])
+
+# 国家队降落伞修正仓位建议
+if national_team_active:
+    p_lo = max(p_lo, 10)  # 底线: 国家队托底中至少留10%
+status_desc = {level: build_advice(level, *position_base[level], national_team_active) for level in position_base}
+if national_team_active:
+    # 微调当前级别的上限
+    status_desc[overall] = build_advice(overall, max(p_lo, 10), p_hi, True)
 
 # Latest values
 last=df.iloc[-1]
