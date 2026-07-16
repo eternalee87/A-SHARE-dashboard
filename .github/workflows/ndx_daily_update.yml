@@ -12,6 +12,11 @@ on:
       - 'ndx_dca/ndx_build_html.py'
       - '.github/workflows/ndx_daily_update.yml'
 
+# Prevent concurrent runs (e.g. manual trigger while scheduled is running)
+concurrency:
+  group: ndx-dca-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -21,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -32,21 +39,33 @@ jobs:
           pip install pandas numpy requests
 
       - name: Fetch NDX/VIX/CNN data
+        id: fetch
         run: python ndx_dca/ndx_fetch_data.py
+        continue-on-error: true
 
       - name: Generate valuation & DCA signal
+        if: steps.fetch.outcome == 'success'
         run: python ndx_dca/ndx_gen_data.py
 
       - name: Build HTML dashboard
+        if: steps.fetch.outcome == 'success'
         run: python ndx_dca/ndx_build_html.py
 
       - name: Update version timestamp
+        if: steps.fetch.outcome == 'success'
         run: |
           echo "{\"version\":\"$(date -u +%Y%m%d-%H%M%S)\",\"updated\":\"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')\"}" > ndx_dca/version.json
 
-      - name: Commit and push if changed
+      - name: Commit and push
+        if: steps.fetch.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json
-          git diff --staged --quiet || (git commit -m "NDX DCA Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" && git push)
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "NDX DCA Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push
+          fi
