@@ -2,6 +2,7 @@ import sys,io,os,json
 sys.stdout=io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
 
 import pandas as pd,numpy as np
+import akshare as ak
 
 def to_py(v):
     if isinstance(v,(np.integer,)): return int(v)
@@ -106,22 +107,26 @@ if os.path.exists(etf_flow_path):
     etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
     etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
     
-    # ETF real prices from spot market
-    etf_prices = {}
+    # ETF NAV (单位净值) — latest date column, per-ETF value
+    etf_nav = {}
     try:
-        spot = ak.fund_etf_spot_em()
-        for _, row in spot.iterrows():
-            etf_prices[str(row['代码'])] = float(row['最新价'])
+        nav_df = ak.fund_etf_fund_daily_em()
+        nav_cols = sorted([c for c in nav_df.columns if '-单位净值' in c])
+        if nav_cols:
+            latest_col = nav_cols[-1]
+            for _, row in nav_df.iterrows():
+                code = str(row['基金代码'])
+                v = row[latest_col]
+                if pd.notna(v):
+                    etf_nav[code] = float(v)
     except:
         pass
     
-    # Fallback price estimates
-    last_row = df.iloc[-1]
-    bm = {k: round(last_row[k], 0) for k in BENCHMARKS}
+    # Fallback if NAV not available
     FALLBACK_PRICE = {
         '510300': 4.8, '510310': 4.5, '510330': 4.8, '159919': 4.8,
         '510050': 3.0, '510500': 8.0,
-        '512100': 3.1, '159845': 3.1,
+        '512100': 3.2, '159845': 3.2,
         '159915': 2.4, '159949': 1.1,
         '588000': 1.9, '588080': 1.4,
         '510180': 4.0,
@@ -130,7 +135,7 @@ if os.path.exists(etf_flow_path):
     }
     
     for i, code in enumerate(etf_codes):
-        price = etf_prices.get(code, FALLBACK_PRICE.get(code, 1.0))
+        price = etf_nav.get(code, FALLBACK_PRICE.get(code, 1.0))
         row = {'code': code, 'name': etf_names[i], 'price': round(price, 2)}
         for d in last_dates:
             ds = str(d)[:10]

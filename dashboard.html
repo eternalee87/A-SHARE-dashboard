@@ -403,10 +403,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-16 16:10';
+var BUILD_TIME = '07-16 16:24';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 16:10') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 16:24') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
