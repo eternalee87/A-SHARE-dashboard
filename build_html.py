@@ -328,7 +328,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   for (var i = 0; i < daily.length; i++) {
     var r = daily[i];
     html += '<tr style="border-top:1px solid #21262d;">';
-    html += '<td style="padding:2px 4px;">'+r.name+'</td>';
+    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:10px;">'+r.code+'</span> '+r.name+'</td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di]; var v = r[ds] || 0;
       var color = v > 2 ? '#2ecc71' : (v < -2 ? '#e74c3c' : '#c9d1d9');

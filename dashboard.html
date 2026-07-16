@@ -313,7 +313,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   for (var i = 0; i < daily.length; i++) {
     var r = daily[i];
     html += '<tr style="border-top:1px solid #21262d;">';
-    html += '<td style="padding:2px 4px;">'+r.name+'</td>';
+    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:10px;">'+r.code+'</span> '+r.name+'</td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di]; var v = r[ds] || 0;
       var color = v > 2 ? '#2ecc71' : (v < -2 ? '#e74c3c' : '#c9d1d9');
@@ -401,10 +401,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-16 11:12';
+var BUILD_TIME = '07-16 12:04';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 11:12') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 12:04') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 

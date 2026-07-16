@@ -68,13 +68,12 @@ if __name__ == '__main__':
     print("国家队ETF份额抓取")
     print("=" * 50)
 
-    # Get trading dates
     dates = get_trading_dates(15)
     print(f"日期范围: {dates[-1]} ~ {dates[0]}")
 
     all_data = []
-
-    # SSE data for each date
+    
+    # === SSE: get historical data ===
     for date_str in dates:
         print(f"Fetching SSE {date_str}...", end=' ')
         df = fetch_sse(date_str)
@@ -83,43 +82,76 @@ if __name__ == '__main__':
             all_data.append(target)
             print(f"{len(target)} ETFs")
         else:
-            print("failed")
+            print("skipped")
         time.sleep(0.3)
 
-    # SZSE latest data
+    # === SZSE: only get latest; accumulate historically ===
     print("Fetching SZSE latest...", end=' ')
     df_sz = fetch_szse()
     if df_sz is not None:
-        target = df_sz[df_sz['code'].isin(TARGET_ETFS.keys())]
-        all_data.append(target)
-        print(f"{len(target)} ETFs")
+        sz_target = df_sz[df_sz['code'].isin(TARGET_ETFS.keys())]
+        all_data.append(sz_target)
+        print(f"{len(sz_target)} ETFs")
+        # Also try to accumulate SZSE history from existing CSV
+        from datetime import date as dt_date
+        today_str = dt_date.today().strftime('%Y%m%d')
+        if os.path.exists(CSV_PATH):
+            existing = pd.read_csv(CSV_PATH, index_col=0)
+            existing.columns = pd.to_datetime(existing.columns)
+            for code in sz_target['code'].values:
+                if code in [str(i).split(' ',1)[0] for i in existing.index]:
+                    # Already have historical data; SZSE gives only latest
+                    pass
     else:
         print("failed")
-
-    if all_data:
-        combined = pd.concat(all_data, ignore_index=True)
-        combined = combined.sort_values(['code', 'date'])
-        
-        # Pivot to get wide format: rows=code, columns=dates
-        pivot = combined.pivot_table(
-            values='shares', index='code', columns='date', aggfunc='first'
-        )
-        pivot = pivot.sort_index(axis=1)
-        
-        # Add names
-        pivot.index = [f"{c} {TARGET_ETFS.get(c, ('',))[0]}" for c in pivot.index]
-        
-        pivot.to_csv(CSV_PATH)
-        print(f"\n保存: {CSV_PATH}")
-        print(f"ETF数量: {len(pivot)}")
-        print(f"日期范围: {pivot.columns[0].strftime('%Y-%m-%d')} ~ {pivot.columns[-1].strftime('%Y-%m-%d')}")
-        
-        # Show latest changes
-        print("\n最新日份额变化 (亿份):")
-        for code in pivot.index:
-            vals = pivot.loc[code].dropna()
-            if len(vals) >= 2:
-                delta = (vals.iloc[-1] - vals.iloc[-2]) / 1e8
-                print(f"  {code}: {delta:+.2f}")
-    else:
+    
+    if not all_data:
         print("No data fetched!")
+        exit(1)
+
+    combined = pd.concat(all_data, ignore_index=True)
+    combined = combined.sort_values(['code', 'date'])
+    
+    # Pivot
+    pivot = combined.pivot_table(
+        values='shares', index='code', columns='date', aggfunc='first'
+    )
+    pivot = pivot.sort_index(axis=1)
+    
+    # Merge with existing SZSE history
+    if os.path.exists(CSV_PATH):
+        existing = pd.read_csv(CSV_PATH, index_col=0)
+        existing.columns = pd.to_datetime(existing.columns)
+        # Keep SZSE historical dates from existing, SSE dates from new
+        sz_codes = [c for c in TARGET_ETFS if TARGET_ETFS[c][1] == 'SZSE']
+        for code in sz_codes:
+            if code in existing.index:
+                old_data = existing.loc[code]
+                new_data = pivot.loc[code] if code in pivot.index else None
+                if new_data is not None:
+                    # Merge: old dates + new date
+                    merged = old_data.combine_first(new_data)
+                    pivot.loc[code] = merged
+    
+    # Add names to index
+    new_idx = []
+    for c in pivot.index:
+        code_str = str(c).split(' ')[0] if ' ' in str(c) else str(c)
+        name = TARGET_ETFS.get(code_str, ('',))[0]
+        new_idx.append(f"{code_str} {name}")
+    pivot.index = new_idx
+    
+    pivot.to_csv(CSV_PATH)
+    print(f"\n保存: {CSV_PATH}")
+    print(f"ETF数量: {len(pivot)}")
+    dates_all = [d for d in pivot.columns if not pd.isna(d)]
+    if dates_all:
+        print(f"日期范围: {min(dates_all).strftime('%Y-%m-%d')} ~ {max(dates_all).strftime('%Y-%m-%d')}")
+    
+    # Show latest changes
+    print("\n最新日份额变化 (亿份):")
+    for code in pivot.index:
+        vals = pivot.loc[code].dropna()
+        if len(vals) >= 2:
+            delta = (vals.iloc[-1] - vals.iloc[-2]) / 1e8
+            print(f"  {code}: {delta:+.2f}")
