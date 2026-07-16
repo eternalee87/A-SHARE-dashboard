@@ -102,51 +102,78 @@ if os.path.exists(etf_flow_path):
     
     # Daily changes (亿份)
     ef_delta = ef.diff(axis=1).iloc[:, 1:] / 1e8
-    last_dates = ef_delta.columns[-5:]  # last 5 trading days
+    last_dates = ef_delta.columns[-5:]
     etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
     etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
     
+    # ETF approximate price estimates (from benchmarks in style CSV)
+    last_row = df.iloc[-1]
+    bm = {k: round(last_row[k], 0) for k in BENCHMARKS}
+    ETF_PRICE = {
+        '510300': bm['沪深300']/1000, '510310': bm['沪深300']/1000,
+        '510330': bm['沪深300']/1000, '159919': bm['沪深300']/1000,
+        '510050': bm['上证50']/1000,
+        '510500': bm['中证500']/1000,
+        '512100': bm['中证1000']/1000, '159845': bm['中证1000']/1000,
+        '159915': bm['创业板指']/1000, '159949': bm['创业板指']/1000,
+        '588000': 1.25, '588080': 1.25,
+        '510180': bm['沪深300']/1000,
+        '510880': bm['中证红利']/1000, '512890': bm['中证红利']/1000,
+        '512880': 1.10,
+    }
+    
     for i, code in enumerate(etf_codes):
-        row = {'code': code, 'name': etf_names[i]}
+        price = ETF_PRICE.get(code, 1.0)
+        row = {'code': code, 'name': etf_names[i], 'price': round(price, 2)}
         for d in last_dates:
-            val = ef_delta.iloc[i][d] if d in ef_delta.columns and not pd.isna(ef_delta.iloc[i][d]) else 0
-            row[str(d)[:10]] = round(val, 2)
-        # 3/5/10 day sums (dropna to handle missing)
-        all_vals = ef_delta.iloc[i].dropna()
-        row['d3'] = round(float(all_vals.iloc[-3:].sum()) if len(all_vals) >= 3 else 0, 2)
-        row['d5'] = round(float(all_vals.iloc[-5:].sum()) if len(all_vals) >= 5 else 0, 2)
-        row['d10'] = round(float(all_vals.iloc[-10:].sum()) if len(all_vals) >= 10 else 0, 2)
+            ds = str(d)[:10]
+            sv = ef_delta.iloc[i][d] if d in ef_delta.columns and not pd.isna(ef_delta.iloc[i][d]) else 0
+            mv = round(sv * price, 2)
+            row[ds+'_s'] = round(sv, 2)  # shares
+            row[ds+'_m'] = mv             # money
+        all_sv = ef_delta.iloc[i].dropna()
+        sum3 = round(float(all_sv.iloc[-3:].sum()) if len(all_sv) >= 3 else 0, 2)
+        sum5 = round(float(all_sv.iloc[-5:].sum()) if len(all_sv) >= 5 else 0, 2)
+        sum10 = round(float(all_sv.iloc[-10:].sum()) if len(all_sv) >= 10 else 0, 2)
+        row['d3_s'] = sum3; row['d3_m'] = round(sum3 * price, 2)
+        row['d5_s'] = sum5; row['d5_m'] = round(sum5 * price, 2)
+        row['d10_s'] = sum10; row['d10_m'] = round(sum10 * price, 2)
         etf_data['daily'].append(row)
     
-    # Totals
+    # Totals (shares + money)
     totals = {}
     for d in last_dates:
-        totals[str(d)[:10]] = round(sum(r.get(str(d)[:10], 0) for r in etf_data['daily']), 2)
-    totals['d3'] = round(sum(r['d3'] for r in etf_data['daily']), 2)
-    totals['d5'] = round(sum(r['d5'] for r in etf_data['daily']), 2)
-    totals['d10'] = round(sum(r['d10'] for r in etf_data['daily']), 2)
+        ds = str(d)[:10]
+        totals[ds+'_s'] = round(sum(r.get(ds+'_s', 0) for r in etf_data['daily']), 2)
+        totals[ds+'_m'] = round(sum(r.get(ds+'_m', 0) for r in etf_data['daily']), 2)
+    totals['d3_s'] = round(sum(r['d3_s'] for r in etf_data['daily']), 2)
+    totals['d3_m'] = round(sum(r['d3_m'] for r in etf_data['daily']), 2)
+    totals['d5_s'] = round(sum(r['d5_s'] for r in etf_data['daily']), 2)
+    totals['d5_m'] = round(sum(r['d5_m'] for r in etf_data['daily']), 2)
+    totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
+    totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
     
-    # Anomaly detection
-    total_d3 = totals['d3']
-    total_d5 = totals['d5']
-    if total_d5 > 50:
+    # Anomaly detection (based on shares)
+    total_d5_s = totals['d5_s']
+    total_d5_m = totals.get('d5_m', 0)
+    if total_d5_s > 50:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5:.0f}亿份→大举托底"
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_s:.0f}亿份(约{total_d5_m:.0f}亿)→大举托底"
         risk_flags.append(etf_data['alert_msg'])
-    elif total_d5 > 20:
+    elif total_d5_s > 20:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流入{total_d5:.0f}亿份→持续买入"
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5_s:.0f}亿份(约{total_d5_m:.0f}亿)→持续买入"
         risk_flags.append(etf_data['alert_msg'])
-    elif total_d5 < -20:
+    elif total_d5_s < -20:
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5):.0f}亿份→减持回收"
+        etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5_s):.0f}亿份→减持回收"
         risk_flags.append(etf_data['alert_msg'])
     
-    # Check individual ETFs
+    # Check individual ETFs (based on shares)
     for r in etf_data['daily']:
-        if abs(r['d3']) > 15:
-            direction = '买入' if r['d3'] > 0 else '卖出'
-            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3']):.0f}亿"
+        if abs(r['d3_s']) > 15:
+            direction = '买入' if r['d3_s'] > 0 else '卖出'
+            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3_s']):.0f}亿"
             if msg not in risk_flags:
                 risk_flags.append(msg)
     

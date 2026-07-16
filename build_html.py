@@ -310,53 +310,58 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   var daily = ef.daily;
   var summary = ef.summary || {};
   
-  // Build table header
-  var html = '<div style="margin-bottom:2px;font-size:13px;color:#8b949e;"> ETF份额变化 (亿份)</div>';
-  html += '<table style="width:100%;font-size:15px;border-collapse:collapse;">';
-  html += '<tr style="color:#8b949e;font-size:12px;">';
-  html += '<th style="text-align:left;padding:2px 4px;">ETF</th>';
-  for (var di = 0; di < dates.length; di++) {
-    var ds = dates[di]; var label = ds.slice(5); // MM-DD
-    html += '<th style="text-align:right;padding:2px 3px;">'+label+'</th>';
+  // Helper: format cell with shares and money
+  function fmtCell(sv, mv, threshold) {
+    threshold = threshold || 2;
+    var c = sv > threshold ? '#e74c3c' : (sv < -threshold ? '#2ecc71' : '#c9d1d9');
+    var sign = sv >= 0 ? '+' : '';
+    var sLine = sign + sv.toFixed(1) + '亿份';
+    var mLine = (mv >= 0 ? '+' : '') + mv.toFixed(1) + '亿';
+    return '<span style=\"color:'+c+';font-size:13px;\">'+sLine+'</span><br><span style=\"color:'+c+';font-size:10px;opacity:0.7;\">'+mLine+'</span>';
   }
-  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">3日</th>';
-  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">5日</th>';
-  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">10日</th>';
+  
+  var html = '<div style=\"margin-bottom:4px;font-size:13px;color:#8b949e;\"> ETF份额与金额变化 (亿)</div>';
+  html += '<table style=\"width:100%;font-size:13px;border-collapse:collapse;\">';
+  html += '<tr style=\"color:#8b949e;font-size:12px;\">';
+  html += '<th style=\"text-align:left;padding:3px 5px;\">ETF</th>';
+  for (var di = 0; di < dates.length; di++) {
+    var label = dates[di].slice(5);
+    html += '<th style=\"text-align:right;padding:3px 4px;\">'+label+'</th>';
+  }
+  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">3日</th>';
+  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">5日</th>';
+  html += '<th style=\"text-align:right;padding:3px 4px;color:#58a6ff;\">10日</th>';
   html += '</tr>';
   
-  // ETF rows
   for (var i = 0; i < daily.length; i++) {
     var r = daily[i];
-    html += '<tr style="border-top:1px solid #21262d;">';
-    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:14px;">'+r.code+'</span> '+r.name+'</td>';
+    html += '<tr style=\"border-top:1px solid #21262d;\">';
+    html += '<td style=\"padding:3px 5px;\"><span style=\"color:#58a6ff;font-size:13px;\">'+r.code+'</span> <span style=\"font-size:12px;\">'+r.name+'</span></td>';
     for (var di = 0; di < dates.length; di++) {
-      var ds = dates[di]; var v = r[ds] || 0;
-      var color = v > 2 ? '#e74c3c' : (v < -2 ? '#2ecc71' : '#c9d1d9');
-      html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(v>=0?'+':'')+v.toFixed(1)+'</td>';
+      var ds = dates[di];
+      html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r[ds+'_s']||0, r[ds+'_m']||0, 2)+'</td>';
     }
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d3>=0?'#e74c3c':'#2ecc71')+'">'+(r.d3>=0?'+':'')+r.d3.toFixed(1)+'</td>';
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d5>=0?'#e74c3c':'#2ecc71')+'">'+(r.d5>=0?'+':'')+r.d5.toFixed(1)+'</td>';
-    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d10>=0?'#e74c3c':'#2ecc71')+'">'+(r.d10>=0?'+':'')+r.d10.toFixed(1)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d3_s||0, r.d3_m||0, 5)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d5_s||0, r.d5_m||0, 5)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(r.d10_s||0, r.d10_m||0, 5)+'</td>';
     html += '</tr>';
   }
   
   // Summary row
-  html += '<tr style="border-top:2px solid #30363d;font-weight:bold;">';
-  html += '<td style="padding:2px 4px;">合计</td>';
+  html += '<tr style=\"border-top:2px solid #30363d;font-weight:bold;\">';
+  html += '<td style=\"padding:3px 5px;\">合计</td>';
   for (var di = 0; di < dates.length; di++) {
-    var ds = dates[di]; var sv = summary[ds] || 0;
-    var color = sv > 10 ? '#e74c3c' : (sv < -10 ? '#2ecc71' : '#c9d1d9');
-    html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
+    var ds = dates[di];
+    html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary[ds+'_s']||0, summary[ds+'_m']||0, 10)+'</td>';
   }
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d3>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d3>=0?'+':'')+(summary.d3||0).toFixed(1)+'</td>';
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d5>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d5>=0?'+':'')+(summary.d5||0).toFixed(1)+'</td>';
-  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d10>=0?'#e74c3c':'#2ecc71')+'">'+(summary.d10>=0?'+':'')+(summary.d10||0).toFixed(1)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d3_s||0, summary.d3_m||0, 10)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d5_s||0, summary.d5_m||0, 10)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 4px;\">'+fmtCell(summary.d10_s||0, summary.d10_m||0, 10)+'</td>';
   html += '</tr>';
   html += '</table>';
   
-  // Alert banner
   if (ef.alert) {
-    html += '<div style="margin-top:6px;padding:4px 8px;background:#442222;border-left:3px solid #e74c3c;font-size:11px;color:#e74c3c;">⚠ '+ef.alert_msg+'</div>';
+    html += '<div style=\"margin-top:6px;padding:4px 8px;background:#442222;border-left:3px solid #e74c3c;font-size:13px;color:#e74c3c;\">⚠ '+ef.alert_msg+'</div>';
   }
   
   document.getElementById('etfTable').innerHTML = html;
