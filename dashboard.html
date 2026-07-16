@@ -11,14 +11,14 @@
 <script src="dashboard_data.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; }
+body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
 .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-radius: 10px; margin-bottom: 16px; }
 .header.GREEN { background: linear-gradient(135deg, #0d3320, #1a4a2e); border: 1px solid #2ecc71; }
 .header.YELLOW { background: linear-gradient(135deg, #3d2e0f, #5a4518); border: 1px solid #f39c12; }
 .header.ORANGE { background: linear-gradient(135deg, #3d1f0f, #5a2e18); border: 1px solid #e67e22; }
 .header.RED { background: linear-gradient(135deg, #330d0d, #4a1e1e); border: 1px solid #e74c3c; }
-.header h1 { font-size: 22px; }
-.status-badge { font-size: 28px; font-weight: bold; padding: 8px 20px; border-radius: 8px; }
+.header h1 { font-size: 24px; }
+.status-badge { font-size: 32px; font-weight: bold; padding: 8px 20px; border-radius: 8px; }
 .status-badge.GREEN { color: #2ecc71; background: rgba(46,204,113,0.15); }
 .status-badge.YELLOW { color: #f39c12; background: rgba(243,156,18,0.15); }
 .status-badge.ORANGE { color: #e67e22; background: rgba(230,126,34,0.15); }
@@ -28,24 +28,24 @@ body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px; }
-.card h3 { font-size: 14px; color: #8b949e; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.card h3 { font-size: 16px; color: #8b949e; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
 .kpi { text-align: center; }
-.kpi .value { font-size: 28px; font-weight: bold; margin: 4px 0; }
-.kpi .label { font-size: 11px; color: #8b949e; }
-.kpi .sub { font-size: 12px; color: #8b949e; margin-top: 2px; }
+.kpi .value { font-size: 34px; font-weight: bold; margin: 4px 0; }
+.kpi .label { font-size: 13px; color: #8b949e; }
+.kpi .sub { font-size: 13px; color: #8b949e; margin-top: 2px; }
 .green { color: #2ecc71; } .red { color: #e74c3c; } .orange { color: #e67e22; } .yellow { color: #f39c12; }
 .signal-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #21262d; }
 .signal-row:last-child { border-bottom: none; }
 .signal-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
 .signal-dot.g { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
 .signal-dot.r { background: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
-.risk-tag { display: inline-block; padding: 4px 10px; margin: 4px; border-radius: 4px; font-size: 12px; background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
-.advice-box { padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+.risk-tag { display: inline-block; padding: 4px 10px; margin: 4px; border-radius: 4px; font-size: 13px; background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
+.advice-box { padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6; }
 .advice-box.GREEN { background: rgba(46,204,113,0.1); border-left: 3px solid #2ecc71; }
 .advice-box.YELLOW { background: rgba(243,156,18,0.1); border-left: 3px solid #f39c12; }
 .advice-box.ORANGE { background: rgba(230,126,34,0.1); border-left: 3px solid #e67e22; }
 .advice-box.RED { background: rgba(231,76,60,0.1); border-left: 3px solid #e74c3c; }
-.bar-row { display: flex; align-items: center; padding: 4px 0; font-size: 12px; }
+.bar-row { display: flex; align-items: center; padding: 4px 0; font-size: 14px; }
 .bar-row .name { width: 70px; text-align: right; margin-right: 10px; flex-shrink: 0; }
 .bar-row .bar-wrap { flex: 1; height: 16px; background: #21262d; border-radius: 3px; position: relative; overflow: hidden; }
 .bar-row .bar-fill { height: 100%; border-radius: 3px; position: absolute; }
@@ -53,12 +53,12 @@ body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0
 canvas { max-height: 280px; }
 .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 900px) { .grid-3, .grid-4, .chart-grid { grid-template-columns: 1fr; } }
-.stage-chain { font-size: 12px; }
+.stage-chain { font-size: 14px; }
 .stage-row { display: flex; align-items: flex-start; padding: 5px 0; border-left: 2px solid #30363d; margin-left: 8px; padding-left: 12px; }
 .stage-row.active { border-left-color: #e67e22; background: rgba(230,126,34,0.06); }
 .stage-row.passed { border-left-color: #e74c3c; }
 .stage-row .stage-num { width: 24px; font-weight: bold; flex-shrink: 0; }
-.freshness { font-size: 11px; color: #8b949e; margin-top: 2px; }
+.freshness { font-size: 12px; color: #8b949e; margin-top: 2px; }
 .freshness.stale { color: #e67e22; }
 .freshness.fresh { color: #2ecc71; }
 .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: #fff; font-size: 14px; z-index: 9999; opacity: 0; transform: translateY(-20px); transition: all 0.3s; pointer-events: none; }
@@ -73,8 +73,8 @@ canvas { max-height: 280px; }
 <div class="header ORANGE" id="header">
   <div>
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
-    <div style="font-size:11px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
-    <div style="font-size:13px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
+    <div style="font-size:13px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
+    <div style="font-size:15px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
   </div>
   <div>
     <div class="status-badge ORANGE" id="statusBadge">中期走弱</div>
@@ -269,7 +269,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
 // ===== BENCH TABLE =====
 (function() {
   var bm = DATA.benchmarks, ytd = DATA.ytd;
-  var html = '<table style="width:100%;font-size:12px;border-collapse:collapse;">';
+  var html = '<table style="width:100%;font-size:14px;border-collapse:collapse;">';
   html += '<tr style="color:#8b949e;"><th style="text-align:left;padding:4px;">指数</th><th style="text-align:right;padding:4px;">点位</th><th style="text-align:right;padding:4px;">YTD</th></tr>';
   var keys = Object.keys(bm);
   for (var i = 0; i < keys.length; i++) {
@@ -296,9 +296,9 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   var summary = ef.summary || {};
   
   // Build table header
-  var html = '<div style="margin-bottom:2px;font-size:12px;color:#8b949e;"> ETF份额变化 (亿份)</div>';
-  html += '<table style="width:100%;font-size:13px;border-collapse:collapse;">';
-  html += '<tr style="color:#8b949e;font-size:11px;">';
+  var html = '<div style="margin-bottom:2px;font-size:13px;color:#8b949e;"> ETF份额变化 (亿份)</div>';
+  html += '<table style="width:100%;font-size:15px;border-collapse:collapse;">';
+  html += '<tr style="color:#8b949e;font-size:12px;">';
   html += '<th style="text-align:left;padding:2px 4px;">ETF</th>';
   for (var di = 0; di < dates.length; di++) {
     var ds = dates[di]; var label = ds.slice(5); // MM-DD
@@ -313,7 +313,7 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   for (var i = 0; i < daily.length; i++) {
     var r = daily[i];
     html += '<tr style="border-top:1px solid #21262d;">';
-    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:12px;">'+r.code+'</span> '+r.name+'</td>';
+    html += '<td style="padding:2px 4px;"><span style="color:#58a6ff;font-size:14px;">'+r.code+'</span> '+r.name+'</td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di]; var v = r[ds] || 0;
       var color = v > 2 ? '#e74c3c' : (v < -2 ? '#2ecc71' : '#c9d1d9');
@@ -401,10 +401,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-16 14:50';
+var BUILD_TIME = '07-16 14:55';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 14:50') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 14:55') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
