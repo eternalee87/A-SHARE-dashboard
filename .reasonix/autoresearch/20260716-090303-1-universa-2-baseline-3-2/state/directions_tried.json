@@ -1,0 +1,23 @@
+[
+  {
+    "fingerprint": "task",
+    "summary": "所有证据齐备。",
+    "first_seen_iteration": 1,
+    "last_seen_iteration": 1,
+    "count": 1
+  },
+  {
+    "fingerprint": "all-evidence-was-verified-in-the-previous-turn-let-me-pr",
+    "summary": "All evidence was verified in the previous turn. Let me provide the evidence blocks for this task instance and finalize.",
+    "first_seen_iteration": 2,
+    "last_seen_iteration": 2,
+    "count": 1
+  },
+  {
+    "fingerprint": "open-success-criteria-0-goal",
+    "summary": "两个成功标准均已满足（open_success_criteria: 0）。Goal 已完成。",
+    "first_seen_iteration": 3,
+    "last_seen_iteration": 3,
+    "count": 1
+  }
+]

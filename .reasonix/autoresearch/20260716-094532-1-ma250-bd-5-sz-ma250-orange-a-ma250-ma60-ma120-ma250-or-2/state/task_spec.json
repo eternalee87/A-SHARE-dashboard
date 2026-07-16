@@ -1,0 +1,25 @@
+{
+  "task_id": "20260716-094532-1-ma250-bd-5-sz-ma250-orange-a-ma250-ma60-ma120-ma250-or-2",
+  "goal": "1. 安全阀逻辑（MA250 的一票否决权）诊断：这是当前系统导致仓位虚高的核心原因。目前采用的是 bd≤5 或 sz≥MA250 进入 ORANGE。A 股的 MA250 更多是心理支撑线而非动量支撑线。在 MA60 和 MA120 已经形成空头排列向下压制时，MA250 的支撑有效性极低。将其作为无条件保送 ORANGE 的“免死金牌”，完全掩盖了中短期动量的衰竭。优化建议： 将逻辑从“或（OR）”改为“且（AND）”的变体，或者引入均线斜率（一阶导数）。年线在脚下只能作为“不立即清仓”的理由，不能作为“维持中等仓位”的理由。修正规则： 若 $bd \\ge 4$ 且 $sz \\ge \\text{MA250}$，最高仓位上限应硬性截断至 20%，剥夺其享受 50% 上限的权利。2. bd 阈值的设定（风险梯度的平滑度）诊断：现有的阶梯过于宽容。A 股具有极强的趋势惯性和高 Beta 属性，呈现“涨慢跌快”的特征。当 $bd=3$ 时（意味着至少跌破两根重要均线且伴随一定回撤），右侧风险已经失控，此时仍判定为 YELLOW 是滞后的。优化建议： 收紧 GREEN 和 YELLOW 的宽容度，增加仓位降级的灵敏度。🟢 GREEN: $bd = 0$ 且 $rf = 0$ (绝对多头)🟡 YELLOW: $bd \\le 2$ 且 $rf \\le 1$ (初期警报，跌破单根短期均线)🟠 ORANGE: $bd \\le 4$ 且 $sz \\ge \\text{MA120}$ (中度受损)🔴 RED: $bd \u003e 4$ (进入右侧防御期)按此新标准，当前快照 $bd=5$ 将直接进入 RED 区域，符合你“3-5成仓位偏高”的盘感。3. 价值/成长比率的异象处理诊断：单向阈值掩盖了结构性失衡。在回撤高达 23.4% 的深水区，通常应伴随价值股的防御性跑赢。当前成长反而跑赢价值（-8.3%），这在A股的宏观衰退期属于典型的“微观流动性扭曲”或抱团现象，意味着市场尚未完成彻底的出清，隐含波动率极高。优化建议： 将单向判定转为绝对值偏离度（Spread Deviation）或引入滚动波动率。在深回撤区间，任何风格的极端分化都是不稳定信号。指标重构： 使用 $\\vert{}\\text{Value}_{ret} - \\text{Growth}_{ret}\\vert{} \u003e \\Delta_{\\text{threshold}}$ 作为得分项。当差值的绝对值过大时，说明市场陷入极端风格博弈，应增加 $bd$ 或 $rf$ 的惩罚分。4. ETF 国家队信号的独立化（流动性 vs 动量）诊断：将政策干预与内生动量混为一谈会导致信号钝化。将“国家队预警”算入 $rf\\_count$ 会推高风险得分，但国家队入场通常代表的是“政策底（流动性托底）”而非“市场底（价格反转）”。国家队的作用是降低下行斜率（Dampening Volatility），而不是立刻扭转趋势。优化建议： 将国家队信号作为独立的“降落伞乘数（Parachute Multiplier）”，剥离出 $rf$ 系统。应用逻辑： 国家队信号不改变当前的颜色评级（维持趋势判断的客观性），但可以改变该评级下的下限。例如，在 RED 区域原本建议仓位是 0-10%，若监测到明确的国家队宽基 ETF 异常放量信号，可将区间微调为 10-15%，作为防止踏空政策底的基础底仓，但不应据此将总仓位推高至 30% 以上。",
+  "scope": null,
+  "non_goals": null,
+  "allowed_operations": {
+    "write": true,
+    "network": false,
+    "publish": false
+  },
+  "success_criteria": [
+    {
+      "id": "objective_evidence",
+      "description": "The goal outcome is supported by direct evidence, such as inspected code, reproduced behavior, source material, or concrete findings.",
+      "required": true,
+      "evidence_ids": null
+    },
+    {
+      "id": "verification",
+      "description": "The result has relevant verification evidence, such as tests, commands, benchmarks, manual checks, or a documented reason why verification is not applicable.",
+      "required": true,
+      "evidence_ids": null
+    }
+  ]
+}

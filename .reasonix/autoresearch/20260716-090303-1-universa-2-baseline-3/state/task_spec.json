@@ -1,0 +1,29 @@
+{
+  "task_id": "20260716-090303-1-universa-2-baseline-3",
+  "goal": "请尝试用深度虚值看跌期权生产量化策略，以下是策略总纲与回测目标\n1. 策略底层逻辑\n对齐《逆风翻盘》寰宇资本（Universa）核心思路：放弃方向择时，永久持有尾部风险敞口，以持续小额的时间价值损耗为成本，换取极端崩盘行情下的非线性超额收益，最终实现降低组合最大回撤、提升长期复合收益的目标。\n2. 回测核心目标\n•复现纯买入深度虚值看跌期权的基准收益 / 成本特征，建立无择时策略的 Baseline；\n•测试不同参数对策略年化成本、崩盘爆发力、连续亏损周期的影响；\n•验证各类降本增效优化的有效性，筛选出高性价比的参数区间；\n•验证策略在不同市场环境下的稳健性，排除过拟合。\n3. 核心约束原则\n所有优化均不预判大盘涨跌方向，仅围绕「期权性价比、成本效率、风险约束」调整，不将策略从 “尾部保险” 异化为 “方向性投机”。",
+  "scope": null,
+  "non_goals": null,
+  "allowed_operations": {
+    "write": true,
+    "network": false,
+    "publish": false
+  },
+  "success_criteria": [
+    {
+      "id": "objective_evidence",
+      "description": "The goal outcome is supported by direct evidence, such as inspected code, reproduced behavior, source material, or concrete findings.",
+      "required": true,
+      "evidence_ids": [
+        "f1"
+      ]
+    },
+    {
+      "id": "verification",
+      "description": "The result has relevant verification evidence, such as tests, commands, benchmarks, manual checks, or a documented reason why verification is not applicable.",
+      "required": true,
+      "evidence_ids": [
+        "f2"
+      ]
+    }
+  ]
+}
