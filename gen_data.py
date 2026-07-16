@@ -92,6 +92,69 @@ status_desc={
     'RED':'仓位<30%或空仓,仅保留防御底仓,等待底部信号'
 }
 
+# ETF 国家队份额跟踪 @gen_data.py
+etf_flow_path = os.path.join(BASE, 'data', 'etf_flow.csv')
+etf_data = {'daily': [], 'summary': {}, 'alert': False, 'alert_msg': ''}
+if os.path.exists(etf_flow_path):
+    ef = pd.read_csv(etf_flow_path, index_col=0)
+    ef.columns = pd.to_datetime(ef.columns)
+    ef = ef.sort_index(axis=1)
+    
+    # Daily changes (亿份)
+    ef_delta = ef.diff(axis=1).iloc[:, 1:] / 1e8
+    last_dates = ef_delta.columns[-5:]  # last 5 trading days
+    etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
+    etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
+    
+    for i, code in enumerate(etf_codes):
+        row = {'code': code, 'name': etf_names[i]}
+        for d in last_dates:
+            val = ef_delta.iloc[i][d] if d in ef_delta.columns and not pd.isna(ef_delta.iloc[i][d]) else 0
+            row[str(d)[:10]] = round(val, 2)
+        # 3/5/10 day sums (dropna to handle missing)
+        all_vals = ef_delta.iloc[i].dropna()
+        row['d3'] = round(float(all_vals.iloc[-3:].sum()) if len(all_vals) >= 3 else 0, 2)
+        row['d5'] = round(float(all_vals.iloc[-5:].sum()) if len(all_vals) >= 5 else 0, 2)
+        row['d10'] = round(float(all_vals.iloc[-10:].sum()) if len(all_vals) >= 10 else 0, 2)
+        etf_data['daily'].append(row)
+    
+    # Totals
+    totals = {}
+    for d in last_dates:
+        totals[str(d)[:10]] = round(sum(r.get(str(d)[:10], 0) for r in etf_data['daily']), 2)
+    totals['d3'] = round(sum(r['d3'] for r in etf_data['daily']), 2)
+    totals['d5'] = round(sum(r['d5'] for r in etf_data['daily']), 2)
+    totals['d10'] = round(sum(r['d10'] for r in etf_data['daily']), 2)
+    
+    # Anomaly detection
+    total_d3 = totals['d3']
+    total_d5 = totals['d5']
+    if total_d5 > 50:
+        etf_data['alert'] = True
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5:.0f}亿份→大举托底"
+        risk_flags.append(etf_data['alert_msg'])
+    elif total_d5 > 20:
+        etf_data['alert'] = True
+        etf_data['alert_msg'] = f"国家队5日净流入{total_d5:.0f}亿份→持续买入"
+        risk_flags.append(etf_data['alert_msg'])
+    elif total_d5 < -20:
+        etf_data['alert'] = True
+        etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5):.0f}亿份→减持回收"
+        risk_flags.append(etf_data['alert_msg'])
+    
+    # Check individual ETFs
+    for r in etf_data['daily']:
+        if abs(r['d3']) > 15:
+            direction = '买入' if r['d3'] > 0 else '卖出'
+            msg = f"{r['code']} {r['name']} 3日{direction}{abs(r['d3']):.0f}亿"
+            if msg not in risk_flags:
+                risk_flags.append(msg)
+    
+    etf_data['summary'] = totals
+    etf_data['dates'] = [str(d)[:10] for d in last_dates]
+
+rf_count = len(risk_flags)
+
 # Latest values
 last=df.iloc[-1]
 
@@ -108,7 +171,8 @@ data={
     'lv_vs_lg':lv_vs_lg,
     'benchmarks':{k:round(last[k],0) for k in BENCHMARKS},
     'ytd':ytd,'vg_data':vg_data,'ls_data':ls_data,'roll_data':roll_data,
-    'ts_180':ts_180,'sz_180':sz_180,'rets_20':rets_20,'rets_60':rets_60
+    'ts_180':ts_180,'sz_180':sz_180,'rets_20':rets_20,'rets_60':rets_60,
+    'etf_flow':etf_data
 }
 
 with open(os.path.join(BASE,'dashboard_data.json'),'w',encoding='utf-8') as f:

@@ -37,6 +37,9 @@ jobs:
           TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         run: python fetch_data.py
 
+      - name: Fetch ETF flow data
+        run: python fetch_etf_flow.py
+
       - name: Generate JSON data
         run: python gen_data.py
 

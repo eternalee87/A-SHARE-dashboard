@@ -138,6 +138,14 @@ canvas { max-height: 280px; }
   </div>
 </div>
 
+<!-- ROW 3.5: ETF 国家队 -->
+<div class="grid grid-1" style="margin-bottom:16px;" id="etfSection">
+  <div class="card">
+    <h3>🏛️ 国家队ETF行动跟踪</h3>
+    <div id="etfTable"></div>
+  </div>
+</div>
+
 <!-- ROW 4: Charts -->
 <div class="chart-grid" style="margin-bottom:16px;">
   <div class="card">
@@ -276,6 +284,69 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   document.getElementById('benchTable').innerHTML = html;
 })();
 
+// ===== ETF 国家队行动跟踪 =====
+(function() {
+  var ef = DATA.etf_flow;
+  if (!ef || !ef.daily || ef.daily.length === 0) {
+    document.getElementById('etfSection').style.display = 'none';
+    return;
+  }
+  var dates = ef.dates || [];
+  var daily = ef.daily;
+  var summary = ef.summary || {};
+  
+  // Build table header
+  var html = '<div style="margin-bottom:2px;font-size:12px;color:#8b949e;">🏛️ 国家队ETF份额变化 (亿份)</div>';
+  html += '<table style="width:100%;font-size:11px;border-collapse:collapse;">';
+  html += '<tr style="color:#8b949e;font-size:10px;">';
+  html += '<th style="text-align:left;padding:2px 4px;">ETF</th>';
+  for (var di = 0; di < dates.length; di++) {
+    var ds = dates[di]; var label = ds.slice(5); // MM-DD
+    html += '<th style="text-align:right;padding:2px 3px;">'+label+'</th>';
+  }
+  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">3日</th>';
+  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">5日</th>';
+  html += '<th style="text-align:right;padding:2px 3px;color:#58a6ff;">10日</th>';
+  html += '</tr>';
+  
+  // ETF rows
+  for (var i = 0; i < daily.length; i++) {
+    var r = daily[i];
+    html += '<tr style="border-top:1px solid #21262d;">';
+    html += '<td style="padding:2px 4px;">'+r.name+'</td>';
+    for (var di = 0; di < dates.length; di++) {
+      var ds = dates[di]; var v = r[ds] || 0;
+      var color = v > 2 ? '#2ecc71' : (v < -2 ? '#e74c3c' : '#c9d1d9');
+      html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(v>=0?'+':'')+v.toFixed(1)+'</td>';
+    }
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d3>=0?'#2ecc71':'#e74c3c')+'">'+(r.d3>=0?'+':'')+r.d3.toFixed(1)+'</td>';
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d5>=0?'#2ecc71':'#e74c3c')+'">'+(r.d5>=0?'+':'')+r.d5.toFixed(1)+'</td>';
+    html += '<td style="text-align:right;padding:2px 3px;color:'+(r.d10>=0?'#2ecc71':'#e74c3c')+'">'+(r.d10>=0?'+':'')+r.d10.toFixed(1)+'</td>';
+    html += '</tr>';
+  }
+  
+  // Summary row
+  html += '<tr style="border-top:2px solid #30363d;font-weight:bold;">';
+  html += '<td style="padding:2px 4px;">合计</td>';
+  for (var di = 0; di < dates.length; di++) {
+    var ds = dates[di]; var sv = summary[ds] || 0;
+    var color = sv > 10 ? '#2ecc71' : (sv < -10 ? '#e74c3c' : '#c9d1d9');
+    html += '<td style="text-align:right;padding:2px 3px;color:'+color+'">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
+  }
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d3>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d3>=0?'+':'')+(summary.d3||0).toFixed(1)+'</td>';
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d5>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d5>=0?'+':'')+(summary.d5||0).toFixed(1)+'</td>';
+  html += '<td style="text-align:right;padding:2px 3px;color:'+(summary.d10>=0?'#2ecc71':'#e74c3c')+'">'+(summary.d10>=0?'+':'')+(summary.d10||0).toFixed(1)+'</td>';
+  html += '</tr>';
+  html += '</table>';
+  
+  // Alert banner
+  if (ef.alert) {
+    html += '<div style="margin-top:6px;padding:4px 8px;background:#442222;border-left:3px solid #e74c3c;font-size:11px;color:#e74c3c;">⚠ '+ef.alert_msg+'</div>';
+  }
+  
+  document.getElementById('etfTable').innerHTML = html;
+})();
+
 // ===== CHARTS =====
 // ===== AUTO-REFRESH & FRESHNESS CHECK =====
 var API_BASE = (window.location.port === '8765') ? '' : '';
@@ -330,10 +401,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-15 12:54';
+var BUILD_TIME = '07-16 11:12';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-15 12:54') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-16 11:12') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
