@@ -23,7 +23,7 @@ html_template = r'''<!DOCTYPE html>
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js"></script>
+<script src="dashboard_data.js?v=__BUILD_TS__"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -441,7 +441,9 @@ var BUILD_TIME = '__BUILD_TIME__';
         if (v.version !== localStorage.getItem('last_version')) {
           localStorage.setItem('last_version', v.version);
           showToast('🆕 数据已更新，刷新中...', 'success');
-          setTimeout(function() { location.reload(true); }, 1000);
+          setTimeout(function() { 
+            window.location.href = window.location.pathname + '?t=' + Date.now();
+          }, 1000);
         }
       })
       .catch(function() {});
@@ -514,6 +516,7 @@ html = html_template.replace('__OVERALL__', overall)
 html = html.replace('__STATUS__', data['overall_label'])
 html = html.replace('__ADVICE__', data['overall_desc'])
 html = html.replace('__BUILD_TIME__', build_time)
+html = html.replace("__BUILD_TS__", datetime.now().strftime("%Y%m%d%H%M%S"))
 
 with open(os.path.join(BASE, 'dashboard.html'), 'w', encoding='utf-8') as f:
     f.write(html)
