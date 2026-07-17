@@ -37,6 +37,9 @@ html = f'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>纳斯达克100定投指示板 | NDX DCA Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -607,6 +610,19 @@ if (histTs.length > 0) {{
 
 // Auto-refresh hint
 console.log('NDX DCA Dashboard loaded | Last trading day: {d["last_trading_day"]} | DCA: {d["dca_amount"]} CNY | {d["valuation_label"]}');
+
+// Version check: auto-refresh if server has newer data than this page
+const DATA_DATE = '{d["last_trading_day"]}';
+fetch('version.json?t=' + Date.now(), {{ cache: 'no-store' }})
+  .then(r => r.json())
+  .then(v => {{
+    const svrDate = v.updated ? v.updated.substring(0, 10) : '';
+    if (svrDate && svrDate !== DATA_DATE) {{
+      console.log('New data (' + svrDate + ' vs page ' + DATA_DATE + '), reloading...');
+      location.reload(true);
+    }}
+  }})
+  .catch(() => {{}});
 </script>
 </body>
 </html>'''
