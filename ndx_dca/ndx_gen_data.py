@@ -64,54 +64,22 @@ ndx_ma200 = ndx.rolling(200).mean()
 ndx_ma200_ratio = ndx.iloc[-1] / ndx_ma200.iloc[-1]
 print(f"NDX MA200: {ndx_ma200.iloc[-1]:.2f}, Ratio: {ndx_ma200_ratio:.4f}")
 
-# ==================== VALUATION SCORING (3-Factor Percentile Model) ====================
-# Core idea: use historical percentile instead of absolute thresholds.
-# VIX (inverted): high VIX = high percentile = fear → undervalued → negative score
-# NDX/MA200: high ratio = high percentile → overvalued → positive score
-# CNN F&G: high = high percentile → greed → positive score
+# ==================== VALUATION SCORING (MA200 Percentile Single-Factor) ====================
+# Core idea: NDX/MA200 historical percentile → score → multiplier
+# Higher ratio = higher percentile = overvalued → less investment
+# Lower ratio = lower percentile = undervalued → more investment
 
-# Build CNN full-history lookup (with VIX proxy for missing dates)
-def vix_to_cnn(v):
-    if v is None or np.isnan(v): return 50
-    if v > 40: return 5
-    if v > 35: return 15
-    if v > 30: return 22
-    if v > 28: return 28
-    if v > 25: return 35
-    if v > 22: return 42
-    if v > 20: return 48
-    if v > 18: return 55
-    if v > 16: return 62
-    if v > 14: return 70
-    if v > 12: return 78
-    return 88
-
-cnn_hist_lookup = {}
-for h in cnn_data.get('history', []):
-    cnn_hist_lookup[h['date']] = h['score']
-
-# Build full-history arrays for percentile computation
-all_vix = []
+# Build MA200 ratio history for percentile baseline
 all_ma_ratio = []
-all_cnn = []
 for dt in common_dates:
-    ds = dt.strftime('%Y-%m-%d')
-    c = cnn_hist_lookup.get(ds)
-    if c is None:
-        c = vix_to_cnn(vix.loc[dt] if dt in vix.index else None)
-    all_vix.append(float(vix.loc[dt]) if dt in vix.index else 20.0)
     mr = float(ndx.loc[dt] / ndx_ma200.loc[dt]) if dt in ndx_ma200.index and not np.isnan(ndx_ma200.loc[dt]) else 1.0
     all_ma_ratio.append(mr)
-    all_cnn.append(float(c))
-
-all_vix = np.array(all_vix)
 all_ma_ratio = np.array(all_ma_ratio)
-all_cnn = np.array(all_cnn)
 
-print(f"Percentile baseline: {len(all_vix)} data points from {common_dates[0].strftime('%Y-%m-%d')} to {common_dates[-1].strftime('%Y-%m-%d')}")
+print(f"MA200 percentile baseline: {len(all_ma_ratio)} data points from {common_dates[0].strftime('%Y-%m-%d')} to {common_dates[-1].strftime('%Y-%m-%d')}")
 
 def score_from_percentile(pct):
-    """Percentile (0-100) → score (-3 to +3), designed for fat tails"""
+    """Percentile (0-100) → score (-3 to +3)"""
     if pct < 5:   return -3
     if pct < 15:  return -2
     if pct < 30:  return -1
@@ -130,29 +98,18 @@ ndx_ma200_ratio = float(ndx_cur / ndx_ma200.iloc[-1])
 ndx_prev_val = float(ndx.iloc[-2]) if len(ndx) > 1 else ndx_cur
 ndx_pct_change = (ndx_cur / ndx_prev_val) - 1
 
-# Compute percentiles against full history
-# VIX: higher = more fear → inverted for score
-p_vix = (all_vix <= vix_cur).sum() / len(all_vix) * 100
-# MA200 ratio: higher = more overvalued
+# MA200 percentile → score (single factor)
 p_ma = (all_ma_ratio <= ndx_ma200_ratio).sum() / len(all_ma_ratio) * 100
-# CNN: higher = more greed
-cnn_val = float(cnn_score_val) if cnn_score_val is not None else 50.0
-if cnn_score_val is None:
-    cnn_val = vix_to_cnn(vix_cur)
-p_cnn = (all_cnn <= cnn_val).sum() / len(all_cnn) * 100
+composite = int(score_from_percentile(p_ma))
 
-# Score: VIX inverted (high VIX = fear = undervalued)
-s1 = score_from_percentile(100 - p_vix)
-s2 = score_from_percentile(p_ma)
-s3 = score_from_percentile(p_cnn)
+# VIX and CNN for display only
+cnn_val = float(cnn_score_val) if cnn_score_val is not None else None
+p_vix = None
+p_cnn = None
 
-composite = round((s1 + s2 + s3) / 3, 2)
-
-print(f"\nValuation Scores (3-Factor Percentile Model):")
-print(f"  VIX: {vix_cur:.2f} → p{p_vix:.1f} (inverted {100-p_vix:.1f}) → score {s1:+d}")
-print(f"  NDX/MA200: {ndx_ma200_ratio:.4f} → p{p_ma:.1f} → score {s2:+d}")
-print(f"  CNN F&G: {cnn_val:.1f} ({cnn_rating}) → p{p_cnn:.1f} → score {s3:+d}")
-print(f"  COMPOSITE: {composite}")
+print(f"\nValuation Score (MA200 Percentile Single-Factor):")
+print(f"  NDX/MA200: {ndx_ma200_ratio:.4f} → p{p_ma:.1f} → score {composite:+d}")
+print(f"  (VIX: {vix_cur:.2f}, CNN: {cnn_val} for reference only)")
 
 # Valuation level
 if composite < -2.0:
@@ -394,13 +351,13 @@ output = {
     'cnn_fng_score': round(float(cnn_val), 2) if cnn_val else None,
     'cnn_fng_rating': cnn_rating,
 
-    # Valuation scores (3-factor percentile model)
-    'score_vix': s1,
-    'score_ma200': s2,
-    'score_cnn': s3,
-    'pct_vix': round(float(p_vix), 1),
+    # Valuation score (MA200 percentile single-factor)
+    'score_ma200': composite,
     'pct_ma200': round(float(p_ma), 1),
-    'pct_cnn': round(float(p_cnn), 1),
+    'score_vix': 0,
+    'score_cnn': 0,
+    'pct_vix': 0,
+    'pct_cnn': 0,
     'composite_score': composite,
     'valuation_level': val_level,
     'valuation_label': val_label,
