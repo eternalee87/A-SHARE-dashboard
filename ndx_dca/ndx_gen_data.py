@@ -76,6 +76,38 @@ for dt in common_dates:
     all_ma_ratio.append(mr)
 all_ma_ratio = np.array(all_ma_ratio)
 
+# VIX/CNN baselines for display (not used in MA200 decision)
+def vix_to_cnn(v):
+    if v is None or np.isnan(v): return 50
+    if v > 40: return 5
+    if v > 35: return 15
+    if v > 30: return 22
+    if v > 28: return 28
+    if v > 25: return 35
+    if v > 22: return 42
+    if v > 20: return 48
+    if v > 18: return 55
+    if v > 16: return 62
+    if v > 14: return 70
+    if v > 12: return 78
+    return 88
+
+cnn_hist_lookup = {}
+for h in cnn_data.get('history', []):
+    cnn_hist_lookup[h['date']] = h['score']
+
+all_vix = []
+all_cnn = []
+for dt in common_dates:
+    ds = dt.strftime('%Y-%m-%d')
+    c = cnn_hist_lookup.get(ds)
+    if c is None:
+        c = vix_to_cnn(vix.loc[dt] if dt in vix.index else None)
+    all_vix.append(float(vix.loc[dt]) if dt in vix.index else 20.0)
+    all_cnn.append(float(c))
+all_vix = np.array(all_vix)
+all_cnn = np.array(all_cnn)
+
 print(f"MA200 percentile baseline: {len(all_ma_ratio)} data points from {common_dates[0].strftime('%Y-%m-%d')} to {common_dates[-1].strftime('%Y-%m-%d')}")
 
 def score_from_percentile(pct):
@@ -98,18 +130,24 @@ ndx_ma200_ratio = float(ndx_cur / ndx_ma200.iloc[-1])
 ndx_prev_val = float(ndx.iloc[-2]) if len(ndx) > 1 else ndx_cur
 ndx_pct_change = (ndx_cur / ndx_prev_val) - 1
 
-# MA200 percentile → score (single factor)
+# MA200 percentile → decision score (single factor for DCA)
 p_ma = (all_ma_ratio <= ndx_ma200_ratio).sum() / len(all_ma_ratio) * 100
-composite = int(score_from_percentile(p_ma))
+decision_score = int(score_from_percentile(p_ma))
 
-# VIX and CNN for display only
-cnn_val = float(cnn_score_val) if cnn_score_val is not None else None
-p_vix = None
-p_cnn = None
+# VIX and CNN percentiles for display only (not used in decision)
+p_vix = (all_vix <= vix_cur).sum() / len(all_vix) * 100
+cnn_val = float(cnn_score_val) if cnn_score_val is not None else 50.0
+if cnn_score_val is None:
+    cnn_val = vix_to_cnn(vix_cur)
+p_cnn = (all_cnn <= cnn_val).sum() / len(all_cnn) * 100
+display_s1 = score_from_percentile(100 - p_vix)  # VIX: inverted
+display_s3 = score_from_percentile(p_cnn)          # CNN
 
-print(f"\nValuation Score (MA200 Percentile Single-Factor):")
-print(f"  NDX/MA200: {ndx_ma200_ratio:.4f} → p{p_ma:.1f} → score {composite:+d}")
-print(f"  (VIX: {vix_cur:.2f}, CNN: {cnn_val} for reference only)")
+composite = decision_score  # decision based on MA200 only
+
+print(f"\nValuation (MA200 Single-Factor Decision):")
+print(f"  MA200: {ndx_ma200_ratio:.4f} → p{p_ma:.1f} → score {decision_score:+d}")
+print(f"  Display: VIX p{p_vix:.1f}({display_s1:+d}) | CNN p{p_cnn:.1f}({display_s3:+d}) for reference")
 
 # Valuation level
 if composite < -2.0:
@@ -354,10 +392,10 @@ output = {
     # Valuation score (MA200 percentile single-factor)
     'score_ma200': composite,
     'pct_ma200': round(float(p_ma), 1),
-    'score_vix': 0,
-    'score_cnn': 0,
-    'pct_vix': 0,
-    'pct_cnn': 0,
+    'score_vix': display_s1,
+    'score_cnn': display_s3,
+    'pct_vix': round(float(p_vix), 1),
+    'pct_cnn': round(float(p_cnn), 1),
     'composite_score': composite,
     'valuation_level': val_level,
     'valuation_label': val_label,

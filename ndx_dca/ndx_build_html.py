@@ -269,7 +269,7 @@ body {{
         <div class="metric-card">
             <div class="metric-header">
                 <span class="metric-name">😰 VIX 恐慌指数</span>
-                <span style="font-size:0.7rem;color:#64748b;">参考</span>
+                <span class="metric-score score-{'neg' if d['score_vix']<0 else 'pos'}{abs(d['score_vix'])}">得分 {d['score_vix']:+d}</span>
             </div>
             <div class="metric-value" style="color: {('#ef4444' if d['vix']>28 else '#f59e0b' if d['vix']>20 else '#22c55e')};">{fmt(d['vix'], 2)}</div>
             <div class="metric-detail">{'🔴 极度恐慌' if d['vix']>35 else '🟠 恐慌偏高' if d['vix']>28 else '🟡 轻微不安' if d['vix']>20 else '🟢 市场平稳' if d['vix']>14 else '⚠️ 过度安逸'}</div>
@@ -301,7 +301,7 @@ body {{
         <div class="metric-card">
             <div class="metric-header">
                 <span class="metric-name">🧠 CNN 恐慌贪婪指数</span>
-                <span style="font-size:0.7rem;color:#64748b;">参考</span>
+                <span class="metric-score score-{'neg' if d['score_cnn']<0 else 'pos'}{abs(d['score_cnn'])}">得分 {d['score_cnn']:+d}</span>
             </div>
             <div class="metric-value" style="color: {('#ef4444' if d['cnn_fng_score'] and d['cnn_fng_score']<25 else '#f59e0b' if d['cnn_fng_score'] and d['cnn_fng_score']<45 else '#22c55e' if d['cnn_fng_score'] and d['cnn_fng_score']>75 else '#94a3b8')};">{fmt(d['cnn_fng_score'], 1) if d['cnn_fng_score'] else '—'}</div>
             <div class="metric-detail">{d['cnn_fng_rating'].upper() if d['cnn_fng_rating'] else '—'}</div>
@@ -327,7 +327,7 @@ body {{
         </div>
         <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:{d['valuation_color']};">{d['composite_score']:+.2f} — {d['valuation_label']}</div>
         <div style="font-size:0.7rem;color:#64748b;margin-top:4px;">
-            NDX/MA200({d['score_ma200']:+d}) → 定投 {d['dca_amount']:,} CNY
+            VIX({d['score_vix']:+d}) | MA200({d['score_ma200']:+d}) | CNN({d['score_cnn']:+d}) → 定投 {d['dca_amount']:,} CNY<br><span style="font-size:0.65rem;color:#64748b;">决策仅用MA200分位值，VIX/CNN为参考指标</span>
         </div>
     </div>
 
@@ -409,7 +409,7 @@ body {{
     <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
         <h3 style="font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">📝 模型说明</h3>
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
-            <strong>MA200 分位值单因子模型：</strong>计算 NDX/MA200 比率在 1990 年至今全历史中的分位值排名，按分位映射到 [-3, +3] 评分，根据评分确定定投倍数。均线下方多投、上方少投，简单有效。VIX 和 CNN 恐慌贪婪指数作为参考显示。<br>
+            <strong>MA200 分位值模型：</strong>以 NDX/MA200 比率的历史分位值作为定投决策依据（均线下方多投、上方少投）。VIX 恐慌指数和 CNN 恐慌贪婪指数作为辅助参考显示。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
             <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。

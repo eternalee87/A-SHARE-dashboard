@@ -195,7 +195,7 @@ body {
     </div>
     <div class="update">
         最后交易日: 2026-07-16<br>
-        生成时间: 2026-07-17 14:01:29
+        生成时间: 2026-07-17 14:06:12
     </div>
 </div>
 
@@ -234,7 +234,7 @@ body {
         <div class="metric-card">
             <div class="metric-header">
                 <span class="metric-name">😰 VIX 恐慌指数</span>
-                <span style="font-size:0.7rem;color:#64748b;">参考</span>
+                <span class="metric-score score-pos0">得分 +0</span>
             </div>
             <div class="metric-value" style="color: #22c55e;">16.73</div>
             <div class="metric-detail">🟢 市场平稳</div>
@@ -266,7 +266,7 @@ body {
         <div class="metric-card">
             <div class="metric-header">
                 <span class="metric-name">🧠 CNN 恐慌贪婪指数</span>
-                <span style="font-size:0.7rem;color:#64748b;">参考</span>
+                <span class="metric-score score-neg1">得分 -1</span>
             </div>
             <div class="metric-value" style="color: #f59e0b;">41.7</div>
             <div class="metric-detail">FEAR</div>
@@ -292,7 +292,7 @@ body {
         </div>
         <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:#808080;">+0.00 — 中性/合理估值</div>
         <div style="font-size:0.7rem;color:#64748b;margin-top:4px;">
-            NDX/MA200(+0) → 定投 2,000 CNY
+            VIX(+0) | MA200(+0) | CNN(-1) → 定投 2,000 CNY<br><span style="font-size:0.65rem;color:#64748b;">决策仅用MA200分位值，VIX/CNN为参考指标</span>
         </div>
     </div>
 
@@ -374,7 +374,7 @@ body {
     <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
         <h3 style="font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">📝 模型说明</h3>
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
-            <strong>MA200 分位值单因子模型：</strong>计算 NDX/MA200 比率在 1990 年至今全历史中的分位值排名，按分位映射到 [-3, +3] 评分，根据评分确定定投倍数。均线下方多投、上方少投，简单有效。VIX 和 CNN 恐慌贪婪指数作为参考显示。<br>
+            <strong>MA200 分位值模型：</strong>以 NDX/MA200 比率的历史分位值作为定投决策依据（均线下方多投、上方少投）。VIX 恐慌指数和 CNN 恐慌贪婪指数作为辅助参考显示。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
             <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。
@@ -382,7 +382,7 @@ body {
     </div>
 
     <div class="footer">
-        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-17 14:01:29 · Powered by yfinance & CNN
+        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-17 14:06:12 · Powered by yfinance & CNN
     </div>
 
 </div>
