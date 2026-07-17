@@ -48,7 +48,7 @@ body {
 }
 .dca-hero::before {
     content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle at 50% 50%, #80808015 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 50%, #32CD3215 0%, transparent 70%);
     animation: pulse 3s ease-in-out infinite;
 }
 @keyframes pulse {
@@ -57,15 +57,15 @@ body {
 }
 .dca-hero .label { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
 .dca-hero .amount {
-    font-size: 4rem; font-weight: 800; color: #808080;
-    text-shadow: 0 0 40px #80808044;
+    font-size: 4rem; font-weight: 800; color: #32CD32;
+    text-shadow: 0 0 40px #32CD3244;
     line-height: 1.1;
 }
 .dca-hero .amount .unit { font-size: 1.5rem; font-weight: 500; color: #94a3b8; }
 .dca-hero .val-label {
     display: inline-block; margin-top: 12px; padding: 6px 20px;
-    background: #80808022; color: #808080;
-    border: 1px solid #80808044;
+    background: #32CD3222; color: #32CD32;
+    border: 1px solid #32CD3244;
     border-radius: 20px; font-size: 0.95rem; font-weight: 600;
 }
 .dca-hero .base-info { font-size: 0.8rem; color: #64748b; margin-top: 10px; }
@@ -195,7 +195,7 @@ body {
     </div>
     <div class="update">
         最后交易日: 2026-07-16<br>
-        生成时间: 2026-07-17 14:06:12
+        生成时间: 2026-07-17 04:01:56
     </div>
 </div>
 
@@ -208,9 +208,9 @@ body {
     <!-- DCA Hero -->
     <div class="dca-hero">
         <div class="label">📌 今日建议定投金额</div>
-        <div class="amount">2,000 <span class="unit">CNY</span></div>
-        <div class="val-label">中性/合理估值 · 倍数 1.0x</div>
-        <div class="base-info">基础日投 2,000 元 × 1.0x · 最小单位 500 元 · 向下取整</div>
+        <div class="amount">3,000 <span class="unit">CNY</span></div>
+        <div class="val-label">轻度低估 · 倍数 1.5x</div>
+        <div class="base-info">基础日投 2,000 元 × 1.5x · 最小单位 500 元 · 向下取整</div>
     </div>
 
     <!-- 4 Indicator Cards -->
@@ -225,7 +225,7 @@ body {
             <div class="gauge-wrap">
                 <span style="font-size:0.7rem;color:#64748b;">MA200</span>
                 <div class="gauge-bar">
-                    <div class="fill" style="width:67.16666666666667%; background: #808080;"></div>
+                    <div class="fill" style="width:67.16666666666667%; background: #32CD32;"></div>
                 </div>
                 <span class="gauge-val">1.1030</span>
             </div>
@@ -252,7 +252,7 @@ body {
                 <span class="metric-name">📉 NDX / MA200</span>
                 <span class="metric-score score-pos0">得分 +0</span>
             </div>
-            <div class="metric-value" style="color: #808080;">1.1030</div>
+            <div class="metric-value" style="color: #32CD32;">1.1030</div>
             <div class="metric-detail">温和偏强</div>
             <div class="gauge-wrap">
                 <span style="font-size:0.7rem;color:#64748b;">0.7</span>
@@ -286,13 +286,13 @@ body {
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
             <span style="font-size:0.75rem;color:#006400;">极度低估<br>-3</span>
             <div style="flex:1;max-width:500px;height:10px;background:linear-gradient(90deg,#006400,#228B22,#32CD32,#808080,#FFA500,#FF4500,#FF0000);border-radius:5px;position:relative;">
-                <div style="position:absolute;top:-4px;width:16px;height:18px;background:white;border-radius:4px;left:50.0%;transform:translateX(-50%);border:2px solid #333;box-shadow:0 0 8px rgba(255,255,255,0.3);"></div>
+                <div style="position:absolute;top:-4px;width:16px;height:18px;background:white;border-radius:4px;left:44.5%;transform:translateX(-50%);border:2px solid #333;box-shadow:0 0 8px rgba(255,255,255,0.3);"></div>
             </div>
             <span style="font-size:0.75rem;color:#FF0000;">严重高估<br>+3</span>
         </div>
-        <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:#808080;">+0.00 — 中性/合理估值</div>
+        <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:#32CD32;">-0.33 — 轻度低估</div>
         <div style="font-size:0.7rem;color:#64748b;margin-top:4px;">
-            VIX(+0) | MA200(+0) | CNN(-1) → 定投 2,000 CNY<br><span style="font-size:0.65rem;color:#64748b;">决策仅用MA200分位值，VIX/CNN为参考指标</span>
+            VIX(+0) + NDX/MA200(+0) + CNN(-1) → 综合 -0.33
         </div>
     </div>
 
@@ -374,7 +374,7 @@ body {
     <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
         <h3 style="font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">📝 模型说明</h3>
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
-            <strong>MA200 分位值模型：</strong>以 NDX/MA200 比率的历史分位值作为定投决策依据（均线下方多投、上方少投）。VIX 恐慌指数和 CNN 恐慌贪婪指数作为辅助参考显示。<br>
+            <strong>三因子分位值模型：</strong>对 VIX 恐慌指数、NDX/MA200 趋势偏离、CNN 恐慌贪婪指数分别计算其历史分位值排名（1990年至今全历史），每项按分位映射到 [-3, +3] 评分，等权平均得出综合评分。分位值模型自适应市场水位变化，不受单日噪音干扰。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
             <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。
@@ -382,7 +382,7 @@ body {
     </div>
 
     <div class="footer">
-        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-17 14:06:12 · Powered by yfinance & CNN
+        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-17 04:01:56 · Powered by yfinance & CNN
     </div>
 
 </div>
@@ -588,7 +588,7 @@ if (daysSince > 1) {
   if (warn) warn.style.display = 'block';
 }
 
-console.log('NDX DCA Dashboard loaded | Last trading day: 2026-07-16 | DCA: 2000 CNY | 中性/合理估值');
+console.log('NDX DCA Dashboard loaded | Last trading day: 2026-07-16 | DCA: 3000 CNY | 轻度低估');
 
 </script>
 </body>
