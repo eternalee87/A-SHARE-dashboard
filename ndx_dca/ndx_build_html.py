@@ -611,18 +611,6 @@ if (histTs.length > 0) {{
 // Auto-refresh hint
 console.log('NDX DCA Dashboard loaded | Last trading day: {d["last_trading_day"]} | DCA: {d["dca_amount"]} CNY | {d["valuation_label"]}');
 
-// Version check: auto-refresh if server has newer data than this page
-const DATA_DATE = '{d["last_trading_day"]}';
-fetch('ndx_dca/version.json?t=' + Date.now(), {{ cache: 'no-store' }})
-  .then(r => r.json())
-  .then(v => {{
-    const svrDate = v.updated ? v.updated.substring(0, 10) : '';
-    if (svrDate && svrDate !== DATA_DATE) {{
-      console.log('New data (' + svrDate + ' vs page ' + DATA_DATE + '), reloading...');
-      location.reload(true);
-    }}
-  }})
-  .catch(() => {{}});
 </script>
 </body>
 </html>'''

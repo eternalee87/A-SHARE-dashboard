@@ -576,18 +576,6 @@ if (histTs.length > 0) {
 // Auto-refresh hint
 console.log('NDX DCA Dashboard loaded | Last trading day: 2026-07-15 | DCA: 2000 CNY | 中性/合理估值');
 
-// Version check: auto-refresh if server has newer data than this page
-const DATA_DATE = '2026-07-15';
-fetch('ndx_dca/version.json?t=' + Date.now(), { cache: 'no-store' })
-  .then(r => r.json())
-  .then(v => {
-    const svrDate = v.updated ? v.updated.substring(0, 10) : '';
-    if (svrDate && svrDate !== DATA_DATE) {
-      console.log('New data (' + svrDate + ' vs page ' + DATA_DATE + '), reloading...');
-      location.reload(true);
-    }
-  })
-  .catch(() => {});
 </script>
 </body>
 </html>
