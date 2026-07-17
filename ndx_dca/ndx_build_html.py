@@ -613,7 +613,7 @@ console.log('NDX DCA Dashboard loaded | Last trading day: {d["last_trading_day"]
 
 // Version check: auto-refresh if server has newer data than this page
 const DATA_DATE = '{d["last_trading_day"]}';
-fetch('version.json?t=' + Date.now(), {{ cache: 'no-store' }})
+fetch('ndx_dca/version.json?t=' + Date.now(), {{ cache: 'no-store' }})
   .then(r => r.json())
   .then(v => {{
     const svrDate = v.updated ? v.updated.substring(0, 10) : '';
