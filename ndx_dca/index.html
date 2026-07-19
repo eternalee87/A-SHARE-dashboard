@@ -195,7 +195,7 @@ body {
     </div>
     <div class="update">
         最后交易日: 2026-07-17<br>
-        生成时间: 2026-07-18 06:27:43
+        生成时间: 2026-07-19 09:25:04
     </div>
 </div>
 
@@ -382,7 +382,7 @@ body {
     </div>
 
     <div class="footer">
-        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-18 06:27:43 · Powered by yfinance & CNN
+        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-19 09:25:04 · Powered by yfinance & CNN
     </div>
 
 </div>
@@ -535,7 +535,7 @@ new Chart(document.getElementById('chartCnn'), {
 // ===== 5. Investment Performance Chart =====
 const histTs = ["2026-07-10", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17"];
 const histInvested = [2000.0, 4000.0, 6000.0, 8000.0, 11000.0, 13000.0];
-const histValues = [2000.0122263800001, 3962.3884040999997, 6006.01687, 7989.0385565999995, 10859.904768190001, 12697.85796102];
+const histValues = [2000.0122263800001, 3962.3884040999997, 6006.01687, 7989.0385565999995, 10859.904768190001, 12697.857342700001];
 
 if (histTs.length > 0) {
     new Chart(document.getElementById('chartPerf'), {
@@ -583,7 +583,7 @@ const lastTradingDay = '2026-07-17';
 const lastDate = new Date(lastTradingDay + 'T00:00:00');
 const now = new Date();
 const daysSince = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
-if (daysSince > 1) {
+if (daysSince > 3) {
   const warn = document.getElementById('freshness-warning');
   if (warn) warn.style.display = 'block';
 }
