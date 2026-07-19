@@ -618,7 +618,7 @@ const lastTradingDay = '{d["last_trading_day"]}';
 const lastDate = new Date(lastTradingDay + 'T00:00:00');
 const now = new Date();
 const daysSince = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
-if (daysSince > 1) {{
+if (daysSince > 3) {{
   const warn = document.getElementById('freshness-warning');
   if (warn) warn.style.display = 'block';
 }}
