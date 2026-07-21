@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js?v=20260717120252"></script>
+<script src="dashboard_data.js?v=20260721135824"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -75,6 +75,7 @@ canvas { max-height: 280px; }
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
     <div style="font-size:13px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
     <div style="font-size:15px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
+    <div style="font-size:11px;color:#e67e22;margin-top:2px;" id="sessionLabel"></div>
   </div>
   <div>
     <div class="status-badge RED" id="statusBadge">熊市特征</div>
@@ -175,6 +176,20 @@ canvas { max-height: 280px; }
 document.getElementById('headerDate').textContent = '数据日期: ' + DATA.date + ' | 上证指数: ' + DATA.sh_index.toFixed(0);
 document.getElementById('statusBadge').textContent = DATA.overall_label;
 document.getElementById('headerCounts').textContent = '破位计数: ' + DATA.bdd_count + ' | 风险信号: ' + DATA.rf_count;
+// Session label
+(function() {
+  var bjHour = (new Date().getUTCHours() + 8) % 24;
+  var el = document.getElementById('sessionLabel');
+  if (bjHour >= 9 && bjHour < 15) {
+    el.textContent = '午盘快照 - 盘中数据,收盘后自动更新';
+    el.style.color = '#e67e22';
+  } else if (bjHour >= 15 && bjHour < 17) {
+    el.textContent = '收盘整理中,数据商更新中...';
+    el.style.color = '#f39c12';
+  } else {
+    el.style.display = 'none';
+  }
+})();
 
 // ===== KPIs =====
 document.getElementById('kpiSH').textContent = DATA.sh_index.toFixed(0);
@@ -403,10 +418,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-17 12:02';
+var BUILD_TIME = '07-21 13:58';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-17 12:02') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-21 13:58') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 

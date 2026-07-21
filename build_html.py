@@ -90,6 +90,7 @@ canvas { max-height: 280px; }
     <h1>📊 A股风格轮动盯盘仪表盘</h1>
     <div style="font-size:13px;color:#8b949e;margin-top:2px;">交易日收盘后更新 · 下次更新: 16:00</div>
     <div style="font-size:15px;color:#8b949e;margin-top:4px;" id="headerDate"></div>
+    <div style="font-size:11px;color:#e67e22;margin-top:2px;" id="sessionLabel"></div>
   </div>
   <div>
     <div class="status-badge __OVERALL__" id="statusBadge">__STATUS__</div>
@@ -190,6 +191,20 @@ canvas { max-height: 280px; }
 document.getElementById('headerDate').textContent = '数据日期: ' + DATA.date + ' | 上证指数: ' + DATA.sh_index.toFixed(0);
 document.getElementById('statusBadge').textContent = DATA.overall_label;
 document.getElementById('headerCounts').textContent = '破位计数: ' + DATA.bdd_count + ' | 风险信号: ' + DATA.rf_count;
+// Session label
+(function() {
+  var bjHour = (new Date().getUTCHours() + 8) % 24;
+  var el = document.getElementById('sessionLabel');
+  if (bjHour >= 9 && bjHour < 15) {
+    el.textContent = '午盘快照 - 盘中数据,收盘后自动更新';
+    el.style.color = '#e67e22';
+  } else if (bjHour >= 15 && bjHour < 17) {
+    el.textContent = '收盘整理中,数据商更新中...';
+    el.style.color = '#f39c12';
+  } else {
+    el.style.display = 'none';
+  }
+})();
 
 // ===== KPIs =====
 document.getElementById('kpiSH').textContent = DATA.sh_index.toFixed(0);
