@@ -189,19 +189,32 @@ if os.path.exists(etf_flow_path):
     totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
     totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
     
-    # Anomaly detection — 国家队信号 = 降落伞机制
+    # 国家队信号 — 三级判定(动量+累计)
     total_d5_m = totals.get('d5_m', 0)
-    if total_d5_m > 200:
+    total_d1_m = totals.get(str(last_dates[-1])[:10]+'_m', 0) if len(last_dates) > 0 else 0
+    total_d3_m = totals.get('d3_m', 0)
+    
+    nt_level = 'none'  # none / watch / active
+    
+    if total_d5_m > 80 and total_d1_m > 20:
+        # 仍在持续买入 → 降落伞生效
+        nt_level = 'active'
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→大举托底"
+        if total_d5_m > 200:
+            etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续托底中"
+        else:
+            etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续买入"
         national_team_active = True
-    elif total_d5_m > 80:
+    elif total_d5_m > 80 and total_d1_m <= 20:
+        # 累计大但当日已停 → 仅观察，降落伞折叠
+        nt_level = 'watch'
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续买入"
-        national_team_active = True
+        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿，但今日已暂停(仅{total_d1_m:.0f}亿)"
+        national_team_active = False
     elif total_d5_m < -80:
         etf_data['alert'] = True
         etf_data['alert_msg'] = f"国家队5日净流出{abs(total_d5_m):.0f}亿→减持回收"
+        national_team_active = False
     # 国家队独立标签加入显示(用🪂区分)
     if etf_data['alert']:
         risk_flags.append(etf_data['alert_msg'])
