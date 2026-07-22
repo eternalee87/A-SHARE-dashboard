@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-21 09:45:12",
+ "generated_at": "2026-07-22 12:03:28",
  "last_trading_day": "2026-07-20",
  "is_trading_day": true,
  "ndx": 28604.23,
@@ -20,17 +20,17 @@
  "valuation_label": "中性/合理估值",
  "valuation_color": "#808080",
  "multiplier": 1.0,
- "base_daily": 2000.0,
- "dca_amount": 2000,
+ "base_weekly": 9615.0,
+ "dca_amount": 9500,
  "min_unit": 500,
  "target_total": 5000000,
  "target_years": 10,
  "start_date": "2026-07-10",
- "total_invested": 15000.0,
- "total_shares": 0.514015,
- "current_value": 14703.0,
- "pnl": -297.0,
- "return_rate": -1.98,
+ "total_invested": 28500.0,
+ "total_shares": 0.982895,
+ "current_value": 28115.0,
+ "pnl": -385.0,
+ "return_rate": -1.35,
  "ndx_return_since_start": -4.09,
  "ndx_start_value": 29825.11,
  "portfolio_max_dd": 0.0,
@@ -1853,29 +1853,17 @@
  ],
  "hist_ts": [
   "2026-07-10",
-  "2026-07-13",
-  "2026-07-14",
-  "2026-07-15",
-  "2026-07-16",
   "2026-07-17",
   "2026-07-20"
  ],
  "hist_invested": [
-  2000.0,
-  4000.0,
-  6000.0,
-  8000.0,
-  11000.0,
-  13000.0,
-  15000.0
+  9500.0,
+  19000.0,
+  28500.0
  ],
  "hist_values": [
-  2000.0122263800001,
-  3962.3884040999997,
-  6006.01687,
-  7989.0385565999995,
-  10859.904768190001,
-  12697.857342700001,
-  14703.00328345
+  9500.0,
+  18607.435647345475,
+  28114.96513324989
  ]
 }

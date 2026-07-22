@@ -242,10 +242,10 @@ body {{
 
     <!-- DCA Hero -->
     <div class="dca-hero">
-        <div class="label">📌 今日建议定投金额</div>
+        <div class="label">📌 本周建议定投金额</div>
         <div class="amount">{fmt(d['dca_amount'], 0)} <span class="unit">CNY</span></div>
         <div class="val-label">{d['valuation_label']} · 倍数 {d['multiplier']}x</div>
-        <div class="base-info">基础日投 {fmt(d['base_daily'], 0)} 元 × {d['multiplier']}x · 最小单位 {d['min_unit']} 元 · 向下取整</div>
+        <div class="base-info">基础周投 {fmt(d['base_weekly'], 0)} 元 × {d['multiplier']}x · 最小单位 {d['min_unit']} 元 · 向下取整</div>
     </div>
 
     <!-- 4 Indicator Cards -->
@@ -411,7 +411,7 @@ body {{
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
             <strong>MA200 分位值模型：</strong>以 NDX/MA200 比率的历史分位值作为定投决策依据（均线下方多投、上方少投）。VIX 恐慌指数和 CNN 恐慌贪婪指数作为辅助参考显示。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
-            <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
+            <strong>基础周投：</strong>500万 ÷ 10年 ÷ 52周 ≈ 9,615 CNY/周（取整 10,000/周）。实际金额 = 基础周投 × 倍数，向下取整至 500 元。每周最后一个交易日定投。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。
         </p>
     </div>

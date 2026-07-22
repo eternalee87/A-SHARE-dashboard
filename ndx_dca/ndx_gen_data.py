@@ -20,11 +20,11 @@ OUTPUT_JSON = os.path.join(BASE, 'data', 'ndx_dashboard_data.json')
 START_DATE = '2026-07-10'
 TARGET_TOTAL = 5_000_000        # 目标总定投 500万
 TARGET_YEARS = 10               # 10年
-TRADING_DAYS_PER_YEAR = 250
-BASE_DAILY = TARGET_TOTAL / (TARGET_YEARS * TRADING_DAYS_PER_YEAR)  # ~2000
+WEEKS_PER_YEAR = 52
+BASE_WEEKLY = TARGET_TOTAL / (TARGET_YEARS * WEEKS_PER_YEAR)  # ~9,615 → 10,000
 MIN_UNIT = 500                  # 最小单位 500元
 
-print(f"Base daily DCA: {BASE_DAILY:.0f} CNY (target {TARGET_TOTAL/10000:.0f}万 / {TARGET_YEARS}年 / ~{TARGET_YEARS*TRADING_DAYS_PER_YEAR}个交易日)")
+print(f"Base weekly DCA: {BASE_WEEKLY:,.0f} CNY (target {TARGET_TOTAL/10000:.0f}万 / {TARGET_YEARS}年 / ~{TARGET_YEARS*WEEKS_PER_YEAR}周)")
 
 # ==================== HELPERS ====================
 def to_py(v):
@@ -186,14 +186,14 @@ else:
     val_color = '#FF0000'
     multiplier = 0.25
 
-# DCA amount
-dca_raw = BASE_DAILY * multiplier
+# Weekly DCA amount
+dca_raw = BASE_WEEKLY * multiplier
 dca_amount = floor_to_unit(dca_raw)
 
 print(f"\nValuation: {val_label} (multiplier={multiplier}x)")
-print(f"DCA Amount: {dca_amount:,} CNY (raw: {dca_raw:.0f})")
+print(f"Weekly DCA Amount: {dca_amount:,} CNY (raw: {dca_raw:.0f})")
 
-# ==================== INVESTMENT HISTORY ====================
+# ==================== INVESTMENT HISTORY (WEEKLY) ====================
 # Load or initialize history
 if os.path.exists(HISTORY_CSV):
     hist_df = pd.read_csv(HISTORY_CSV, index_col=0, parse_dates=True)
@@ -219,13 +219,19 @@ last_ndx_dt = ndx.index[-1]
 print(f"Today: {today_str}, Last NDX date: {last_ndx_date}")
 print(f"Start date: {START_DATE}, Started: {today_date >= start_dt}")
 
-# ==================== RECORD ALL UNRECORDED INVESTMENTS ====================
-# Get all trading dates >= START_DATE that have both NDX and VIX
-all_trade_dates = common_dates[common_dates >= START_DATE]
+# ==================== RECORD WEEKLY INVESTMENTS ====================
+# Only invest on the LAST trading day of each ISO week
+from collections import OrderedDict
+all_dates_raw = common_dates[common_dates >= START_DATE]
+week_map = OrderedDict()
+for dt in all_dates_raw:
+    iso = dt.isocalendar()
+    week_map[(iso[0], iso[1])] = dt
+weekly_dates = pd.DatetimeIndex(list(week_map.values())).sort_values()
 existing_dates = set(hist_df.index.strftime('%Y-%m-%d').tolist()) if len(hist_df) > 0 else set()
 
 missed_dates = []
-for dt in all_trade_dates:
+for dt in weekly_dates:
     ds = dt.strftime('%Y-%m-%d')
     if ds not in existing_dates:
         missed_dates.append((dt, ds))
@@ -263,7 +269,7 @@ if missed_dates:
     hist_df.index.name = 'date'
     hist_df = hist_df.sort_index()
 else:
-    print(f"\n✅ 所有交易日已记录")
+    print(f"\n✅ 所有周次已记录")
 
 # ==================== RECOMPUTE CUMULATIVE ====================
 # Always recompute from scratch — guards against stale values after backfill
@@ -403,7 +409,7 @@ output = {
     'multiplier': multiplier,
 
     # DCA
-    'base_daily': round(BASE_DAILY, 0),
+    'base_weekly': round(BASE_WEEKLY, 0),
     'dca_amount': dca_amount,
     'min_unit': MIN_UNIT,
     'target_total': TARGET_TOTAL,
