@@ -62,6 +62,10 @@ jobs:
         if: steps.fetch.outputs.FETCH_OK == 'true'
         run: python ndx_dca/ndx_build_html.py
 
+      - name: Build family guide
+        if: steps.fetch.outputs.FETCH_OK == 'true'
+        run: python ndx_dca/build_family_guide.py
+
       - name: Update version
         if: steps.fetch.outputs.FETCH_OK == 'true'
         run: |

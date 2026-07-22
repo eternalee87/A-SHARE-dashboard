@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纳斯达克100定投计划 — 家庭执行手册</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #f8fafc; color: #1e293b; line-height: 1.8;
+    max-width: 800px; margin: 0 auto; padding: 20px;
+}
+h1 {
+    font-size: 1.6rem; color: #1e40af; border-bottom: 3px solid #3b82f6;
+    padding-bottom: 10px; margin-bottom: 16px;
+}
+h2 {
+    font-size: 1.2rem; color: #1e40af; margin: 28px 0 12px;
+    padding: 8px 12px; background: #eff6ff; border-left: 4px solid #3b82f6;
+    border-radius: 0 8px 8px 0;
+}
+h3 { font-size: 1rem; margin: 16px 0 8px; color: #334155; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; }
+li { margin: 4px 0; }
+.card {
+    background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 20px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.card.warning {
+    background: #fffbeb; border-color: #f59e0b;
+}
+.card.info {
+    background: #f0f9ff; border-color: #0ea5e9;
+}
+.card.green {
+    background: #f0fdf4; border-color: #22c55e;
+}
+.card.red {
+    background: #fef2f2; border-color: #ef4444;
+}
+table {
+    width: 100%; border-collapse: collapse; margin: 12px 0;
+}
+th, td {
+    border: 1px solid #e2e8f0; padding: 8px 12px; text-align: center;
+}
+th { background: #f1f5f9; font-weight: 600; }
+.amount { font-size: 2rem; font-weight: 800; color: #2563eb; }
+.steps { counter-reset: step; }
+.steps li {
+    counter-increment: step; list-style: none; padding: 12px 16px;
+    margin: 8px 0; background: #f8fafc; border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+.steps li::before {
+    content: counter(step);
+    display: inline-block; width: 28px; height: 28px;
+    background: #3b82f6; color: white; border-radius: 50%;
+    text-align: center; line-height: 28px; margin-right: 12px;
+    font-weight: 700; font-size: 0.9rem;
+}
+.footer { margin-top: 40px; padding: 16px; text-align: center;
+    color: #94a3b8; font-size: 0.8rem; border-top: 1px solid #e2e8f0; }
+@media print {
+    body { background: white; }
+    .card { box-shadow: none; break-inside: avoid; }
+    h2 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+
+<h1>📊 纳斯达克100 定投计划<br><span style="font-size:0.9rem;color:#64748b;font-weight:400;">为小朋友的未来 · 家庭执行手册</span></h1>
+
+<div class="card info">
+    <p><strong>📅 更新日期：</strong>2026年07月22日</p>
+    <p><strong>🎯 目标：</strong>10年累计投入约 500 万人民币</p>
+    <p><strong>📅 起始日：</strong>2026年7月10日</p>
+    <p><strong>🏦 投资标的：</strong>纳斯达克100指数（NDX）</p>
+    <p><strong>📊 实时仪表盘：</strong><a href="https://eternalee87.github.io/A-SHARE-dashboard/ndx_dca/">点此查看</a></p>
+</div>
+
+<h2>一、核心理念（为什么这么做）</h2>
+
+<p>这是为小朋友准备的一份长期礼物。我们每周拿出一笔钱投资美国最优秀的100家科技公司，持续10年。</p>
+
+<div class="card">
+    <h3>一句话原则</h3>
+    <p style="font-size:1.2rem;font-weight:700;color:#2563eb;text-align:center;">
+        「市场便宜时多买，市场贵时少买，每周坚持，十年不断。」
+    </p>
+</div>
+
+<h2>二、每周操作（怎么做）</h2>
+
+<ol class="steps">
+    <li><strong>打开仪表盘</strong><br>
+        用手机或电脑浏览器打开：<br>
+        <code>https://eternalee87.github.io/A-SHARE-dashboard/ndx_dca/</code></li>
+    <li><strong>看本周定投金额</strong><br>
+        页面最上方的大数字就是本周建议投入金额（如 9,500 或 14,500 等）</li>
+    <li><strong>执行买入</strong><br>
+        在你的券商账户中，买入对应金额的纳斯达克100 ETF（如 QQQ、QQQM 或国内纳指ETF）</li>
+    <li><strong>确认完成</strong><br>
+        买入后确认成交，不需要做任何其他操作</li>
+</ol>
+
+<div class="card warning">
+    <p><strong>⏰ 什么时候操作？</strong></p>
+    <p>每周操作一次即可，建议在<strong>周六或周日</strong>查看仪表盘，用上周五的收盘价作为参考。最晚不要拖到下一周。</p>
+</div>
+
+<h2>三、定投金额规则</h2>
+
+<p>系统根据 NDX 指数相对于其 200 日均线的位置，自动判断当前是「便宜」还是「贵」：</p>
+
+<table>
+    <tr><th>判断</th><th>均线位置</th><th>倍数</th><th>每周投入</th></tr>
+    <tr style="background:#dcfce7;"><td>🔥 极度低估</td><td>远低于均线（08年级别）</td><td>2.5x</td><td>约 24,000</td></tr>
+    <tr style="background:#f0fdf4;"><td>🟢 低估</td><td>明显低于均线</td><td>2.0x</td><td>约 19,000</td></tr>
+    <tr style="background:#fefce8;"><td>🟡 轻度低估</td><td>略低于均线</td><td>1.5x</td><td>约 14,500</td></tr>
+    <tr><td>⚪ 中性</td><td>均线附近</td><td>1.0x</td><td>约 9,500</td></tr>
+    <tr style="background:#fff7ed;"><td>🟠 轻度高估</td><td>略高于均线</td><td>0.75x</td><td>约 7,000</td></tr>
+    <tr style="background:#fef2f2;"><td>🔴 高估</td><td>明显高于均线</td><td>0.5x</td><td>约 5,000</td></tr>
+    <tr style="background:#fee2e2;"><td>💀 严重高估</td><td>远高于均线（泡沫）</td><td>0.25x</td><td>约 2,500</td></tr>
+</table>
+
+<p style="font-size:0.8rem;color:#64748b;">* 基础周投 9,615 元，实际执行金额向下取整至 500 元</p>
+
+<div class="card green">
+    <h3>💡 简单记忆法</h3>
+    <ul>
+        <li>「新闻说美股崩了、人人恐慌」→ 大概率是低估 → <strong>多投</strong></li>
+        <li>「新闻说美股疯了、人人赚钱」→ 大概率是高估 → <strong>少投</strong></li>
+        <li>「没啥特别新闻」→ 大概率是中性 → <strong>正常投 9,500</strong></li>
+    </ul>
+</div>
+
+<h2>四、常见问题</h2>
+
+<div class="card">
+    <h3>Q: 仪表盘打不开怎么办？</h3>
+    <p>检查网络连接。如果页面确实打不开：</p>
+    <ul>
+        <li>看最近一次看到的金额，按相同金额继续投（大概率是 9,500）</li>
+        <li>等网络恢复后再查看补投</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h3>Q: 这周忘了投怎么办？</h3>
+    <p>没关系，下周补上即可。定投是长期计划，漏一两周不影响大局。<strong>千万别因为漏了就放弃。</strong></p>
+</div>
+
+<div class="card">
+    <h3>Q: 账户亏了怎么办？</h3>
+    <p>这很正常，历史上经历过多次 -30% 以上的大跌。系统会自动在低位加大投入，跌得越多投得越多。<strong>不要停、不要卖、继续投。</strong></p>
+</div>
+
+<div class="card">
+    <h3>Q: 需要卖吗？</h3>
+    <p><strong>10年内不需要。</strong>这是一个只买不卖的计划。10年后根据当时情况再决定。</p>
+</div>
+
+<div class="card">
+    <h3>Q: 怎么确认买的是对的？</h3>
+    <p>买入代码为 <strong>QQQ</strong> 或 <strong>QQQM</strong>（美股纳斯达克100 ETF），或国内的纳指ETF（如 513100、159941）。每周买对应金额即可。</p>
+</div>
+
+<h2>五、历史回测参考</h2>
+
+<p>以下是如果从不同年份开始执行此方案的历史模拟结果（每周定投 + MA200分位值调节）：</p>
+
+<table>
+    <tr><th>起点</th><th>达到500万用时</th><th>最终市值</th><th>年化收益</th><th>最惨时浮亏</th></tr>
+    <tr><td>2006年</td><td>8.6年</td><td>7,687万</td><td>+25.6%</td><td>-36%（2008年）</td></tr>
+    <tr><td>2008年</td><td>8.5年</td><td>6,579万</td><td>+29.1%</td><td>-35%（2008年）</td></tr>
+    <tr><td>2014年</td><td>9.2年</td><td>2,248万</td><td>+55.5%</td><td>-30%（2022年）</td></tr>
+    <tr><td>2017年</td><td>未到（已投488万）</td><td>1,344万</td><td>—</td><td>-25%（2020年）</td></tr>
+</table>
+
+<p style="font-size:0.8rem;color:#64748b;">* 以上为基于历史数据的模拟推演，不代表未来收益。最终市值 = 达到500万后持有至今不动。</p>
+
+<div class="card red">
+    <h3>⚠️ 最重要的一条</h3>
+    <p style="font-size:1.1rem;font-weight:700;">
+        无论市场涨跌、无论新闻说什么、无论账户赚了还是亏了——<br>
+        <span style="color:#dc2626;">每周坚持定投，十年不断。</span><br>
+        历史证明，唯一会亏钱的方式，就是中途停下来。
+    </p>
+</div>
+
+<h2>六、联系与支持</h2>
+
+<div class="card info">
+    <p><strong>📊 实时仪表盘：</strong><a href="https://eternalee87.github.io/A-SHARE-dashboard/ndx_dca/">eternalee87.github.io/A-SHARE-dashboard/ndx_dca/</a></p>
+    <p><strong>📅 起始日期：</strong>2026年7月10日</p>
+    <p><strong>📅 目标日期：</strong>2036年7月10日（10年）</p>
+    <p><strong>🎁 受益人：</strong>小朋友</p>
+</div>
+
+<div class="footer">
+    本手册由系统自动生成 · 2026年07月22日 · 仅供家庭内部参考，不构成投资建议
+</div>
+
+</body>
+</html>
