@@ -189,27 +189,41 @@ if os.path.exists(etf_flow_path):
     totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
     totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
     
-    # 国家队信号 — 三级判定(动量+累计)
+    # 国家队信号 — 比率激增判定(动量+累计)
     total_d5_m = totals.get('d5_m', 0)
     total_d1_m = totals.get(str(last_dates[-1])[:10]+'_m', 0) if len(last_dates) > 0 else 0
-    total_d3_m = totals.get('d3_m', 0)
     
-    nt_level = 'none'  # none / watch / active
+    # 计算前4日均值(去除当日，避免当日自身干扰)
+    if len(last_dates) >= 2:
+        prev_days = [totals.get(str(d)[:10]+'_m', 0) for d in last_dates[:-1]]
+        avg_prev = sum(prev_days) / len(prev_days) if prev_days else 0
+    else:
+        avg_prev = 0
     
-    if total_d5_m > 80 and total_d1_m > 20:
-        # 仍在持续买入 → 降落伞生效
+    # 比率: 当日 / 前4日均值
+    ratio = total_d1_m / avg_prev if avg_prev > 0 else 0
+    # 绝对底线: 当日至少5亿才值得关注
+    has_floor = total_d1_m >= 5
+    
+    nt_level = 'none'
+    
+    if total_d5_m > 80 and has_floor and ratio > 0.3:
+        # 仍在持续买入(比率>30% + 绝对底线) → 降落伞生效
         nt_level = 'active'
         etf_data['alert'] = True
         if total_d5_m > 200:
-            etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续托底中"
+            etf_data['alert_msg'] = f"🪂 国家队5日+{total_d5_m:.0f}亿→持续托底(日{total_d1_m:.0f}亿,比率{ratio:.0%})"
         else:
-            etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿→持续买入"
+            etf_data['alert_msg'] = f"🪂 国家队5日+{total_d5_m:.0f}亿→持续买入(日{total_d1_m:.0f}亿)"
         national_team_active = True
-    elif total_d5_m > 80 and total_d1_m <= 20:
-        # 累计大但当日已停 → 仅观察，降落伞折叠
+    elif total_d5_m > 80 and ratio <= 0.3:
+        # 显著减速或已停 → 降落伞折叠
         nt_level = 'watch'
         etf_data['alert'] = True
-        etf_data['alert_msg'] = f"🪂 国家队5日净流入{total_d5_m:.0f}亿，但今日已暂停(仅{total_d1_m:.0f}亿)"
+        if total_d1_m < 5:
+            etf_data['alert_msg'] = f"🪂 国家队5日+{total_d5_m:.0f}亿，但今日已暂停(仅{total_d1_m:.0f}亿)"
+        else:
+            etf_data['alert_msg'] = f"🪂 国家队5日+{total_d5_m:.0f}亿，但买入减速(日{total_d1_m:.0f}亿,比率{ratio:.0%})"
         national_team_active = False
     elif total_d5_m < -80:
         etf_data['alert'] = True
