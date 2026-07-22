@@ -79,7 +79,7 @@ jobs:
           git stash
           git pull --rebase origin main || true
           git stash pop || true
-          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json
+          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json ndx_dca/family_guide.html
           if git diff --staged --quiet; then
             echo "No changes"
           else
