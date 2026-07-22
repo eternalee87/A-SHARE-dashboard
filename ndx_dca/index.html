@@ -195,7 +195,7 @@ body {
     </div>
     <div class="update">
         最后交易日: 2026-07-21<br>
-        生成时间: 2026-07-22 07:44:00
+        生成时间: 2026-07-22 08:38:36
     </div>
 </div>
 
@@ -207,10 +207,10 @@ body {
 
     <!-- DCA Hero -->
     <div class="dca-hero">
-        <div class="label">📌 今日建议定投金额</div>
-        <div class="amount">2,000 <span class="unit">CNY</span></div>
+        <div class="label">📌 本周建议定投金额</div>
+        <div class="amount">9,500 <span class="unit">CNY</span></div>
         <div class="val-label">中性/合理估值 · 倍数 1.0x</div>
-        <div class="base-info">基础日投 2,000 元 × 1.0x · 最小单位 500 元 · 向下取整</div>
+        <div class="base-info">基础周投 9,615 元 × 1.0x · 最小单位 500 元 · 向下取整</div>
     </div>
 
     <!-- 4 Indicator Cards -->
@@ -292,7 +292,7 @@ body {
         </div>
         <div style="margin-top:10px;font-size:1.2rem;font-weight:700;color:#808080;">+0.00 — 中性/合理估值</div>
         <div style="font-size:0.7rem;color:#64748b;margin-top:4px;">
-            VIX(+0) | MA200(+0) | CNN(-1) → 定投 2,000 CNY<br><span style="font-size:0.65rem;color:#64748b;">决策仅用MA200分位值，VIX/CNN为参考指标</span>
+            VIX(+0) | MA200(+0) | CNN(-1) → 定投 9,500 CNY<br><span style="font-size:0.65rem;color:#64748b;">决策仅用MA200分位值，VIX/CNN为参考指标</span>
         </div>
     </div>
 
@@ -376,13 +376,13 @@ body {
         <p style="font-size:0.7rem;color:#64748b;line-height:1.6;">
             <strong>MA200 分位值模型：</strong>以 NDX/MA200 比率的历史分位值作为定投决策依据（均线下方多投、上方少投）。VIX 恐慌指数和 CNN 恐慌贪婪指数作为辅助参考显示。<br>
             <strong>定投倍数：</strong>极度低估 2.5x → 中度低估 2.0x → 轻度低估 1.5x → 中性 1.0x → 轻度高估 0.75x → 中度高估 0.5x → 严重高估 0.25x。<br>
-            <strong>基础日投：</strong>500万 ÷ 10年 ÷ 250交易日 ≈ 2,000 CNY/日。实际金额 = 基础日投 × 倍数，向下取整至 500 元。<br>
+            <strong>基础周投：</strong>500万 ÷ 10年 ÷ 52周 ≈ 9,615 CNY/周（取整 10,000/周）。实际金额 = 基础周投 × 倍数，向下取整至 500 元。每周最后一个交易日定投。<br>
             <strong>⚠️ 免责声明：</strong>本系统仅供学习参考，不构成任何投资建议。投资有风险，入市需谨慎。历史表现不代表未来收益。
         </p>
     </div>
 
     <div class="footer">
-        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-22 07:44:00 · Powered by yfinance & CNN
+        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-22 08:38:36 · Powered by yfinance & CNN
     </div>
 
 </div>
@@ -535,7 +535,7 @@ new Chart(document.getElementById('chartCnn'), {
 // ===== 5. Investment Performance Chart =====
 const histTs = ["2026-07-10", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-20", "2026-07-21"];
 const histInvested = [2000.0, 4000.0, 6000.0, 8000.0, 11000.0, 13000.0, 15000.0, 17000.0];
-const histValues = [2000.0122263800001, 3962.3884040999997, 6006.01687, 7989.0385565999995, 10859.904768190001, 12697.857342700001, 14703.00328345, 16986.199847699998];
+const histValues = [2000.0122263800001, 3962.3884040999997, 6006.01687, 7989.0385565999995, 10859.904768190001, 12697.857342700001, 14703.00328345, 16986.18688534];
 
 if (histTs.length > 0) {
     new Chart(document.getElementById('chartPerf'), {
@@ -588,7 +588,7 @@ if (daysSince > 3) {
   if (warn) warn.style.display = 'block';
 }
 
-console.log('NDX DCA Dashboard loaded | Last trading day: 2026-07-21 | DCA: 2000 CNY | 中性/合理估值');
+console.log('NDX DCA Dashboard loaded | Last trading day: 2026-07-21 | DCA: 9500 CNY | 中性/合理估值');
 
 </script>
 </body>

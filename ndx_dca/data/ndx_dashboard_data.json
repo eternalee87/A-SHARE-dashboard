@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-22 07:44:00",
+ "generated_at": "2026-07-22 08:38:36",
  "last_trading_day": "2026-07-21",
  "is_trading_day": true,
  "ndx": 29155.18,
@@ -20,8 +20,8 @@
  "valuation_label": "中性/合理估值",
  "valuation_color": "#808080",
  "multiplier": 1.0,
- "base_daily": 2000.0,
- "dca_amount": 2000,
+ "base_weekly": 9615.0,
+ "dca_amount": 9500,
  "min_unit": 500,
  "target_total": 5000000,
  "target_years": 10,
@@ -1879,6 +1879,6 @@
   10859.904768190001,
   12697.857342700001,
   14703.00328345,
-  16986.199847699998
+  16986.18688534
  ]
 }
