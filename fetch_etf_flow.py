@@ -133,20 +133,19 @@ if __name__ == '__main__':
     )
     pivot = pivot.sort_index(axis=1)
     
-    # Merge with existing SZSE history
+    # Merge with existing SZSE history + preserve on fetch failure
     if os.path.exists(CSV_PATH):
         existing = pd.read_csv(CSV_PATH, index_col=0)
         existing.columns = pd.to_datetime(existing.columns)
-        # Keep SZSE historical dates from existing, SSE dates from new
         sz_codes = [c for c in TARGET_ETFS if TARGET_ETFS[c][1] == 'SZSE']
         for code in sz_codes:
             if code in existing.index:
-                old_data = existing.loc[code]
-                new_data = pivot.loc[code] if code in pivot.index else None
-                if new_data is not None:
-                    # Merge: old dates + new date
-                    merged = old_data.combine_first(new_data)
-                    pivot.loc[code] = merged
+                if code in pivot.index:
+                    # Merge old + new
+                    pivot.loc[code] = existing.loc[code].combine_first(pivot.loc[code])
+                else:
+                    # SZSE fetch failed — preserve old data
+                    pivot.loc[code] = existing.loc[code]
     
     # Add names to index
     new_idx = []

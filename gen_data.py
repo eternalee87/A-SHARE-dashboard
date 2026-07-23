@@ -163,35 +163,45 @@ if os.path.exists(etf_flow_path):
         row = {'code': code, 'name': etf_names[i], 'price': round(price, 2)}
         for d in last_dates:
             ds = str(d)[:10]
-            sv = ef_delta.iloc[i][d] if d in ef_delta.columns and not pd.isna(ef_delta.iloc[i][d]) else 0
-            mv = round(sv * price, 2)
-            row[ds+'_s'] = round(sv, 2)  # shares
-            row[ds+'_m'] = mv             # money
+            # NaN = no data, keep as NaN (don't fill 0)
+            if d in ef_delta.columns and not pd.isna(ef_delta.iloc[i][d]):
+                sv = round(ef_delta.iloc[i][d], 2)
+                mv = round(sv * price, 2)
+                row[ds+'_s'] = sv
+                row[ds+'_m'] = mv
+            else:
+                row[ds+'_s'] = None  # None → JS renders as '-'
+                row[ds+'_m'] = None
+        # d3/d5/d10: only use actual data points
         all_sv = ef_delta.iloc[i].dropna()
-        sum3 = round(float(all_sv.iloc[-3:].sum()) if len(all_sv) >= 3 else 0, 2)
-        sum5 = round(float(all_sv.iloc[-5:].sum()) if len(all_sv) >= 5 else 0, 2)
-        sum10 = round(float(all_sv.iloc[-10:].sum()) if len(all_sv) >= 10 else 0, 2)
-        row['d3_s'] = sum3; row['d3_m'] = round(sum3 * price, 2)
-        row['d5_s'] = sum5; row['d5_m'] = round(sum5 * price, 2)
-        row['d10_s'] = sum10; row['d10_m'] = round(sum10 * price, 2)
+        if len(all_sv) >= 3:
+            row['d3_s'] = round(float(all_sv.iloc[-3:].sum()), 2); row['d3_m'] = round(row['d3_s'] * price, 2)
+        else: row['d3_s'] = row['d3_m'] = None
+        if len(all_sv) >= 5:
+            row['d5_s'] = round(float(all_sv.iloc[-5:].sum()), 2); row['d5_m'] = round(row['d5_s'] * price, 2)
+        else: row['d5_s'] = row['d5_m'] = None
+        if len(all_sv) >= 10:
+            row['d10_s'] = round(float(all_sv.iloc[-10:].sum()), 2); row['d10_m'] = round(row['d10_s'] * price, 2)
+        else: row['d10_s'] = row['d10_m'] = None
         etf_data['daily'].append(row)
     
-    # Totals (shares + money)
+    # Totals: skip None (missing data)
     totals = {}
     for d in last_dates:
         ds = str(d)[:10]
-        totals[ds+'_s'] = round(sum(r.get(ds+'_s', 0) for r in etf_data['daily']), 2)
-        totals[ds+'_m'] = round(sum(r.get(ds+'_m', 0) for r in etf_data['daily']), 2)
-    totals['d3_s'] = round(sum(r['d3_s'] for r in etf_data['daily']), 2)
-    totals['d3_m'] = round(sum(r['d3_m'] for r in etf_data['daily']), 2)
-    totals['d5_s'] = round(sum(r['d5_s'] for r in etf_data['daily']), 2)
-    totals['d5_m'] = round(sum(r['d5_m'] for r in etf_data['daily']), 2)
-    totals['d10_s'] = round(sum(r['d10_s'] for r in etf_data['daily']), 2)
-    totals['d10_m'] = round(sum(r['d10_m'] for r in etf_data['daily']), 2)
+        s_vals = [r[ds+'_s'] for r in etf_data['daily'] if r.get(ds+'_s') is not None]
+        m_vals = [r[ds+'_m'] for r in etf_data['daily'] if r.get(ds+'_m') is not None]
+        totals[ds+'_s'] = round(sum(s_vals), 2) if s_vals else None
+        totals[ds+'_m'] = round(sum(m_vals), 2) if m_vals else None
+    for key in ['d3','d5','d10']:
+        s_vals = [r[key+'_s'] for r in etf_data['daily'] if r.get(key+'_s') is not None]
+        m_vals = [r[key+'_m'] for r in etf_data['daily'] if r.get(key+'_m') is not None]
+        totals[key+'_s'] = round(sum(s_vals), 2) if s_vals else None
+        totals[key+'_m'] = round(sum(m_vals), 2) if m_vals else None
     
     # 国家队信号 — 比率激增判定(动量+累计)
-    total_d5_m = totals.get('d5_m', 0)
-    total_d1_m = totals.get(str(last_dates[-1])[:10]+'_m', 0) if len(last_dates) > 0 else 0
+    total_d5_m = totals.get('d5_m') or 0
+    total_d1_m = totals.get(str(last_dates[-1])[:10]+'_m') or 0 if len(last_dates) > 0 else 0
     
     # 计算前4日均值(去除当日，避免当日自身干扰)
     if len(last_dates) >= 2:
@@ -235,7 +245,8 @@ if os.path.exists(etf_flow_path):
     
     # Check individual ETFs (based on money) — also 🪂
     for r in etf_data['daily']:
-        if abs(r['d3_m']) > 30:
+        dm = r.get('d3_m')
+        if dm is not None and abs(dm) > 30:
             direction = '买入' if r['d3_m'] > 0 else '卖出'
             msg = f"🪂 {r['code']} {r['name']} 3日{direction}{abs(r['d3_m']):.0f}亿"
             if msg not in risk_flags:
