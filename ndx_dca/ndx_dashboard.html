@@ -195,7 +195,7 @@ body {
     </div>
     <div class="update">
         最后交易日: 2026-07-22<br>
-        生成时间: 2026-07-23 09:16:51
+        生成时间: 2026-07-23 09:19:06
     </div>
 </div>
 
@@ -337,21 +337,21 @@ body {
             </div>
             <div class="summary-item">
                 <div class="s-label">💰 总投入金额</div>
-                <div class="s-value" style="color:#60a5fa;">26,500 <span style="font-size:0.8rem;">CNY</span></div>
-                <div class="s-sub">目标 500万 · 进度 0.5%</div>
+                <div class="s-value" style="color:#60a5fa;">28,500 <span style="font-size:0.8rem;">CNY</span></div>
+                <div class="s-sub">目标 500万 · 进度 0.6%</div>
             </div>
             <div class="summary-item">
                 <div class="s-label">📊 当前市值</div>
-                <div class="s-value" style="color:#a78bfa;">26,395 <span style="font-size:0.8rem;">CNY</span></div>
-                <div class="s-sub">0.9102 份 NDX</div>
+                <div class="s-value" style="color:#a78bfa;">28,371 <span style="font-size:0.8rem;">CNY</span></div>
+                <div class="s-sub">0.9784 份 NDX</div>
             </div>
             <div class="summary-item">
                 <div class="s-label">📈 盈亏 (P&L)</div>
-                <div class="s-value" style="color:#ef4444;">-105 <span style="font-size:0.8rem;">CNY</span></div>
+                <div class="s-value" style="color:#ef4444;">-129 <span style="font-size:0.8rem;">CNY</span></div>
             </div>
             <div class="summary-item">
                 <div class="s-label">📊 投入至今总收益率</div>
-                <div class="s-value" style="color:#ef4444;">-0.40%</div>
+                <div class="s-value" style="color:#ef4444;">-0.45%</div>
             </div>
             <div class="summary-item">
                 <div class="s-label">📉 NDX 自起投日收益率</div>
@@ -382,7 +382,7 @@ body {
     </div>
 
     <div class="footer">
-        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-23 09:16:51 · Powered by yfinance & CNN
+        NDX DCA Dashboard · 为小朋友的未来 · 2026-07-23 09:19:06 · Powered by yfinance & CNN
     </div>
 
 </div>
@@ -533,9 +533,9 @@ new Chart(document.getElementById('chartCnn'), {
 });
 
 // ===== 5. Investment Performance Chart =====
-const histTs = ["2026-07-10", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-20", "2026-07-21", "2026-07-22"];
-const histInvested = [2000.0, 4000.0, 6000.0, 8000.0, 11000.0, 13000.0, 15000.0, 17000.0, 26500.0];
-const histValues = [2000.0122263800001, 3962.3884040999997, 6006.01687, 7989.0385565999995, 10859.904768190001, 12697.857342700001, 14703.00328345, 16986.18688534, 26394.6700353];
+const histTs = ["2026-07-10", "2026-07-17", "2026-07-22"];
+const histInvested = [9500.0, 19000.0, 28500.0];
+const histValues = [9500.0, 18607.435647345475, 28371.286534561277];
 
 if (histTs.length > 0) {
     new Chart(document.getElementById('chartPerf'), {
