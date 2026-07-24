@@ -235,10 +235,6 @@ body {{
 </div>
 
 <div class="container">
-    <!-- Data freshness warning -->
-    <div id="freshness-warning" style="display:none;background:#7f1d1d;border:1px solid #ef4444;border-radius:8px;padding:10px 16px;margin-bottom:16px;text-align:center;color:#fca5a5;font-size:0.85rem;">
-        ⚠️ 数据最后更新于 <strong>{d['last_trading_day']}</strong>，可能已过期。请检查网络或等待自动更新。
-    </div>
 
     <!-- DCA Hero -->
     <div class="dca-hero">
@@ -613,16 +609,6 @@ if (histTs.length > 0) {{
 }}
 
 // Auto-refresh hint
-// Data freshness check
-const lastTradingDay = '{d["last_trading_day"]}';
-const lastDate = new Date(lastTradingDay + 'T00:00:00');
-const now = new Date();
-const daysSince = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
-if (daysSince > 3) {{
-  const warn = document.getElementById('freshness-warning');
-  if (warn) warn.style.display = 'block';
-}}
-
 console.log('NDX DCA Dashboard loaded | Last trading day: {d["last_trading_day"]} | DCA: {d["dca_amount"]} CNY | {d["valuation_label"]}');
 
 </script>
