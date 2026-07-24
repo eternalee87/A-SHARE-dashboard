@@ -1,19 +1,14 @@
 {
  "current": {
-  "score": 43.2285714285714,
+  "score": 38.8,
   "rating": "fear",
-  "timestamp": "2026-07-23T09:18:01+00:00"
+  "timestamp": "2026-07-24T07:25:01+00:00"
  },
- "previous_close": 42.9714285714286,
- "previous_1_week": 41.2,
- "previous_1_month": 28.457142857142863,
- "previous_1_year": 76.3714285714286,
+ "previous_close": 39.6,
+ "previous_1_week": 37.2285714285714,
+ "previous_1_month": 26.45714285714286,
+ "previous_1_year": 75.25714285714287,
  "history": [
-  {
-   "date": "2025-07-23",
-   "score": 76.3714285714286,
-   "rating": "extreme greed"
-  },
   {
    "date": "2025-07-24",
    "score": 75.25714285714287,
@@ -1251,17 +1246,22 @@
   },
   {
    "date": "2026-07-22",
-   "score": 43.2285714285714,
+   "score": 43.3142857142857,
    "rating": "fear"
   },
   {
    "date": "2026-07-23",
-   "score": 43.2285714285714,
+   "score": 38.8,
    "rating": "fear"
   },
   {
-   "date": "2026-07-23",
-   "score": 43.2285714285714,
+   "date": "2026-07-24",
+   "score": 38.8,
+   "rating": "fear"
+  },
+  {
+   "date": "2026-07-24",
+   "score": 38.8,
    "rating": "fear"
   }
  ]
