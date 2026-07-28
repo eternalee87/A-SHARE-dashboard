@@ -174,20 +174,6 @@ canvas { max-height: 280px; }
   </div>
 </div>
 
-<!-- ROW 4.5: PE估值 -->
-<div class="grid grid-1" style="margin-bottom:16px;">
-  <div class="card">
-    <h3>📊 全部A股PE估值 (中位数PE_TTM) <span style="font-size:13px;color:#8b949e;" id="peCurrent"></span></h3>
-    <div style="display:flex;gap:12px;margin-bottom:8px;font-size:12px;color:#8b949e;">
-      <span>🟢 低估 &lt;<span id="peQ20"></span></span>
-      <span>🟡 合理 <span id="peQ20to80"></span></span>
-      <span>🔴 高估 &gt;<span id="peQ80"></span></span>
-      <span>| 当前分位: <b style="color:#c9d1d9;" id="pePct"></b></span>
-    </div>
-    <canvas id="chartPE" style="height:220px;"></canvas>
-  </div>
-</div>
-
 <!-- ROW 5: Benchmark Table + Rolling Returns -->
 <div class="grid grid-2" style="margin-bottom:16px;">
   <div class="card">

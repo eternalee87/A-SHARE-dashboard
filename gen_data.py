@@ -61,33 +61,6 @@ rets_60={st:round(r180[st].iloc[-1]/r180[st].iloc[-60]-1,4) for st in STYLES}
 rets_20={st:round(r180[st].iloc[-1]/r180[st].iloc[-20]-1,4) for st in STYLES}
 best_60=max(rets_60,key=rets_60.get); worst_60=min(rets_60,key=rets_60.get)
 
-# 全部A股PE估值 (日频, 含分位数) @gen_data.py
-pe_data={'current':0,'percentile':0,'zone':'','ts':[],'vals':[],'bands':{}}
-try:
-    pe_df=ak.stock_a_ttm_lyr()
-    # 使用中位数PE_TTM (比加权平均更不受极端值扭曲)
-    pe_series=pe_df['middlePETTM']
-    pe_ts=[str(d)[:10] for d in pe_df['date']]
-    # 取最近1200个交易日(约5年)用于图表，避免太长
-    pe_series_plot=pe_series.iloc[-1200:]
-    pe_ts_plot=pe_ts[-1200:]
-    pe_current=float(pe_series.iloc[-1])
-    # 分位数: 优先用API自带(近10年)，否则自己算
-    pe_pct=float(pe_df['quantileInRecent10YearsMiddlePeTtm'].iloc[-1])
-    if pd.isna(pe_pct):
-        pe_pct=float((pe_series<pe_current).mean())
-    pe_q20=float(pe_series.quantile(0.2)); pe_q50=float(pe_series.quantile(0.5))
-    pe_q80=float(pe_series.quantile(0.8)); pe_mean=float(pe_series.mean())
-    if pe_current<pe_q20: pe_zone='green'; pe_zone_label='低估(<20%分位)'
-    elif pe_current<pe_q80: pe_zone='yellow'; pe_zone_label='合理(20-80%分位)'
-    else: pe_zone='red'; pe_zone_label='高估(>80%分位)'
-    pe_data={'current':round(pe_current,2),'percentile':round(pe_pct*100,1),
-             'zone':pe_zone,'zone_label':pe_zone_label,'mean':round(pe_mean,1),
-             'q20':round(pe_q20,2),'q50':round(pe_q50,2),'q80':round(pe_q80,2),
-             'ts':pe_ts_plot,'vals':[round(float(v),2) for v in pe_series_plot.values]}
-except Exception as e:
-    print(f"PE data warning: {e}")
-
 # Risk flags (内生风险信号，不含国家队)
 risk_flags=[]
 if abs(sz_dd)>0.15: risk_flags.append(f"回撤{abs(sz_dd):.0%}超过15%阈值")
@@ -311,7 +284,6 @@ data={
     'ytd':ytd,'vg_data':vg_data,'ls_data':ls_data,'roll_data':roll_data,
     'ts_180':ts_180,'sz_180':sz_180,'rets_20':rets_20,'rets_60':rets_60,
     'etf_flow':etf_data,
-    'pe_data':pe_data
 }
 
 with open(os.path.join(BASE,'dashboard_data.json'),'w',encoding='utf-8') as f:

@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js?v=20260728144553"></script>
+<script src="dashboard_data.js?v=20260728150804"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -156,20 +156,6 @@ canvas { max-height: 280px; }
   <div class="card">
     <h3>大小盘轮动 (2年, 沪深300/中证1000)</h3>
     <canvas id="chartLS"></canvas>
-  </div>
-</div>
-
-<!-- ROW 4.5: PE估值 -->
-<div class="grid grid-1" style="margin-bottom:16px;">
-  <div class="card">
-    <h3>📊 全部A股PE估值 (中位数PE_TTM) <span style="font-size:13px;color:#8b949e;" id="peCurrent"></span></h3>
-    <div style="display:flex;gap:12px;margin-bottom:8px;font-size:12px;color:#8b949e;">
-      <span>🟢 低估 &lt;<span id="peQ20"></span></span>
-      <span>🟡 合理 <span id="peQ20to80"></span></span>
-      <span>🔴 高估 &gt;<span id="peQ80"></span></span>
-      <span>| 当前分位: <b style="color:#c9d1d9;" id="pePct"></b></span>
-    </div>
-    <canvas id="chartPE" style="height:220px;"></canvas>
   </div>
 </div>
 
@@ -508,10 +494,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '07-28 14:45';
+var BUILD_TIME = '07-28 15:08';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-28 14:45') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '07-28 15:08') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
