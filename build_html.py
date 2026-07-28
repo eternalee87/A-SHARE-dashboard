@@ -314,13 +314,18 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
 (function() {
   var bm = DATA.benchmarks, ytd = DATA.ytd;
   var html = '<table style="width:100%;font-size:14px;border-collapse:collapse;">';
-  html += '<tr style="color:#8b949e;"><th style="text-align:left;padding:4px;">指数</th><th style="text-align:right;padding:4px;">点位</th><th style="text-align:right;padding:4px;">YTD</th></tr>';
+  html += '<tr style="color:#8b949e;"><th style="text-align:left;padding:4px;">指数</th><th style="text-align:right;padding:4px;">点位</th><th style="text-align:right;padding:4px;">PE</th><th style="text-align:right;padding:4px;">分位</th><th style="text-align:right;padding:4px;">YTD</th></tr>';
   var keys = Object.keys(bm);
   for (var i = 0; i < keys.length; i++) {
     var name = keys[i], val = bm[name], y = (ytd[name]||0)*100;
+    var peInfo = DATA.idx_pe ? (DATA.idx_pe[name] || {}) : {};
+    var pev = peInfo.pe ? peInfo.pe.toFixed(1) : '-';
+    var pep = peInfo.pct ? peInfo.pct + '%' : '-';
     html += '<tr style="border-top:1px solid #21262d;">' +
       '<td style="padding:4px;">'+name+'</td>' +
       '<td style="text-align:right;padding:4px;">'+val+'</td>' +
+      '<td style="text-align:right;padding:4px;">'+pev+'</td>' +
+      '<td style="text-align:right;padding:4px;">'+pep+'</td>' +
       '<td style="text-align:right;padding:4px;color:'+(y>=0?'#e74c3c':'#2ecc71')+'">'+(y>=0?'+':'')+y.toFixed(1)+'%</td>' +
     '</tr>';
   }
