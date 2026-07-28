@@ -174,6 +174,20 @@ canvas { max-height: 280px; }
   </div>
 </div>
 
+<!-- ROW 4.5: PE估值 -->
+<div class="grid grid-1" style="margin-bottom:16px;">
+  <div class="card">
+    <h3>📊 全市场PE估值 (万得全A口径) <span style="font-size:13px;color:#8b949e;" id="peCurrent"></span></h3>
+    <div style="display:flex;gap:12px;margin-bottom:8px;font-size:12px;color:#8b949e;">
+      <span>🟢 低估 &lt;<span id="peQ20"></span></span>
+      <span>🟡 合理 <span id="peQ20to80"></span></span>
+      <span>🔴 高估 &gt;<span id="peQ80"></span></span>
+      <span>| 当前分位: <b style="color:#c9d1d9;" id="pePct"></b></span>
+    </div>
+    <canvas id="chartPE" style="height:220px;"></canvas>
+  </div>
+</div>
+
 <!-- ROW 5: Benchmark Table + Rolling Returns -->
 <div class="grid grid-2" style="margin-bottom:16px;">
   <div class="card">
@@ -313,6 +327,39 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   html += '</table>';
   document.getElementById('benchTable').innerHTML = html;
 })();
+
+// ===== PE估值图表 =====
+(function() {
+  var pe = DATA.pe_data;
+  if (!pe || !pe.ts || pe.ts.length === 0) return;
+  document.getElementById('peCurrent').textContent = 'PE: ' + pe.current + ' (' + pe.zone_label + ')';
+  document.getElementById('peQ20').textContent = pe.q20;
+  document.getElementById('peQ20to80').textContent = pe.q20 + '~' + pe.q80;
+  document.getElementById('peQ80').textContent = pe.q80;
+  document.getElementById('pePct').textContent = pe.percentile + '%';
+  var N = pe.ts.length;
+  new Chart(document.getElementById('chartPE'), {
+    type: 'line',
+    data: {
+      labels: pe.ts,
+      datasets: [
+        { label: 'PE', data: pe.vals, borderColor: '#3498db', borderWidth: 1.5, pointRadius: 0, fill: false },
+        { label: '低('+pe.q20+')', data: Array(N).fill(pe.q20), borderColor: '#2ecc71', borderWidth: 0.8, borderDash: [4,4], pointRadius: 0, fill: false },
+        { label: '高('+pe.q80+')', data: Array(N).fill(pe.q80), borderColor: '#e74c3c', borderWidth: 0.8, borderDash: [4,4], pointRadius: 0, fill: false },
+        { label: '均('+pe.mean+')', data: Array(N).fill(pe.mean), borderColor: '#8b949e', borderWidth: 0.5, borderDash: [2,2], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 }, boxWidth: 12 } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 12, autoSkip: true } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+})();
+
 
 // ===== ETF 国家队行动跟踪 =====
 (function() {
