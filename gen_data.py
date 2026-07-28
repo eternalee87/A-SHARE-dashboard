@@ -88,18 +88,6 @@ try:
 except Exception as e:
     print(f"PE data warning: {e}")
 
-# 指数PE分位 (benchmark table展示用) @gen_data.py
-IDX_PE_NAMES={'上证50':'上证50','沪深300':'沪深300','中证500':'中证500','创业板50':'创业板50'}
-idx_pe={}
-for name,sym in IDX_PE_NAMES.items():
-    try:
-        ip=ak.stock_index_pe_lg(symbol=sym)
-        cols=list(ip.columns)
-        idx_pe[name]={'pe':round(float(ip[cols[3]].iloc[-1]),2),
-                       'pct':round(float(ip[cols[4]].iloc[-1]),1)}
-    except:
-        idx_pe[name]={'pe':None,'pct':None}
-
 # Risk flags (内生风险信号，不含国家队)
 risk_flags=[]
 if abs(sz_dd)>0.15: risk_flags.append(f"回撤{abs(sz_dd):.0%}超过15%阈值")
@@ -323,8 +311,7 @@ data={
     'ytd':ytd,'vg_data':vg_data,'ls_data':ls_data,'roll_data':roll_data,
     'ts_180':ts_180,'sz_180':sz_180,'rets_20':rets_20,'rets_60':rets_60,
     'etf_flow':etf_data,
-    'pe_data':pe_data,
-    'idx_pe':idx_pe
+    'pe_data':pe_data
 }
 
 with open(os.path.join(BASE,'dashboard_data.json'),'w',encoding='utf-8') as f:
