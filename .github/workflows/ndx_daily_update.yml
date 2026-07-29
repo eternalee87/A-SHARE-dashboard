@@ -39,7 +39,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pandas numpy requests
+        run: pip install pandas numpy requests akshare
 
       - name: Fetch data (with retry)
         id: fetch
@@ -68,6 +68,18 @@ jobs:
         if: steps.fetch.outputs.FETCH_OK == 'true'
         run: python ndx_dca/build_family_guide.py
 
+      - name: Fetch CSI data
+        if: steps.fetch.outputs.FETCH_OK == 'true'
+        run: python csi_dividend/csi_fetch_data.py
+
+      - name: Generate CSI signal
+        if: steps.fetch.outputs.FETCH_OK == 'true'
+        run: python csi_dividend/csi_gen_data.py
+
+      - name: Build CSI HTML
+        if: steps.fetch.outputs.FETCH_OK == 'true'
+        run: python csi_dividend/csi_build_html.py
+
       - name: Update version
         if: steps.fetch.outputs.FETCH_OK == 'true'
         run: |
@@ -81,7 +93,7 @@ jobs:
           git stash
           git pull --rebase origin main || true
           git stash pop || true
-          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json ndx_dca/family_guide.html
+          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json ndx_dca/family_guide.html csi_dividend/data/ csi_dividend/csi_dashboard.html csi_dividend/index.html
           if git diff --staged --quiet; then
             echo "No changes"
           else
