@@ -8,8 +8,12 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(BASE, 'data', 'dashboard_data.json'), 'r', encoding='utf-8') as f:
     d = json.load(f)
 
-def fmt(n, d=0): return f"{n:,.{d}f}" if n is not None else '—'
-def pct(n): return f"{n:+.2f}%" if n is not None else '—'
+def fmt(n, d=0):
+    try: return f"{float(n):,.{d}f}" if n is not None else '—'
+    except: return str(n) if n else '—'
+def pct(n):
+    try: return f"{float(n):+.2f}%" if n is not None else '—'
+    except: return str(n) if n else '—'
 
 html = f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -120,11 +124,11 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
     <h2>📋 投资汇总 · 自 {d['start_date']} 起</h2>
     <div class="summary-grid">
         <div class="summary-item"><div class="s-label">📅 起始日期</div><div class="s-value" style="font-size:0.9rem;">{d['start_date']}</div></div>
-        <div class="summary-item"><div class="s-label">💰 总投入</div><div class="s-value" style="color:#60a5fa;">{fmt(d['total_invested'],0)}</div><div class="s-sub">进度 {d['total_invested']/d['target_total']*100:.1f}%</div></div>
-        <div class="summary-item"><div class="s-label">📊 市值</div><div class="s-value" style="color:#a78bfa;">{fmt(d['current_value'],0)}</div><div class="s-sub">{d['total_shares']:.4f} 份</div></div>
-        <div class="summary-item"><div class="s-label">📈 盈亏</div><div class="s-value" style="color:{'#22c55e' if d['pnl']>=0 else '#ef4444'};">{fmt(d['pnl'],0)}</div></div>
-        <div class="summary-item"><div class="s-label">📊 总收益率</div><div class="s-value" style="color:{'#22c55e' if d['return_rate']>=0 else '#ef4444'};">{pct(d['return_rate'])}</div></div>
-        <div class="summary-item"><div class="s-label">📉 指数收益率</div><div class="s-value" style="color:{'#22c55e' if d['csi_return']>=0 else '#ef4444'};">{pct(d['csi_return'])}</div></div>
+        <div class="summary-item"><div class="s-label">💰 总投入</div><div class="s-value" style="color:#60a5fa;">{fmt(d['total_invested'],0)}</div><div class="s-sub">进度 {float(d['total_invested'])/d['target_total']*100:.1f}%</div></div>
+        <div class="summary-item"><div class="s-label">📊 市值</div><div class="s-value" style="color:#a78bfa;">{fmt(d['current_value'],0)}</div><div class="s-sub">{float(d['total_shares']):.4f} 份</div></div>
+        <div class="summary-item"><div class="s-label">📈 盈亏</div><div class="s-value" style="color:{'#22c55e' if float(d['pnl'])>=0 else '#ef4444'};">{fmt(d['pnl'],0)}</div></div>
+        <div class="summary-item"><div class="s-label">📊 总收益率</div><div class="s-value" style="color:{'#22c55e' if float(d['return_rate'])>=0 else '#ef4444'};">{pct(d['return_rate'])}</div></div>
+        <div class="summary-item"><div class="s-label">📉 指数收益率</div><div class="s-value" style="color:{'#22c55e' if float(d['csi_return'])>=0 else '#ef4444'};">{pct(d['csi_return'])}</div></div>
         <div class="summary-item"><div class="s-label">⚠️ 组合回撤</div><div class="s-value" style="color:#ef4444;">{pct(d['portfolio_max_dd']*100)}</div></div>
         <div class="summary-item"><div class="s-label">⚠️ 指数回撤</div><div class="s-value" style="color:#ef4444;">{pct(d['csi_max_dd']*100)}</div></div>
     </div>

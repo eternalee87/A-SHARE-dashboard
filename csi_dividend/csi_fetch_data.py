@@ -1,34 +1,28 @@
 """
-中证红利质量指数 (931468) 定投仪表盘 — 数据抓取
-数据源: akshare
+中证红利 (000922) 定投仪表盘 — 数据准备
+数据源: 用户提供的 Excel 价格+PE 数据
 """
 import sys, io, os
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import pandas as pd
-import akshare as ak
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-CSI_CSV = os.path.join(BASE, 'data', 'csi_data.csv')
 
-print("=" * 60)
-print("中证红利质量指数 (931468) 数据抓取")
-print(f"时间: {pd.Timestamp.now()}")
-print("=" * 60)
+# Price data from Excel
+px = pd.read_excel('.reasonix/attachments/clipboard-20260729-113909.300220-000002.xlsx')
+px = px.dropna(subset=['日期'])
+px['date'] = pd.to_datetime(px['日期'])
+px = px[['date', '收盘价(元)']].rename(columns={'收盘价(元)': 'close'})
+px = px.set_index('date').sort_index()
 
-# Fetch full history
-df = ak.index_zh_a_hist(symbol='931468', period='daily', start_date='20040101', end_date='20301231')
+# PE data from Excel  
+pe = pd.read_excel('.reasonix/attachments/clipboard-20260729-174438.679355-000004.xlsx')
+pe['date'] = pd.to_datetime(pe['日期'])
+pe = pe[['date', 'PE-TTM', 'EPS']].set_index('date').sort_index()
 
-# Map columns
-df = df.rename(columns={
-    '日期': 'date', '收盘': 'close', '开盘': 'open',
-    '最高': 'high', '最低': 'low', '成交量': 'volume'
-})
-df['date'] = pd.to_datetime(df['date'])
-df = df.set_index('date')[['close']].dropna()
-df = df.sort_index()
+# Save
+px.to_csv(os.path.join(BASE, 'data', 'csi_price.csv'), float_format='%.2f')
+pe.to_csv(os.path.join(BASE, 'data', 'csi_pe.csv'), float_format='%.2f')
 
-os.makedirs(os.path.dirname(CSI_CSV), exist_ok=True)
-df.to_csv(CSI_CSV, float_format='%.2f')
-print(f"Saved: {CSI_CSV}")
-print(f"Range: {df.index[0].strftime('%Y-%m-%d')} ~ {df.index[-1].strftime('%Y-%m-%d')}")
-print(f"Rows: {len(df)}, Latest: {df.iloc[-1, 0]:.2f}")
+print(f"Price: {px.index[0].date()} ~ {px.index[-1].date()}, {len(px)} rows, latest={px.iloc[-1,0]:.2f}")
+print(f"PE: {pe.index[0].date()} ~ {pe.index[-1].date()}, {len(pe)} rows, latest PE={pe.iloc[-1,0]:.2f}")
