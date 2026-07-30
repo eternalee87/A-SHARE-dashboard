@@ -102,11 +102,6 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
         <div class="metric-value" style="color:{'#ef4444' if d.get('dy_pct',50)<40 else '#f59e0b' if d.get('dy_pct',50)<70 else '#22c55e'};">{d.get('dy_cur','—')}%</div>
         <div class="metric-detail">10年分位 P{d.get('dy_pct','—')} · {'🔴 偏低' if d.get('dy_pct',50)<30 else '🟡 中位' if d.get('dy_pct',50)<70 else '🟢 偏高'}</div>
     </div>
-    <div class="metric-card">
-        <div class="metric-name">💰 累计投入</div>
-        <div class="metric-value" style="color:#60a5fa;">{fmt(d['total_invested'],0)}</div>
-        <div class="metric-detail">市值 {fmt(d['current_value'],0)} · 收益 {pct(d['return_rate'])}</div>
-    </div>
 </div>
 
 <div class="charts-row">
