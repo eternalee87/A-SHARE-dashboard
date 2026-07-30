@@ -88,14 +88,19 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
 
 <div class="metrics-row">
     <div class="metric-card">
-        <div class="metric-name">📈 指数 931468</div>
+        <div class="metric-name">📈 指数 000922</div>
         <div class="metric-value" style="color:#f59e0b;">{fmt(d['csi'], 2)}</div>
-        <div class="metric-detail">MA200: {fmt(d['ma200'], 2)} · 比率: {d['ratio']:.4f} · P{d['pct_rank']:.1f}</div>
+        <div class="metric-detail">MA200: {fmt(d['ma200'], 2)} · 比率: {d['ratio']:.4f} ({d.get('ratio_formula','')})</div>
     </div>
     <div class="metric-card">
-        <div class="metric-name">📊 估值评分</div>
-        <div class="metric-value" style="color:{d['valuation_color']};">{d['score']:+d}</div>
-        <div class="metric-detail">{d['valuation_label']} · MA200分位 P{d['pct_rank']:.1f}</div>
+        <div class="metric-name">📊 PE-TTM (10年分位)</div>
+        <div class="metric-value" style="color:{'#22c55e' if d.get('pe_pct',50)<40 else '#f59e0b' if d.get('pe_pct',50)<70 else '#ef4444'};">{d.get('pe_cur','—')}</div>
+        <div class="metric-detail">10年分位 P{d.get('pe_pct','—')} · {'🟢 偏低' if d.get('pe_pct',50)<30 else '🟡 中位' if d.get('pe_pct',50)<70 else '🔴 偏高'}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-name">💎 估算股息率 (10年分位)</div>
+        <div class="metric-value" style="color:{'#ef4444' if d.get('dy_pct',50)<40 else '#f59e0b' if d.get('dy_pct',50)<70 else '#22c55e'};">{d.get('dy_cur','—')}%</div>
+        <div class="metric-detail">10年分位 P{d.get('dy_pct','—')} · {'🔴 偏低' if d.get('dy_pct',50)<30 else '🟡 中位' if d.get('dy_pct',50)<70 else '🟢 偏高'}</div>
     </div>
     <div class="metric-card">
         <div class="metric-name">💰 累计投入</div>
