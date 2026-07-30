@@ -216,6 +216,9 @@ th {{ background: #f1f5f9; font-weight: 600; }}
     <p><strong>📅 起始日期：</strong>2026年7月10日</p>
     <p><strong>📅 目标日期：</strong>2036年7月10日（10年）</p>
     <p><strong>🎁 受益人：</strong>小朋友</p>
+    <hr style="border-color:#e2e8f0; margin:12px 0;">
+    <p><strong>🏦 红利定投计划：</strong><a href="https://eternalee87.github.io/A-SHARE-dashboard/csi_dividend/">eternalee87.github.io/A-SHARE-dashboard/csi_dividend/</a></p>
+    <p style="font-size:0.85rem;color:#64748b;">搭配现金流规划，额外补充2年100万红利定投计划，ETF 159209，追求稳健股息回报。</p>
 </div>
 
 <div class="footer">
