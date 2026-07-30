@@ -20,6 +20,7 @@ TARGET_TOTAL = 1_000_000
 TARGET_YEARS = 2
 BASE_WEEKLY = TARGET_TOTAL / (TARGET_YEARS * 52)
 MIN_UNIT = 500
+BASE_POSITION = 800_000  # 已有底仓
 PAYOUT_RATIO = 0.38  # CSI Dividend avg
 
 def f500(x): return max(MIN_UNIT, int(x // MIN_UNIT) * MIN_UNIT)
@@ -124,6 +125,12 @@ else: total_inv=0; total_sh=0
 
 cur_val=total_sh*csi_cur; pnl=cur_val-total_inv; ret=pnl/total_inv*100 if total_inv>0 else 0
 csi_start=csi[csi.index>=START_DATE].iloc[0]; csi_ret=(csi_cur/csi_start-1)*100
+# Include base position
+base_shares = BASE_POSITION / csi_start
+full_inv = total_inv + BASE_POSITION
+full_val = (total_sh + base_shares) * csi_cur
+full_pnl = full_val - full_inv
+full_ret = full_pnl / full_inv * 100 if full_inv > 0 else 0
 
 vals=hist['cum_shares']*hist['csi_close'] if len(hist)>0 else pd.Series([0])
 peak=vals.expanding().max(); dd=float((vals/peak-1).min())*100 if len(vals)>0 else 0
@@ -148,9 +155,11 @@ out = {
     'base_weekly': round(BASE_WEEKLY,0), 'dca_amount': dca_amount,
     'target_total': TARGET_TOTAL, 'target_years': TARGET_YEARS,
     'start_date': START_DATE, 'min_unit': MIN_UNIT,
-    'total_invested': round(total_inv,0), 'total_shares': round(total_sh,6),
-    'current_value': round(cur_val,0), 'pnl': round(pnl,0),
-    'return_rate': round(ret,2), 'csi_return': round(csi_ret,2),
+    'total_invested': round(full_inv,0), 'total_shares': round(total_sh + base_shares,6),
+    'current_value': round(full_val,0), 'pnl': round(full_pnl,0),
+    'return_rate': round(full_ret,2), 'csi_return': round(csi_ret,2),
+    'dca_invested': round(total_inv,0),  # DCA-only for reference
+    'base_position': BASE_POSITION,
     'portfolio_max_dd': round(dd,4), 'csi_max_dd': round(csi_dd,4),
     'pe_cur': round(pe_cur,2) if pe_cur else None, 'pe_pct': round(pe_pct,1) if pe_pct else None,
     'dy_cur': round(dy_cur*100,2) if dy_cur else None, 'dy_pct': round(dy_pct,1) if dy_pct else None,

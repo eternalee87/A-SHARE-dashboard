@@ -121,10 +121,10 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
 </div>
 
 <div class="summary-panel">
-    <h2>📋 投资汇总 · 自 {d['start_date']} 起</h2>
+    <h2>📋 投资汇总 · 自 {d['start_date']} 起 (含底仓{d['base_position']/10000:.0f}万)</h2>
     <div class="summary-grid">
         <div class="summary-item"><div class="s-label">📅 起始日期</div><div class="s-value" style="font-size:0.9rem;">{d['start_date']}</div></div>
-        <div class="summary-item"><div class="s-label">💰 总投入</div><div class="s-value" style="color:#60a5fa;">{fmt(d['total_invested'],0)}</div><div class="s-sub">进度 {float(d['total_invested'])/d['target_total']*100:.1f}%</div></div>
+        <div class="summary-item"><div class="s-label">💰 总投入(含底仓)</div><div class="s-value" style="color:#60a5fa;">{fmt(d['total_invested'],0)}</div><div class="s-sub">DCA {float(d.get('dca_invested',0))/10000:.1f}万 + 底仓{float(d['base_position'])/10000:.0f}万</div></div>
         <div class="summary-item"><div class="s-label">📊 市值</div><div class="s-value" style="color:#a78bfa;">{fmt(d['current_value'],0)}</div><div class="s-sub">{float(d['total_shares']):.4f} 份</div></div>
         <div class="summary-item"><div class="s-label">📈 盈亏</div><div class="s-value" style="color:{'#22c55e' if float(d['pnl'])>=0 else '#ef4444'};">{fmt(d['pnl'],0)}</div></div>
         <div class="summary-item"><div class="s-label">📊 总收益率</div><div class="s-value" style="color:{'#22c55e' if float(d['return_rate'])>=0 else '#ef4444'};">{pct(d['return_rate'])}</div></div>
