@@ -1,5 +1,5 @@
 """
-中证红利质量指数 (931468) 定投仪表盘 — HTML生成
+中证红利 (000922) 定投仪表盘 — HTML生成
 """
 import sys, io, os, json
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -23,7 +23,7 @@ html = f'''<!DOCTYPE html>
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>中证红利质量定投 | CSI Dividend Quality DCA</title>
+<title>中证红利定投 | CSI Dividend DCA</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
@@ -71,8 +71,8 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
 
 <div class="header">
     <div>
-        <h1>🏦 中证红利质量 定投指示板</h1>
-        <div class="subtitle">指数 931468 · ETF 159209 · 目标 {d['target_total']/10000:.0f}万 · {d['target_years']}年 · 起始 {d['start_date']}</div>
+        <h1>🏦 中证红利 定投指示板</h1>
+        <div class="subtitle">指数 000922 · ETF 159209 · 目标 {d['target_total']/10000:.0f}万 · {d['target_years']}年 · 起始 {d['start_date']}</div>
     </div>
     <div class="update">最后交易日: {d['last_trading_day']}<br>生成: {d['generated_at']}</div>
 </div>
@@ -139,7 +139,7 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
     </div>
 </div>
 
-<div class="footer">中证红利质量定投 · ETF 159209 · {d['generated_at']} · Powered by akshare</div>
+<div class="footer">中证红利定投 · ETF 159209 · {d['generated_at']} · Powered by akshare</div>
 
 </div>
 
@@ -149,7 +149,7 @@ Chart.defaults.color=tc;Chart.defaults.borderColor=gc;
 
 new Chart(document.getElementById('chCsi'),{{
     type:'line',data:{{labels:{json.dumps(d['ts_180'])},datasets:[
-        {{label:'931468',data:{json.dumps(d['vals_180'])},borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.05)',borderWidth:2,pointRadius:0,fill:true,tension:0.3}},
+        {{label:'000922',data:{json.dumps(d['vals_180'])},borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.05)',borderWidth:2,pointRadius:0,fill:true,tension:0.3}},
         {{label:'MA200',data:{json.dumps(d['ma_180'])},borderColor:'#60a5fa',borderWidth:1.5,borderDash:[6,3],pointRadius:0,fill:false,tension:0.3}}
     ]}},
     options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{labels:{{usePointStyle:true,boxWidth:8}}}}}},scales:{{x:{{ticks:{{maxTicksLimit:8}}}},y:{{ticks:{{callback:v=>v.toLocaleString()}}}}}}}}
