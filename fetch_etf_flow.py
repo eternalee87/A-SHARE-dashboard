@@ -71,7 +71,7 @@ def fetch_szse():
 def get_trading_dates(n=15):
     """获取最近n个交易日(近似，跳过周末)"""
     dates = []
-    d = datetime.now()
+    d = datetime.now() - timedelta(days=1)  # 从昨天开始，不含今天(数据未出)
     while len(dates) < n:
         if d.weekday() < 5:  # Mon-Fri
             dates.append(d.strftime('%Y%m%d'))
