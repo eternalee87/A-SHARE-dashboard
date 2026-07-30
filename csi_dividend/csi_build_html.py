@@ -83,7 +83,7 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsof
     <div class="label">📌 本周建议定投金额</div>
     <div class="amount">{fmt(d['dca_amount'], 0)} <span class="unit">CNY</span></div>
     <div class="val-label">{d['valuation_label']} · 倍数 {d['multiplier']}x</div>
-    <div class="base-info">基础周投 {fmt(d['base_weekly'], 0)} 元 × {d['multiplier']}x · 最小 {d['min_unit']} 元</div>
+    <div class="base-info">基准: 100万÷2年÷52周 ≈ {fmt(d['base_weekly'],0)} 元 · 实际 = 基准 × {d['multiplier']}x → 取整至 {d['min_unit']} 元 = {fmt(d['dca_amount'],0)} 元</div>
 </div>
 
 <div class="metrics-row">
