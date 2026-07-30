@@ -2,8 +2,9 @@ name: Hourly Dashboard Update
 
 on:
   schedule:
-    # 每小时执行（北京时间 8:00-18:00，即 UTC 0:00-10:00，周一至周五）
-    - cron: '0 0-10 * * 1-5'
+    # 每小时执行(北京时间 8:00-19:00, 即 UTC 0:00-11:00, 周一至周五)
+    # ETF份额数据通常17:00后发布, 延至19:00确保覆盖
+    - cron: '0 0-11 * * 1-5'
   workflow_dispatch:
   push:
     paths:

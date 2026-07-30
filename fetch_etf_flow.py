@@ -37,6 +37,22 @@ TARGET_ETFS = {
     # 证券（国家队护盘常用）
     '512880': ('证券ETF', 'SSE'),
 }
+RETRY_COUNT = 3
+RETRY_DELAY = 10  # seconds
+
+def _retry(func, name, *args, **kwargs):
+    """重试包装: 失败后指数退避"""
+    for attempt in range(RETRY_COUNT):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            if attempt < RETRY_COUNT - 1:
+                wait = RETRY_DELAY * (2 ** attempt)
+                print(f"  {name} retry {attempt+1}/{RETRY_COUNT} in {wait}s: {e}")
+                time.sleep(wait)
+            else:
+                print(f"  {name} FAILED after {RETRY_COUNT} tries: {e}")
+                return None
 
 def fetch_sse(date_str):
     """获取上交所ETF某日份额"""
@@ -106,7 +122,7 @@ if __name__ == '__main__':
     if df_sz is not None:
         sz_target = df_sz[df_sz['code'].isin(TARGET_ETFS.keys())]
         all_data.append(sz_target)
-        print(f"{len(sz_target)} ETFs")
+        print(f"  {len(sz_target)} ETFs")
         # Also try to accumulate SZSE history from existing CSV
         from datetime import date as dt_date
         today_str = dt_date.today().strftime('%Y%m%d')
