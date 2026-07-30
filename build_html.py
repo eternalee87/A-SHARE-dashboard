@@ -314,39 +314,6 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   document.getElementById('benchTable').innerHTML = html;
 })();
 
-// ===== PE估值图表 =====
-(function() {
-  var pe = DATA.pe_data;
-  if (!pe || !pe.ts || pe.ts.length === 0) return;
-  document.getElementById('peCurrent').textContent = 'PE: ' + pe.current + ' (' + pe.zone_label + ')';
-  document.getElementById('peQ20').textContent = pe.q20;
-  document.getElementById('peQ20to80').textContent = pe.q20 + '~' + pe.q80;
-  document.getElementById('peQ80').textContent = pe.q80;
-  document.getElementById('pePct').textContent = pe.percentile + '%';
-  var N = pe.ts.length;
-  new Chart(document.getElementById('chartPE'), {
-    type: 'line',
-    data: {
-      labels: pe.ts,
-      datasets: [
-        { label: 'PE', data: pe.vals, borderColor: '#3498db', borderWidth: 1.5, pointRadius: 0, fill: false },
-        { label: '低('+pe.q20+')', data: Array(N).fill(pe.q20), borderColor: '#2ecc71', borderWidth: 0.8, borderDash: [4,4], pointRadius: 0, fill: false },
-        { label: '高('+pe.q80+')', data: Array(N).fill(pe.q80), borderColor: '#e74c3c', borderWidth: 0.8, borderDash: [4,4], pointRadius: 0, fill: false },
-        { label: '均('+pe.mean+')', data: Array(N).fill(pe.mean), borderColor: '#8b949e', borderWidth: 0.5, borderDash: [2,2], pointRadius: 0, fill: false }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 }, boxWidth: 12 } } },
-      scales: {
-        x: { ticks: { color: '#8b949e', maxTicksLimit: 12, autoSkip: true } },
-        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
-      }
-    }
-  });
-})();
-
-
 // ===== ETF 国家队行动跟踪 =====
 (function() {
   var ef = DATA.etf_flow;
