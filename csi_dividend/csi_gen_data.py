@@ -133,9 +133,9 @@ full_pnl = full_val - full_inv
 full_ret = full_pnl / full_inv * 100 if full_inv > 0 else 0
 
 vals=hist['cum_shares']*hist['csi_close'] if len(hist)>0 else pd.Series([0])
-peak=vals.expanding().max(); dd=float((vals/peak-1).min())*100 if len(vals)>0 else 0
+peak=vals.expanding().max(); dd=float((vals/peak-1).min()) if len(vals)>0 else 0
 csi_since=csi[csi.index>=START_DATE]; csi_peak=csi_since.expanding().max()
-csi_dd=float((csi_since/csi_peak-1).min())*100 if len(csi_since)>0 else 0
+csi_dd=float((csi_since/csi_peak-1).min()) if len(csi_since)>0 else 0
 
 r180=csi.iloc[-180:]; ts_180=[str(d)[:10] for d in r180.index]; vals_180=[float(v) for v in r180.values]
 ma_180=[float(v) for v in ma200.iloc[-180:].values]
