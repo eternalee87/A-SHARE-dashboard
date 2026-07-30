@@ -69,15 +69,12 @@ jobs:
         run: python ndx_dca/build_family_guide.py
 
       - name: Fetch CSI data
-        if: steps.fetch.outputs.FETCH_OK == 'true'
         run: python csi_dividend/csi_fetch_data.py
 
       - name: Generate CSI signal
-        if: steps.fetch.outputs.FETCH_OK == 'true'
         run: python csi_dividend/csi_gen_data.py
 
       - name: Build CSI HTML
-        if: steps.fetch.outputs.FETCH_OK == 'true'
         run: python csi_dividend/csi_build_html.py
 
       - name: Update version
