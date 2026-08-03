@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看板制作心得 & AI使用体会</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --orange: #e67e22;
+    --yellow: #f39c12;
+    --purple: #8e44ad;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.8; font-size: 16px;
+    padding: 40px 20px;
+    max-width: 860px; margin: 0 auto;
+  }
+  h1 { font-size: 2em; margin-bottom: 8px; color: #fff; }
+  h1 .sub { display:block; font-size: .45em; font-weight:400; color: var(--muted); margin-top: 6px; }
+  h2 {
+    font-size: 1.4em; margin: 48px 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--border); color: var(--accent);
+  }
+  h3 { font-size: 1.15em; margin: 28px 0 10px; color: #e6edf3; }
+  p { margin: 12px 0; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin: 20px 0;
+  }
+  .card.warn {
+    border-left: 4px solid var(--orange);
+    background: rgba(230,126,34,0.06);
+  }
+  .card.tip {
+    border-left: 4px solid var(--green);
+    background: rgba(46,204,113,0.06);
+  }
+  table { width:100%; border-collapse:collapse; margin: 16px 0; font-size: 14px; }
+  th { text-align:left; padding: 10px 12px; background: #21262d; color: var(--muted); font-weight:600; }
+  td { padding: 10px 12px; border-top: 1px solid var(--border); }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+  code {
+    background: #21262d; padding: 2px 8px; border-radius: 4px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: .88em; color: var(--orange);
+  }
+  pre {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; overflow-x: auto;
+    margin: 16px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre code { background: none; padding: 0; color: var(--text); }
+  .tag {
+    display: inline-block; padding: 3px 10px; border-radius: 4px;
+    font-size: 13px; font-weight: 600; margin: 2px 4px;
+  }
+  .tag.g { background: rgba(46,204,113,0.15); color: var(--green); }
+  .tag.r { background: rgba(231,76,60,0.15); color: var(--red); }
+  .tag.o { background: rgba(230,126,34,0.15); color: var(--orange); }
+  .tag.b { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .pipeline {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin: 20px 0; flex-wrap: wrap;
+  }
+  .pipeline .box {
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; text-align: center;
+    min-width: 140px;
+  }
+  .pipeline .box strong { display:block; font-size:1.1em; color:var(--accent); }
+  .pipeline .box .sub { font-size:.8em; color:var(--muted); margin-top:4px; }
+  .pipeline .arrow { font-size: 1.8em; color: var(--muted); padding: 0 8px; }
+  blockquote {
+    border-left: 3px solid var(--accent); margin: 16px 0;
+    padding: 8px 16px; color: var(--muted); background: rgba(88,166,255,0.04);
+    border-radius: 0 6px 6px 0;
+  }
+  ul, ol { margin: 10px 0 10px 24px; }
+  li { margin: 6px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .toc { font-size: 15px; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .footer {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border);
+    text-align: center; color: var(--muted); font-size: 13px;
+  }
+  .emoji-bullet { margin-right: 6px; }
+  @media (max-width:640px) {
+    body { padding: 16px; font-size: 15px; }
+    h1 { font-size: 1.6em; }
+    .pipeline { flex-direction:column; }
+    .pipeline .arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<h1>
+  用 Python + GitHub Actions 搭建自动化数据看板
+  <span class="sub">方法论 · 踩坑记录 · AI 协作心得</span>
+</h1>
+
+<div class="toc card">
+  <strong>📑 目录</strong><br>
+  <a href="#part1">PART ONE</a> — 技术方法论与踩坑记录<br>
+  <a href="#part2">PART TWO</a> — 使用 AI 的心得体会
+</div>
+
+<!-- ==================== PART ONE ==================== -->
+<h2 id="part1">PART ONE：用 Python + GitHub Actions 搭建自动化数据看板</h2>
+
+<p>
+分享了三个看板的制作过程：<strong>A股风格轮动盯盘、中证红利定投指示板、纳斯达克100定投指示板</strong>。
+三个看板共用同一套技术栈，从零搭建到全自动运行，这里总结一下通用的方法论和容易踩的坑。
+</p>
+
+<h3>一、三个看板长什么样</h3>
+
+<table>
+<tr><th>看板</th><th>核心功能</th><th>链接</th></tr>
+<tr>
+  <td><strong>A股盯盘</strong></td>
+  <td>6风格轮动 + 均线系统 + 牛熊信号链 + 国家队ETF监控</td>
+  <td><a href="https://eternalee87.github.io/A-SHARE-dashboard/" target="_blank">A-SHARE-dashboard</a></td>
+</tr>
+<tr>
+  <td><strong>中证红利定投</strong></td>
+  <td>MA200分位值 → 周度定投金额建议 + 绩效追踪</td>
+  <td><a href="https://eternalee87.github.io/A-SHARE-dashboard/csi_dividend/" target="_blank">csi_dividend</a></td>
+</tr>
+<tr>
+  <td><strong>纳斯达克100定投</strong></td>
+  <td>MA200分位值 + VIX + CNN恐慌贪婪 → 定投倍数</td>
+  <td><a href="https://eternalee87.github.io/A-SHARE-dashboard/ndx_dca/" target="_blank">ndx_dca</a></td>
+</tr>
+</table>
+
+<div class="card">
+  <strong>🎯 三个看板各自的目标：</strong>
+  <ol>
+    <li><strong>关注风格轮动和市场场景切换</strong></li>
+    <li><strong>定投纳指</strong></li>
+    <li><strong>定投消化现金流</strong></li>
+  </ol>
+</div>
+
+<div class="card tip">
+  <strong>💡 最重要的事：</strong>虽然内容完全不同，但它们的<strong>技术架构是一模一样的</strong>。搞懂一个，剩下两个都是复制粘贴改参数。
+</div>
+
+<h3>二、通用架构：三板斧流水线</h3>
+<p>每个看板都是 <strong>三步走</strong>，无一例外：</p>
+
+<div class="pipeline">
+  <div class="box"><strong>fetch_data</strong><span class="sub">数据抓取</span></div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>gen_data</strong><span class="sub">信号计算</span></div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>build_html</strong><span class="sub">页面生成</span></div>
+</div>
+<p style="text-align:center;color:var(--muted);font-size:14px;">
+  CSV 落盘 &nbsp;→&nbsp; JSON 落盘 &nbsp;→&nbsp; HTML + JS 落盘
+</p>
+
+<p>每一步都是<strong>纯 Python 脚本</strong>，输入是文件，输出也是文件。没有任何数据库、没有后端 API、没有 Docker。极简，极其好维护。</p>
+
+<h4>2.1 第一步：数据抓取（fetch_data.py）</h4>
+<p>核心问题只有一个：<strong>从哪拿数据？</strong></p>
+
+<table>
+<tr><th>看板</th><th>数据内容</th><th>数据源</th><th>Python 库</th></tr>
+<tr><td>A股盯盘</td><td>风格指数 + 宽基指数 + ETF份额</td><td>新浪财经 / 腾讯财经 / tushare</td><td><code>akshare</code></td></tr>
+<tr><td>中证红利</td><td>000922价格 + PE-TTM</td><td>新浪财经</td><td><code>akshare</code></td></tr>
+<tr><td>NDX定投</td><td>纳斯达克100 + VIX + CNN恐慌贪婪</td><td>Yahoo Finance + CNN</td><td><code>yfinance</code> + <code>requests</code></td></tr>
+</table>
+
+<div class="card tip">
+  <strong>✅ 心得：数据源一定要有多级兜底。</strong><br>
+  A股数据商发布时间不一致：新浪约 16:00 就有当日数据（快但偶尔缺），腾讯约 16:30-17:00（慢但全），tushare 需要 token 但最快。代码里做了三级降级：<br><br>
+  <code>tushare（有 token 则优先） → 新浪（快） → 腾讯（兜底）</code><br><br>
+  而且还有一个巧妙的检查：如果新浪返回的最新日期不是今天，自动切到腾讯补数据。
+</div>
+
+<div class="card warn">
+  <strong>⚠️ NDX 的数据源特别坑：</strong>Yahoo Finance 的历史数据接口经常抽风，有时候返回空，有时候延迟一天。所以 GitHub Actions 里做了 <strong>3 次重试 + 30 秒间隔</strong>，并且在 cron 里安排了三个时间点兜底（北京时间 6:30 / 8:30 / 12:00）。
+</div>
+
+<h4>2.2 第二步：信号计算（gen_data.py）</h4>
+<p>数据拿到之后，要做的事情就是把原始价格变成<strong>"信号"</strong>。</p>
+
+<p><strong>A股盯盘的信号体系：</strong></p>
+<ul>
+  <li>均线系统：MA20 / MA60 / MA120 / MA250，判断指数处于什么位置</li>
+  <li>破位计数：跌破几条均线 + 回撤幅度 + 均线死叉 → 得到 0~10 的分数</li>
+  <li>仓位评级：<span class="tag g">GREEN 牛市</span> <span class="tag o">YELLOW 调整</span> <span class="tag r">ORANGE 中期走弱</span> <span class="tag r">RED 熊市</span></li>
+  <li>国家队ETF监控：从 ETF 份额变动推算净申购金额，结合比率判断"托底"还是"减速"</li>
+  <li>风格轮动：60日最强/最弱风格、价值/成长比率、大小盘轮动</li>
+</ul>
+
+<p><strong>定投看板的信号体系：</strong></p>
+<ul>
+  <li>核心模型：<strong>MA200 分位值</strong>。多种模型对比（单指标 vs 复合打分法）后，从收益率、回撤控制、定投节奏、可理解性多维度评价，选择了这个最符合需求的指标</li>
+  <li>计算 <code>当前价格 / MA200</code>，在历史上处于什么分位。分位越低 → 越低估 → 投更多</li>
+  <li>分位值 → 分数 → 倍数映射</li>
+</ul>
+
+<div class="card tip">
+  <strong>✅ 心得：信号逻辑要"自解释"。</strong>比如定投金额的计算公式直接在页面上显示出来，用户不需要看代码就能理解为什么是这个数。
+</div>
+
+<h4>2.3 第三步：页面生成（build_html.py）</h4>
+<blockquote>reasonix + GitHub Desktop 自己搞定，我只做评价和测试。</blockquote>
+
+<p>这一步是整个方案最<strong>"务实"</strong>的选择：<strong>不用任何前端框架，直接把数据写进 HTML。</strong></p>
+
+<ol>
+  <li>Python 读取 <code>dashboard_data.json</code></li>
+  <li>用 <code>json.dumps()</code> 把数据写成 <code>const DATA = {...}</code> 塞进一个 <code>.js</code> 文件</li>
+  <li>HTML 通过 <code>&lt;script src="dashboard_data.js"&gt;</code> 加载数据</li>
+  <li>页面渲染全部用原生 JavaScript + Chart.js（CDN 引入，零依赖安装）</li>
+</ol>
+
+<div class="card tip">
+  <strong>🤔 为什么不用 React/Vue？</strong><br>
+  因为这个场景只有一个静态页面，前端框架的构建链（webpack/vite/npm install）完全是负资产。纯 HTML + 原生 JS 的好处：<br>
+  ✅ 浏览器直接打开就能看（<code>python -m http.server</code> 一键本地调试）<br>
+  ✅ GitHub Pages 原生支持，零配置<br>
+  ✅ 任何人都能看懂、修改，不需要前端背景
+</div>
+
+<p>Chart.js 画图非常简单，比如画上证指数 + 均线：</p>
+<pre><code>new Chart(document.getElementById('chartSH'), {
+  type: 'line',
+  data: {
+    labels: DATA.ts_180,   // 日期数组
+    datasets: [
+      { label: '上证指数', data: DATA.sz_180, borderColor: '#58a6ff', ... },
+      { label: 'MA250', data: Array(180).fill(DATA.ma250), borderDash: [6,3], ... },
+    ]
+  }
+});</code></pre>
+
+<h3>三、全自动运行：GitHub Actions + GitHub Pages</h3>
+<blockquote>我的需求是能够定期自动更新，但没有实时的诉求所以不用特别高频。<br>（根据使用场景和需求来，但也很容易出错，需要多用多校验）</blockquote>
+
+<p>这是最关键的一步——让看板自己更新，不需要人操作。</p>
+
+<h4>3.1 定时触发</h4>
+<p>在 <code>.github/workflows/</code> 下放一个 YAML 文件：</p>
+<pre><code>on:
+  schedule:
+    - cron: '0 0-11 * * 1-5'   # 北京时间 8:00-19:00，每小时一次，周一到周五
+  workflow_dispatch:             # 手动触发按钮</code></pre>
+
+<div class="card warn">
+  <strong>⚠️ 坑：GitHub Actions 的 cron 是 UTC 时间！</strong><br>
+  北京时间 = UTC + 8。所以 <code>0 0</code> 是北京时间早上 8 点，<code>0 11</code> 是北京时间晚上 7 点。写反了就会在半夜跑。
+</div>
+
+<h4>3.2 执行流程</h4>
+<pre><code>steps:
+  - checkout 代码
+  - 安装 Python + pip install 依赖
+  - python fetch_data.py    # 抓数据 → CSV
+  - python gen_data.py      # 算信号 → JSON
+  - python build_html.py    # 拼页面 → HTML
+  - git commit + git push   # 推回仓库</code></pre>
+<p>整个流程跑完大约 <strong>2-3 分钟</strong>。A股看板用了每小时更新（覆盖盘中到收盘后），NDX 用了早间三次兜底。</p>
+
+<h4>3.3 GitHub Pages 自动部署</h4>
+<p>只要仓库设置里开启 GitHub Pages，指向 <code>main</code> 分支的根目录，每次 Action push 新的 HTML 后，GitHub Pages 会自动重新部署。一般 1-2 分钟内生效。</p>
+
+<div class="card warn">
+  <strong>⚠️ 坑：浏览器缓存。</strong>页面更新了但看到的还是旧的。解决方案：<br>
+  ✅ HTML 里加 <code>&lt;meta http-equiv="Cache-Control" content="no-cache"&gt;</code><br>
+  ✅ JS 引用加版本号参数：<code>&lt;script src="dashboard_data.js?v=20260731120000"&gt;&lt;/script&gt;</code><br>
+  ✅ 更进一步：搞了一个 <code>version.json</code>，页面每 5 分钟轮询一次，检测到版本变化自动刷新
+</div>
+
+<h4>3.4 版本自动检测刷新</h4>
+<pre><code>// 每 5 分钟检查 version.json 是否变了
+function checkVersion() {
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.json())
+    .then(v => {
+      if (v.version !== localStorage.getItem('last_version')) {
+        localStorage.setItem('last_version', v.version);
+        showToast('🆕 数据已更新，刷新中...', 'success');
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+setInterval(checkVersion, 5 * 60 * 1000);</code></pre>
+<p>这样你打开页面放在那里，数据更新了会自动刷新，不用手动 F5。</p>
+
+<h3>四、最容易踩的 8 个坑</h3>
+
+<div class="card warn">
+  <strong>🕳️ 坑 1：数据源的时间差</strong><br>
+  A股数据商不是收盘立刻就有数据的。新浪大约 16:00，腾讯 16:30-17:00。如果你 15:30 拉数据，拿到的是昨天的。<br>
+  <strong>对策：</strong>多数据源降级 + 检查最新日期是否为今天 + 错开 cron 时间。
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 2：PE-TTM 数据经常空</strong><br>
+  <code>akshare</code> 获取中证红利 PE 的接口有时候返回空或报错。<br>
+  <strong>对策：</strong>PE 失败不要阻断整个流程，用 <code>try/except</code> 包起来，PE 缺失时页面显示 "N/A"，其他功能照常。
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 3：MA200 需要足够的历史数据</strong><br>
+  <code>ndx.rolling(200).mean()</code> 要求至少有 200 个交易日（约 10 个月）的数据。如果数据文件是新拉的，前 199 天全是 NaN。<br>
+  <strong>对策：</strong>确保 fetch 脚本拉取至少 2-3 年的历史数据，<code>start='20200101'</code> 起步。
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 4：GitHub Actions 的磁盘和内存限制</strong><br>
+  免费版 Actions 的 runner 只有 7GB RAM + 14GB SSD。akshare 拉全量 A股历史数据大约几百 MB，完全够用。但如果要跑回测或大量计算，注意 <code>timeout-minutes</code> 设置（默认 360 分钟，够用）。
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 5：git push 冲突</strong><br>
+  如果两个 cron 同时触发（比如 A股的和 NDX 的都写同一个文件），会 push 冲突。<br>
+  <strong>对策：</strong>使用 <code>concurrency</code> 限制并发 + push 前先 <code>git pull --rebase</code>，失败后重试 3 次。
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 6：ffill 导致的"假数据"</strong><br>
+  如果某天数据缺失，<code>pandas.fillna(method='ffill')</code> 会自动用前一天的数据填充（容易给人造成误解，所以测试要细致）。这会导致你以为有最新数据，其实是旧的。<br>
+  <strong>对策：</strong>在 gen_data.py 里检查最新行是否实质更新：
+<pre><code># 检查不完整数据
+unchanged = [n for n in style_names if abs(last[n] - prev[n]) < 0.001]
+if len(unchanged) >= 3:
+    df_final = df_final.iloc[:-1]  # 丢弃</code></pre>
+</div>
+
+<div class="card warn">
+  <strong>🕳️ 坑 7：周度定投的 ISO Week 对齐</strong><br>
+  定投按周执行，但不同数据源对"周"的定义可能不一致。必须用 <code>isocalendar()</code> 的 <code>(year, week_number)</code> 来判断是否是同一周。每周选最后一个交易日执行，如果那周没交易（节假日），顺延到下一个交易日。
+</div>
+
+<h3>五、方法论总结：从零搭建一个看板的 SOP</h3>
+<blockquote>其实 DS 自己都可以搞定，我的任务是提示词要够细致准确的让 AI 明白到底需要他做什么——包括目标、准确描述现象、实现前先讨论方案、总结落地、不断根据需求迭代。</blockquote>
+
+<ol>
+  <li><strong>确定数据源</strong> → 找到能稳定拉数据的 Python 库（akshare / yfinance / requests）</li>
+  <li><strong>写 fetch 脚本</strong> → 拉数据 → 存 CSV，做好多源兜底和错误处理</li>
+  <li><strong>写 gen_data 脚本</strong> → 读 CSV → 用 Pandas 算指标 → 输出 JSON</li>
+  <li><strong>写 build_html 脚本</strong> → 读 JSON → 拼 HTML + Chart.js → 输出纯静态页面</li>
+  <li><strong>本地调通</strong> → <code>python -m http.server 8765</code> 打开浏览器看效果</li>
+  <li><strong>扔到 GitHub</strong> → 配 Actions cron → 设 GitHub Pages → 完事</li>
+  <li><strong>加版本轮询</strong> → <code>version.json</code> + 前端轮询 → 打开页面自动刷新</li>
+</ol>
+
+<div class="card tip">
+  <strong>⏱️ 整个周期：</strong>如果数据源明确、指标公式清楚，一个看板从零到全自动上线大约 <strong>2-4 小时</strong>。第一个最慢（搭架子），第二个第三个就是复制粘贴改参数。
+</div>
+
+<hr>
+
+<!-- ==================== PART TWO ==================== -->
+<h2 id="part2">PART TWO：使用各种 AI 后的心得体会</h2>
+
+<h3>AI 都能做什么</h3>
+
+<table>
+<tr><th>✅ 能做</th><th>❌ 不能做</th></tr>
+<tr>
+  <td><strong>信息整理</strong> — 多源数据汇总、关键指标监控、异常信号标注</td>
+  <td><strong>🚫 预测价格</strong> — AI能分析趋势，但无法预测明天涨跌</td>
+</tr>
+<tr>
+  <td><strong>逻辑推演</strong> — 数据间关联分析、历史规律归纳</td>
+  <td><strong>🚫 替代判断</strong> — AI没有你的负债表、现金流、家庭责任</td>
+</tr>
+<tr>
+  <td><strong>纪律守门</strong> — 设定规则的自动提醒、情绪化操作预警</td>
+  <td><strong>🚫 消除不确定性</strong> — 只能让你更清楚看到不确定性，不能消灭它</td>
+</tr>
+<tr>
+  <td><strong>记忆外接</strong> — 你的判断记录、历史决策复盘、教训归档</td>
+  <td></td>
+</tr>
+</table>
+
+<div class="card tip">
+  <strong>🔑 核心认知：</strong>AI是放大镜，不是方向盘——它让你看得更清楚，但车往哪开、开多快、什么时候刹车——必须是你自己决定。
+</div>
+
+<h3>哪里容易出错</h3>
+
+<div class="card warn">
+  <strong>❌ 错误流程：</strong><br>
+  你："我该买什么？" → AI："建议关注XX..." → 你：（无脑跟单）
+</div>
+
+<div class="card tip">
+  <strong>✅ 正确姿势：idea先行，然后动起来，多比较</strong><br><br>
+  你："我觉得XX方向长期逻辑成立"<br>
+  AI："支持该观点的3个数据... 可能推翻的2个风险..."<br>
+  你："逻辑对，但短期过热，等回调5%"<br>
+  AI："已设定提醒，条件满足时通知你"
+</div>
+
+<p><strong>升级版：</strong>第一性原理 + 子 agent 相互 PK —— 人提假设，AI验证；人定策略，AI监控。</p>
+
+<h3>一个可用的最小框架</h3>
+
+<div class="card">
+  <p style="font-size:1.1em;text-align:center;">
+    <strong>目标 + 边界 + 现状 + 问题阐述 + 预期输出 + 多轮PK</strong>
+  </p>
+</div>
+
+<hr>
+
+<div class="card tip" style="text-align:center;">
+  <h3 style="margin-top:0;">最后的最后</h3>
+  <p style="font-size:1.1em;"><strong>AI是放大镜，不是方向盘</strong><br>
+  它让你看得更清楚，但车往哪开、开多快、什么时候刹车——必须是你自己决定。</p>
+</div>
+
+<div class="card" style="text-align:center; border-color: var(--accent);">
+  <h3 style="margin-top:0;">最后的最后的最后</h3>
+  <p style="font-size:1.2em;"><strong>先上车、开起来、逐步磨合和调教。</strong></p>
+</div>
+
+<div class="footer">
+  <p>源码开源在 <a href="https://github.com/eternalee87/A-SHARE-dashboard" target="_blank">github.com/eternalee87/A-SHARE-dashboard</a></p>
+  <p>Generated 2026-08-03 · 欢迎抄作业 & 提 Issue</p>
+</div>
+
+</body>
+</html>
