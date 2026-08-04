@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js?v=20260804143322"></script>
+<script src="dashboard_data.js?v=20260804062604"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -111,7 +111,7 @@ canvas { max-height: 280px; }
 <div class="grid grid-3" style="margin-bottom:16px;">
   <div class="card" style="grid-column:span 2;">
     <h3>上证指数 180日 + 均线系统</h3>
-    <canvas id="chartSH" style="height:220px;"></canvas>
+    <canvas id="chartSH"></canvas>
   </div>
   <div class="card">
     <h3>🎯 信号面板</h3>
@@ -151,11 +151,11 @@ canvas { max-height: 280px; }
 <div class="chart-grid" style="margin-bottom:16px;">
   <div class="card">
     <h3>价值/成长比率 (360日, 1=起点)</h3>
-    <canvas id="chartVG" style="height:220px;"></canvas>
+    <canvas id="chartVG"></canvas>
   </div>
   <div class="card">
     <h3>大小盘轮动 (2年, 沪深300/中证1000)</h3>
-    <canvas id="chartLS" style="height:220px;"></canvas>
+    <canvas id="chartLS"></canvas>
   </div>
 </div>
 
@@ -167,7 +167,7 @@ canvas { max-height: 280px; }
   </div>
   <div class="card">
     <h3>风格近60日滚动20日收益 (%)</h3>
-    <canvas id="chartRoll" style="height:220px;"></canvas>
+    <canvas id="chartRoll"></canvas>
   </div>
 </div>
 
@@ -461,10 +461,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '08-04 14:33';
+var BUILD_TIME = '08-04 06:26';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '08-04 14:33') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '08-04 06:26') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
