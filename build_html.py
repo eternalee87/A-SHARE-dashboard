@@ -400,9 +400,9 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
       var c = sv > 2 ? '#e74c3c' : (sv < -2 ? '#2ecc71' : '#c9d1d9');
       html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+c+';font-size:13px;\">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
     }
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d3_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d3_s>=0?'+':'')+r.d3_s.toFixed(1)+'</td>';
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d5_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d5_s>=0?'+':'')+r.d5_s.toFixed(1)+'</td>';
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d10_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d10_s>=0?'+':'')+r.d10_s.toFixed(1)+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d3_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d3_s>=0?'+':'')+(r.d3_s||0).toFixed(1)+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d5_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d5_s>=0?'+':'')+(r.d5_s||0).toFixed(1)+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d10_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d10_s>=0?'+':'')+(r.d10_s||0).toFixed(1)+'</td>';
     html2 += '</tr>';
   }
   
