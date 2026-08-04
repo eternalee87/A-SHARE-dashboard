@@ -126,7 +126,7 @@ canvas { max-height: 280px; }
 <div class="grid grid-3" style="margin-bottom:16px;">
   <div class="card" style="grid-column:span 2;">
     <h3>上证指数 180日 + 均线系统</h3>
-    <canvas id="chartSH"></canvas>
+    <canvas id="chartSH" style="height:220px;"></canvas>
   </div>
   <div class="card">
     <h3>🎯 信号面板</h3>
@@ -166,11 +166,11 @@ canvas { max-height: 280px; }
 <div class="chart-grid" style="margin-bottom:16px;">
   <div class="card">
     <h3>价值/成长比率 (360日, 1=起点)</h3>
-    <canvas id="chartVG"></canvas>
+    <canvas id="chartVG" style="height:220px;"></canvas>
   </div>
   <div class="card">
     <h3>大小盘轮动 (2年, 沪深300/中证1000)</h3>
-    <canvas id="chartLS"></canvas>
+    <canvas id="chartLS" style="height:220px;"></canvas>
   </div>
 </div>
 
@@ -182,7 +182,7 @@ canvas { max-height: 280px; }
   </div>
   <div class="card">
     <h3>风格近60日滚动20日收益 (%)</h3>
-    <canvas id="chartRoll"></canvas>
+    <canvas id="chartRoll" style="height:220px;"></canvas>
   </div>
 </div>
 
