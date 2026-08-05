@@ -396,13 +396,17 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     html2 += '<tr style=\"border-top:1px solid #21262d;\">';
     html2 += '<td style=\"padding:3px 5px;\"><span style=\"color:#58a6ff;font-size:13px;\">'+r.code+'</span> <span style=\"font-size:12px;\">'+r.name+'</span></td>';
     for (var di = 0; di < dates.length; di++) {
-      var ds = dates[di], sv = r[ds+'_s']||0;
-      var c = sv > 2 ? '#e74c3c' : (sv < -2 ? '#2ecc71' : '#c9d1d9');
-      html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+c+';font-size:13px;\">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
+      var ds = dates[di], sv = r[ds+'_s'];
+      if (sv == null) {
+        html2 += '<td style=\"text-align:right;padding:3px 6px;color:#555;font-size:13px;\">-</td>';
+      } else {
+        var c = sv > 2 ? '#e74c3c' : (sv < -2 ? '#2ecc71' : '#c9d1d9');
+        html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+c+';font-size:13px;\">'+(sv>=0?'+':'')+sv.toFixed(1)+'</td>';
+      }
     }
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d3_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d3_s>=0?'+':'')+(r.d3_s||0).toFixed(1)+'</td>';
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d5_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d5_s>=0?'+':'')+(r.d5_s||0).toFixed(1)+'</td>';
-    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d10_s>=0?'#e74c3c':'#2ecc71')+';font-size:13px;\">'+(r.d10_s>=0?'+':'')+(r.d10_s||0).toFixed(1)+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d3_s!=null?(r.d3_s>=0?'#e74c3c':'#2ecc71'):'#555')+';font-size:13px;\">'+(r.d3_s!=null?((r.d3_s>=0?'+':'')+r.d3_s.toFixed(1)):'-')+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d5_s!=null?(r.d5_s>=0?'#e74c3c':'#2ecc71'):'#555')+';font-size:13px;\">'+(r.d5_s!=null?((r.d5_s>=0?'+':'')+r.d5_s.toFixed(1)):'-')+'</td>';
+    html2 += '<td style=\"text-align:right;padding:3px 6px;color:'+(r.d10_s!=null?(r.d10_s>=0?'#e74c3c':'#2ecc71'):'#555')+';font-size:13px;\">'+(r.d10_s!=null?((r.d10_s>=0?'+':'')+r.d10_s.toFixed(1)):'-')+'</td>';
     html2 += '</tr>';
   }
   
