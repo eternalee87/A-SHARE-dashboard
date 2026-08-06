@@ -57,7 +57,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
         <h1>🏦 中证红利 定投指示板</h1>
         <div class="subtitle">指数 000922 · ETF 159209 · 目标 100万 · 2年 · 起始 2026-07-10</div>
     </div>
-    <div class="update">最后交易日: 2026-08-06<br>生成: 2026-08-06 08:02:47</div>
+    <div class="update">最后交易日: 2026-08-06<br>生成: 2026-08-06 10:18:29</div>
 </div>
 
 <div class="container">
@@ -117,7 +117,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
     </div>
 </div>
 
-<div class="footer">中证红利定投 · ETF 159209 · 2026-08-06 08:02:47 · Powered by akshare</div>
+<div class="footer">中证红利定投 · ETF 159209 · 2026-08-06 10:18:29 · Powered by akshare</div>
 
 </div>
 
@@ -138,7 +138,7 @@ new Chart(document.getElementById('chRatio'),{
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:8}},y:{ticks:{callback:v=>v.toFixed(2)}}}}
 });
 
-const hts=["2026-07-10", "2026-07-17", "2026-07-24", "2026-07-29", "2026-07-31", "2026-08-04", "2026-08-05", "2026-08-06"],hvs=[9499.983758299999, 18689.544797759998, 28578.194244, 38712.11908247999, 20548.34933382, 34142.2483161, 48071.204926499995, 62650.83213725],his=[9500.0, 19000.0, 28500.0, 38000.0, 52000.0, 66000.0, 80000.0, 94000.0];
+const hts=["2026-07-10", "2026-07-17", "2026-07-24", "2026-07-29", "2026-07-31", "2026-08-04", "2026-08-05", "2026-08-06"],hvs=[9499.983758299999, 18689.544797759998, 28578.194244, 38712.11908247999, 20548.34933382, 34142.2483161, 48071.204926499995, 62650.83423573],his=[9500.0, 19000.0, 28500.0, 38000.0, 52000.0, 66000.0, 80000.0, 94000.0];
 if(hts.length>0){
     new Chart(document.getElementById('chPerf'),{
         type:'line',data:{labels:hts,datasets:[
