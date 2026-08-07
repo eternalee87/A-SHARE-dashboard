@@ -1,0 +1,29 @@
+{
+  "task_id": "20260807-012935-d-2026-08-reasonix-external-folder-b81f55ba89f4-u4-m153-2",
+  "goal": "这个文件夹在这里：D:\\策略测试和优化尝试_2026.08，分析目标是通过了解这个策略的顺风期、逆风期、对应的市场环境，掌握牛末熊初震荡阶段和熊初阶段应该如何配置和使用这个策略（仓位、时机），并且通过持仓分析给出这个策略的优化思路，提升长期夏普比。 @__reasonix_external_folder/b81f55ba89f4/U4_M153_BD20230727_ED20991231_46af28f1c8effaab25ad4bacf2f608a1/",
+  "scope": null,
+  "non_goals": null,
+  "allowed_operations": {
+    "write": true,
+    "network": false,
+    "publish": false
+  },
+  "success_criteria": [
+    {
+      "id": "objective_evidence",
+      "description": "The goal outcome is supported by direct evidence, such as inspected code, reproduced behavior, source material, or concrete findings.",
+      "required": true,
+      "evidence_ids": [
+        "f1"
+      ]
+    },
+    {
+      "id": "verification",
+      "description": "The result has relevant verification evidence, such as tests, commands, benchmarks, manual checks, or a documented reason why verification is not applicable.",
+      "required": true,
+      "evidence_ids": [
+        "f2"
+      ]
+    }
+  ]
+}

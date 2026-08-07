@@ -1,0 +1,31 @@
+list_performance_csvfile:['./online/running_task/909/U4_M153_BD20230727_ED20991231_46af28f1c8effaab25ad4bacf2f608a1/stock_account0.csv']
+benchmark_csvfile:./online/running_task/909/U4_M153_BD20230727_ED20991231_46af28f1c8effaab25ad4bacf2f608a1/benchmark.csv
+sys_version:3.21
+Performance_total_return:1.6296522462515808
+benchmark_total_return:0.1995855438459807
+performance_annualized_return:0.10653525963550425
+benchmark_annualized_return:0.019236404849901856
+Sharpe ratio of performance: 1.0416416778293782
+Sharpe ratio of benchmark: -0.02466132237136589
+Sortino ratio of performance: None
+Sortino ratio of benchmark: None
+max_withdraw:-0.09896537238575287, 最大回撤区间:2020-02-13 - 2020-03-19
+大于等于5%的回撤次数:6
+大于等于10%的回撤次数:0
+大于等于15%的回撤次数:0
+大于等于20%的回撤次数:0
+大于等于25%的回撤次数:0
+Calmar ratio:1.0764902618690206
+Full alpha:0.00038058545904761667, Full beta:0.1414643723047445
+year:2016, turnover_rate:0.0
+year:2017, turnover_rate:10.453535038503263
+year:2018, turnover_rate:5.65197469132533
+year:2019, turnover_rate:10.012863849244143
+year:2020, turnover_rate:16.896404012956467
+year:2021, turnover_rate:17.20197739540631
+year:2022, turnover_rate:11.903654622797394
+year:2023, turnover_rate:14.097315506288606
+year:2024, turnover_rate:16.23351265505347
+year:2025, turnover_rate:14.542086259981028
+year:2026, turnover_rate:7.957597858305845
+mean_of_turnover_rate:11.359174717260169

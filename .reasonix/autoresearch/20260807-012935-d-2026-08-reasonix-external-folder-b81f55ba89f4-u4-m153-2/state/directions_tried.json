@@ -1,0 +1,9 @@
+[
+  {
+    "fingerprint": "criteria",
+    "summary": "两个关键脚本本次会话重新运行成功，结果与报告完全一致（可复现）。补报两条 criteria 的证据：",
+    "first_seen_iteration": 1,
+    "last_seen_iteration": 1,
+    "count": 1
+  }
+]
