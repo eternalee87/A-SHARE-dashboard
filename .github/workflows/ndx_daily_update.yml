@@ -50,8 +50,8 @@ jobs:
               echo "FETCH_OK=true" >> $GITHUB_OUTPUT
               exit 0
             fi
-            echo "Attempt $i failed, waiting 30s..."
-            sleep 30
+            echo "Attempt $i failed, waiting 10s..."
+            sleep 10
           done
           echo "FETCH_OK=false" >> $GITHUB_OUTPUT
           echo "All 3 fetch attempts failed" >&2

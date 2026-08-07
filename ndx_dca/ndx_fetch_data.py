@@ -36,7 +36,7 @@ def fetch_yahoo_chart(symbol, period1, period2=None):
     url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={period1}&period2={period2}&interval=1d&events=history'
     
     try:
-        r = requests.get(url, headers=YF_HEADERS, timeout=30)
+        r = requests.get(url, headers=YF_HEADERS, timeout=15)
         if r.status_code != 200:
             print(f"    HTTP {r.status_code}")
             return None
