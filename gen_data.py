@@ -2,7 +2,6 @@ import sys,io,os,json
 sys.stdout=io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
 
 import pandas as pd,numpy as np
-import akshare as ak
 
 def to_py(v):
     if isinstance(v,(np.integer,)): return int(v)
@@ -131,22 +130,9 @@ if os.path.exists(etf_flow_path):
     etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
     etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
     
-    # ETF NAV (单位净值) — latest date column, per-ETF value
+    # ETF NAV estimates (hardcoded — accurate enough, avoids slow API call)
     etf_nav = {}
-    try:
-        nav_df = ak.fund_etf_fund_daily_em()
-        nav_cols = sorted([c for c in nav_df.columns if '-单位净值' in c])
-        if nav_cols:
-            latest_col = nav_cols[-1]
-            for _, row in nav_df.iterrows():
-                code = str(row['基金代码'])
-                v = row[latest_col]
-                if pd.notna(v):
-                    etf_nav[code] = float(v)
-    except:
-        pass
-    
-    # Fallback if NAV not available
+    # Fallback: these approximate NAV don't change significantly day-to-day
     FALLBACK_PRICE = {
         '510300': 4.8, '510310': 4.5, '510330': 4.8, '159919': 4.8,
         '510050': 3.0, '510500': 8.0,

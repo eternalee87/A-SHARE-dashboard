@@ -1,0 +1,478 @@
+{
+  "generated_at": "2026-08-06T10:58:15.683237",
+  "framework_version": "v2-trend-following",
+  "qualitative": {
+    "signals": [
+      {
+        "dimension": "美联储货币政策",
+        "signal": 1,
+        "direction": "利多",
+        "detail": "联邦基金利率 3.63%，处于降息周期中，宽松货币政策利多黄金",
+        "accuracy": 0.8,
+        "weight": 0.25
+      },
+      {
+        "dimension": "美国经济象限",
+        "signal": 0,
+        "direction": "中性",
+        "detail": "过热象限（通胀上行+增长走强），黄金中性",
+        "accuracy": 0.8,
+        "weight": 0.25
+      },
+      {
+        "dimension": "美元趋势",
+        "signal": 0,
+        "direction": "中性",
+        "detail": "DXY 99.86，接近MA200(99.15)，美元中性",
+        "accuracy": 0.65,
+        "weight": 0.15
+      },
+      {
+        "dimension": "实际利率趋势",
+        "signal": -1,
+        "direction": "利空",
+        "detail": "TIPS 2.43%，高于3月均线(2.22%)，实际利率上行利空黄金",
+        "accuracy": 0.6,
+        "weight": 0.15
+      },
+      {
+        "dimension": "美国财政赤字",
+        "signal": 1,
+        "direction": "利多",
+        "detail": "美国财政赤字率约6%，远高于疫情前~3%中枢，债务扩张支撑黄金长期逻辑",
+        "accuracy": 0.4,
+        "weight": 0.1
+      },
+      {
+        "dimension": "央行购金",
+        "signal": 1,
+        "direction": "利多",
+        "detail": "全球央行持续净购金（年均>1000吨），结构性去美元化支撑黄金",
+        "accuracy": 0.4,
+        "weight": 0.1
+      }
+    ],
+    "total_score": 0.3,
+    "max_score": 1.0,
+    "normalized": 0.3,
+    "weighted_accuracy": 0.67,
+    "direction": "看多",
+    "intensity": 0.3
+  },
+  "quantitative": {
+    "signals": [
+      {
+        "dimension": "MA20趋势线",
+        "signal": 1,
+        "direction": "看多",
+        "detail": "金价$4,222 站上MA20($4,066)，比率1.038(>1.02)，短期趋势向上，可以持仓/做多",
+        "weight": 0.3
+      },
+      {
+        "dimension": "MA50/200交叉",
+        "signal": -0.5,
+        "direction": "看空",
+        "detail": "死叉但差距收窄(MA50 $4,176 < MA200 $4,478, -6.7%)，可能筑底，观望",
+        "weight": 0.25
+      },
+      {
+        "dimension": "最大回撤",
+        "signal": -1,
+        "direction": "看空",
+        "detail": "距1年高$5,318 回撤-20.6%(15-25%)，深度回调，趋势严重受损，不建议做多",
+        "weight": 0.2
+      },
+      {
+        "dimension": "定价框架有效性",
+        "signal": 0,
+        "direction": "中性",
+        "detail": "金价与利率同向变动48%交易日(45-55%)，关系不稳定",
+        "weight": 0.15
+      },
+      {
+        "dimension": "上海金溢价",
+        "signal": 0,
+        "direction": "中性",
+        "detail": "上海金数据暂缺",
+        "weight": 0.1
+      }
+    ],
+    "total_score": -0.03,
+    "max_score": 1.0,
+    "normalized": -0.03,
+    "direction": "中性",
+    "intensity": 0.03
+  },
+  "combined": {
+    "verdict": "观望",
+    "direction": "中性",
+    "confidence": "低",
+    "detail": "定性信号较弱，定量中性，无明显机会",
+    "qual_score": 0.3,
+    "quant_score": -0.03,
+    "qual_direction": "看多",
+    "quant_direction": "中性"
+  },
+  "exit_strategy": {
+    "layers": [
+      {
+        "level": 1,
+        "name": "MA20趋势线失守",
+        "condition": "金价$4,222 > MA20($4,066)",
+        "triggered": false,
+        "action": "暂未触发，可维持仓位",
+        "severity": "✅ 正常"
+      },
+      {
+        "level": 2,
+        "name": "MA50/MA200死叉确认",
+        "condition": "MA50($4,176) < MA200($4,478)",
+        "triggered": true,
+        "action": "再减仓至1/3，转为防御模式",
+        "severity": "🔴 红色预警"
+      },
+      {
+        "level": 3,
+        "name": "深度回撤确认",
+        "condition": "距1年高$5,318回撤-20.6% (阈值: <-15%)",
+        "triggered": true,
+        "action": "深度回撤21%，趋势可能终结，建议清仓观望",
+        "severity": "🔴 红色预警"
+      },
+      {
+        "level": 4,
+        "name": "定性信号反转（基本面确认）",
+        "condition": "美联储政策+经济象限: 看多",
+        "triggered": false,
+        "action": "定性仍利多，即使技术面走坏，结构性支撑仍在",
+        "severity": "✅ 结构性支撑"
+      }
+    ],
+    "triggered_count": 2,
+    "verdict": "建议大幅减仓",
+    "detail": "已触发2层离场信号，趋势严重受损"
+  },
+  "backtest": {
+    "monthly_signals": [
+      {
+        "date": "2024-08-07",
+        "price": 2390.5,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 14.63,
+        "dd_pct": -2.92
+      },
+      {
+        "date": "2024-09-06",
+        "price": 2493.5,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 5.34,
+        "dd_pct": -1.27
+      },
+      {
+        "date": "2024-10-07",
+        "price": 2644.8,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 0.45,
+        "dd_pct": -0.94
+      },
+      {
+        "date": "2024-11-05",
+        "price": 2740.3,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 4.22,
+        "dd_pct": -1.73
+      },
+      {
+        "date": "2024-12-05",
+        "price": 2626.6,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 10.07,
+        "dd_pct": -5.81
+      },
+      {
+        "date": "2025-01-07",
+        "price": 2656.7,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 11.73,
+        "dd_pct": -4.73
+      },
+      {
+        "date": "2025-02-06",
+        "price": 2856.0,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 15.43,
+        "dd_pct": -0.54
+      },
+      {
+        "date": "2025-03-10",
+        "price": 2891.0,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 15.26,
+        "dd_pct": -1.93
+      },
+      {
+        "date": "2025-04-08",
+        "price": 2968.4,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 11.56,
+        "dd_pct": -5.46
+      },
+      {
+        "date": "2025-05-08",
+        "price": 3296.6,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 3.15,
+        "dd_pct": -3.37
+      },
+      {
+        "date": "2025-06-09",
+        "price": 3332.1,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 9.18,
+        "dd_pct": -2.32
+      },
+      {
+        "date": "2025-07-09",
+        "price": 3311.6,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 20.08,
+        "dd_pct": -3.49
+      },
+      {
+        "date": "2025-08-07",
+        "price": 3400.3,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 17.06,
+        "dd_pct": -1.13
+      },
+      {
+        "date": "2025-09-08",
+        "price": 3638.1,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 15.8,
+        "dd_pct": 0.0
+      },
+      {
+        "date": "2025-10-07",
+        "price": 3976.6,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 11.89,
+        "dd_pct": 0.0
+      },
+      {
+        "date": "2025-11-05",
+        "price": 3980.3,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": 24.39,
+        "dd_pct": -8.21
+      },
+      {
+        "date": "2025-12-05",
+        "price": 4212.9,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 24.14,
+        "dd_pct": -2.85
+      },
+      {
+        "date": "2026-01-07",
+        "price": 4449.3,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": 7.71,
+        "dd_pct": -1.76
+      },
+      {
+        "date": "2026-02-06",
+        "price": 4951.2,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": -4.66,
+        "dd_pct": -6.9
+      },
+      {
+        "date": "2026-03-10",
+        "price": 5229.7,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": -18.54,
+        "dd_pct": -1.67
+      },
+      {
+        "date": "2026-04-09",
+        "price": 4792.2,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": -14.36,
+        "dd_pct": -9.89
+      },
+      {
+        "date": "2026-05-08",
+        "price": 4720.4,
+        "ma20_above": true,
+        "ma50_200": "金叉",
+        "signal": "看多",
+        "fwd_3m_return": -10.55,
+        "dd_pct": -11.24
+      },
+      {
+        "date": "2026-06-09",
+        "price": 4260.0,
+        "ma20_above": false,
+        "ma50_200": "金叉",
+        "signal": "中性",
+        "fwd_3m_return": -0.88,
+        "dd_pct": -19.9
+      },
+      {
+        "date": "2026-07-10",
+        "price": 4104.1,
+        "ma20_above": false,
+        "ma50_200": "死叉",
+        "signal": "看空",
+        "fwd_3m_return": 2.88,
+        "dd_pct": -22.83
+      }
+    ],
+    "signal_stats": {
+      "看多": {
+        "count": 25,
+        "probability": 52.1,
+        "avg_3m_return": 5.38,
+        "positive_rate": 76.0
+      },
+      "中性": {
+        "count": 19,
+        "probability": 39.6,
+        "avg_3m_return": 6.58,
+        "positive_rate": 78.9
+      },
+      "看空": {
+        "count": 4,
+        "probability": 8.3,
+        "avg_3m_return": 8.39,
+        "positive_rate": 100.0
+      }
+    },
+    "periods": [
+      {
+        "signal": "中性",
+        "start": "2024-08-07",
+        "end": "2024-09-06"
+      },
+      {
+        "signal": "看多",
+        "start": "2024-09-06",
+        "end": "2024-12-05"
+      },
+      {
+        "signal": "中性",
+        "start": "2024-12-05",
+        "end": "2025-01-07"
+      },
+      {
+        "signal": "看多",
+        "start": "2025-01-07",
+        "end": "2025-03-10"
+      },
+      {
+        "signal": "中性",
+        "start": "2025-03-10",
+        "end": "2025-06-09"
+      },
+      {
+        "signal": "看多",
+        "start": "2025-06-09",
+        "end": "2025-07-09"
+      },
+      {
+        "signal": "中性",
+        "start": "2025-07-09",
+        "end": "2025-08-07"
+      },
+      {
+        "signal": "看多",
+        "start": "2025-08-07",
+        "end": "2025-11-05"
+      },
+      {
+        "signal": "中性",
+        "start": "2025-11-05",
+        "end": "2025-12-05"
+      },
+      {
+        "signal": "看多",
+        "start": "2025-12-05",
+        "end": "2026-06-09"
+      },
+      {
+        "signal": "中性",
+        "start": "2026-06-09",
+        "end": "2026-07-10"
+      },
+      {
+        "signal": "看空",
+        "start": "2026-07-10",
+        "end": "2026-07-10"
+      }
+    ],
+    "total_months": 48
+  },
+  "market_snapshot": {
+    "gold_usd": 4222.3999,
+    "gold_stats": {
+      "current": 4222.3999,
+      "ma50": 4176.11,
+      "ma200": 4478.27,
+      "ma50_ratio": 1.0111,
+      "ma200_ratio": 0.9429,
+      "max_1y": 5318.4,
+      "min_1y": 3313.4,
+      "pct_from_1y_low": 27.43,
+      "pct_from_1y_high": -20.61
+    },
+    "dxy": 99.86,
+    "us10y": 4.627,
+    "tips": 2.43,
+    "fed_rate": 3.63,
+    "usdcny": 6.748,
+    "vix": 16.11
+  }
+}

@@ -99,7 +99,7 @@ if __name__ == '__main__':
     print("国家队ETF份额抓取")
     print("=" * 50)
 
-    dates = get_trading_dates(15)
+    dates = get_trading_dates(7)
     print(f"日期范围: {dates[-1]} ~ {dates[0]}")
 
     all_data = []

@@ -97,6 +97,8 @@ def fetch_all(start='20130101', end='20260710'):
             s = fetch_sina(name, symbol)
             if s is not None:
                 src = 'sina'
+                # Only keep last 90 days; existing CSV has full history
+                s = s.iloc[-90:]
                 # Smart check: if Sina's latest data is older than TX, use TX
                 from datetime import datetime, timedelta
                 today_str = datetime.now().strftime('%Y%m%d')

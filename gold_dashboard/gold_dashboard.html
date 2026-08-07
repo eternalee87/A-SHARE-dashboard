@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黄金交易机会看板 v2 — 趋势跟踪 + 分层离场</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+.container { max-width: 1440px; margin: 0 auto; padding: 20px; }
+.header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    border-bottom: 1px solid #1e293b;
+    margin-bottom: 30px;
+}
+.header h1 {
+    font-size: 2em;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+.header .subtitle { color: #94a3b8; font-size: 0.9em; }
+.header .updated { color: #64748b; font-size: 0.8em; margin-top: 6px; }
+.header .version { color: #22c55e; font-size: 0.75em; margin-top: 4px; }
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+.card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #334155;
+    transition: border-color 0.3s;
+}
+.card:hover { border-color: #475569; }
+.card-title { font-size: 0.85em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.card-value { font-size: 2em; font-weight: 700; margin-bottom: 4px; }
+.card-sub { color: #64748b; font-size: 0.85em; }
+
+/* 综合研判 + 离场 */
+.top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+@media (max-width: 900px) { .top-row { grid-template-columns: 1fr; } }
+
+.verdict-card {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 2px solid #f59e0b;
+    border-radius: 16px;
+    padding: 24px 30px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.verdict-badge {
+    font-size: 1.5em;
+    font-weight: 900;
+    color: #f59e0b;
+    white-space: nowrap;
+}
+.verdict-info { flex: 1; }
+.verdict-info h2 { font-size: 1.2em; margin-bottom: 6px; }
+.verdict-info .conf { color: #94a3b8; font-weight: 600; font-size: 0.9em; }
+.verdict-info .detail { color: #94a3b8; font-size: 0.9em; margin-top: 8px; line-height: 1.5; }
+.verdict-scores {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.score-item { text-align: center; }
+.score-item .label { color: #64748b; font-size: 0.75em; }
+.score-item .value { font-size: 1.4em; font-weight: 700; }
+
+.exit-card {
+    background: #1e293b;
+    border: 2px solid #ef4444;
+    border-radius: 16px;
+    padding: 24px 30px;
+}
+.exit-card h3 { font-size: 1.1em; margin-bottom: 4px; }
+.exit-card .exit-summary { color: #ef4444; font-weight: 700; font-size: 1.3em; margin-bottom: 6px; }
+.exit-card .exit-detail { color: #94a3b8; font-size: 0.85em; line-height: 1.5; }
+
+.exit-layers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+}
+@media (max-width: 900px) { .exit-layers { grid-template-columns: 1fr; } }
+.exit-layer {
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+.exit-level {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+.exit-num { font-size: 1.1em; }
+.exit-severity { font-size: 0.8em; font-weight: 500; margin-left: auto; }
+.exit-condition { color: #94a3b8; font-size: 0.78em; margin-bottom: 4px; }
+.exit-action { font-size: 0.82em; font-weight: 500; }
+
+/* 信号面板 */
+.panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+@media (max-width: 900px) { .panels { grid-template-columns: 1fr; } }
+.panel {
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    overflow: hidden;
+}
+.panel-header {
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 1.05em;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.panel-header .score-summary { font-size: 0.85em; font-weight: 500; }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+    text-align: left;
+    padding: 10px 20px;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid #334155;
+}
+td {
+    padding: 10px 20px;
+    font-size: 0.88em;
+    border-bottom: 1px solid #1e293b;
+    vertical-align: middle;
+}
+.dim-name { font-weight: 600; white-space: nowrap; }
+.dim-detail { color: #94a3b8; font-size: 0.82em; max-width: 280px; }
+.dim-meta { color: #64748b; font-size: 0.8em; }
+
+.backtest-section { margin-bottom: 30px; }
+.periods { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.period-tag {
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid;
+    font-size: 0.78em;
+    white-space: nowrap;
+}
+.badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    color: #fff;
+    font-weight: 600;
+}
+
+.model-note {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 30px;
+}
+.model-note h3 { color: #fbbf24; font-size: 1em; margin-bottom: 10px; }
+.model-note p { color: #94a3b8; font-size: 0.85em; line-height: 1.7; }
+
+.footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: #475569;
+    font-size: 0.8em;
+    border-top: 1px solid #1e293b;
+    margin-top: 20px;
+}
+.footer a { color: #64748b; }
+
+.compare-table { margin-top: 10px; }
+.compare-table th { font-size: 0.75em; }
+.compare-table td { font-size: 0.82em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 标题 -->
+    <div class="header">
+        <h1> Gold Trading Dashboard</h1>
+        <div class="subtitle">中金李昭定价框架 + 趋势跟踪量价 + 分层离场方案</div>
+        <div class="version">v2 · 趋势跟踪框架 (2026-08-06)</div>
+        <div class="updated">数据更新: 2026-08-06T10:58:15</div>
+    </div>
+
+    <!-- 市场快照 -->
+    <div class="overview-grid">
+        <div class="card">
+            <div class="card-title">Comex Gold (GC=F)</div>
+            <div class="card-value" style="color:#fbbf24">$4,222</div>
+            <div class="card-sub">MA20: $4,176 | MA200: $4,478</div>
+        </div>
+        <div class="card">
+            <div class="card-title">DXY (美元指数)</div>
+            <div class="card-value">99.86</div>
+            <div class="card-sub">USD/CNY: 6.748</div>
+        </div>
+        <div class="card">
+            <div class="card-title">10Y TIPS 实际利率</div>
+            <div class="card-value">2.43%</div>
+            <div class="card-sub">名义10Y: 4.627% | Fed: 3.63%</div>
+        </div>
+        <div class="card">
+            <div class="card-title">VIX</div>
+            <div class="card-value">16.11</div>
+            <div class="card-sub">1Y高$5,318 | 回撤-20.6%</div>
+        </div>
+    </div>
+
+    <!-- 综合研判 + 离场方案 (并排) -->
+    <div class="top-row">
+        <div class="verdict-card">
+            <div class="verdict-badge">观望</div>
+            <div class="verdict-info">
+                <h2>综合研判: 观望</h2>
+                <div class="conf">置信度: 低 | 定性看多 + 定量中性</div>
+                <div class="detail">定性信号较弱，定量中性，无明显机会</div>
+            </div>
+            <div class="verdict-scores">
+                <div class="score-item">
+                    <div class="label">定性</div>
+                    <div class="value" style="color:#22c55e">+30%</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">定量</div>
+                    <div class="value" style="color:#f59e0b">-3%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exit-card">
+            <h3>Exit Strategy</h3>
+            <div class="exit-summary">建议大幅减仓 (2/4层触发)</div>
+            <div class="exit-detail">已触发2层离场信号，趋势严重受损</div>
+            <div class="exit-layers">
+            <div class="exit-layer" style="background:#1e293b;border-left:3px solid #334155">
+                <div class="exit-level">
+                    <span class="exit-num">&#10003;</span>
+                    <span>L1: MA20趋势线失守</span>
+                    <span class="exit-severity" style="color:#22c55e">✅ 正常</span>
+                </div>
+                <div class="exit-condition">金价$4,222 > MA20($4,066)</div>
+                <div class="exit-action" style="color:#94a3b8">暂未触发，可维持仓位</div>
+            </div>
+            <div class="exit-layer" style="background:#450a0a;border-left:3px solid #ef4444">
+                <div class="exit-level">
+                    <span class="exit-num">&#9888;</span>
+                    <span>L2: MA50/MA200死叉确认</span>
+                    <span class="exit-severity" style="color:#ef4444">🔴 红色预警</span>
+                </div>
+                <div class="exit-condition">MA50($4,176) < MA200($4,478)</div>
+                <div class="exit-action" style="color:#fca5a5">再减仓至1/3，转为防御模式</div>
+            </div>
+            <div class="exit-layer" style="background:#450a0a;border-left:3px solid #ef4444">
+                <div class="exit-level">
+                    <span class="exit-num">&#9888;</span>
+                    <span>L3: 深度回撤确认</span>
+                    <span class="exit-severity" style="color:#ef4444">🔴 红色预警</span>
+                </div>
+                <div class="exit-condition">距1年高$5,318回撤-20.6% (阈值: <-15%)</div>
+                <div class="exit-action" style="color:#fca5a5">深度回撤21%，趋势可能终结，建议清仓观望</div>
+            </div>
+            <div class="exit-layer" style="background:#1e293b;border-left:3px solid #334155">
+                <div class="exit-level">
+                    <span class="exit-num">&#10003;</span>
+                    <span>L4: 定性信号反转（基本面确认）</span>
+                    <span class="exit-severity" style="color:#22c55e">✅ 结构性支撑</span>
+                </div>
+                <div class="exit-condition">美联储政策+经济象限: 看多</div>
+                <div class="exit-action" style="color:#94a3b8">定性仍利多，即使技术面走坏，结构性支撑仍在</div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- 模型说明 -->
+    <div class="model-note">
+        <h3>Framework</h3>
+        <p>
+            <strong>定性(基本面):</strong> 美联储政策 + 经济象限(滞胀/复苏) + 美元趋势 + 实际利率 + 财政赤字 + 央行购金<br>
+            <strong>定量(趋势跟踪 v2):</strong> MA20趋势线(短期) + MA50/200金叉死叉(中期) + 最大回撤(风险) + 定价框架有效性(结构) + 上海金溢价<br>
+            <strong>离场方案:</strong> L1 MA20失守(减1/3) → L2 死叉确认(再减1/3) → L3 回撤>15%(清仓) → L4 定性反转(最终确认·80%准确率)<br>
+            <strong>v2改进:</strong> 均值回归→趋势跟踪，看空占比64.6%→8.3%，消除"牛市全程喊空"的问题
+        </p>
+    </div>
+
+    <!-- 定性/定量面板 -->
+    <div class="panels">
+        <div class="panel">
+            <div class="panel-header">
+                <span>Qualitative (Research Framework)</span>
+                <span class="score-summary" style="color:#22c55e">
+                    看多 +30% | acc 67%
+                </span>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead><tr><th>Dimension</th><th>Direction</th><th>Score</th><th>Weight</th><th>Accuracy</th><th>Detail</th></tr></thead>
+                    <tbody>
+        <tr>
+            <td class="dim-name">美联储货币政策</td>
+            <td style="color:#22c55e;font-weight:700">&#9650; 利多</td>
+            <td>+1</td>
+            <td>25%</td>
+            <td><span class="badge" style="background:#22c55e">80%</span></td>
+            <td class="dim-detail">联邦基金利率 3.63%，处于降息周期中，宽松货币政策利多黄金</td>
+        </tr>
+        <tr>
+            <td class="dim-name">美国经济象限</td>
+            <td style="color:#f59e0b;font-weight:700">&#8212; 中性</td>
+            <td>+0</td>
+            <td>25%</td>
+            <td><span class="badge" style="background:#22c55e">80%</span></td>
+            <td class="dim-detail">过热象限（通胀上行+增长走强），黄金中性</td>
+        </tr>
+        <tr>
+            <td class="dim-name">美元趋势</td>
+            <td style="color:#f59e0b;font-weight:700">&#8212; 中性</td>
+            <td>+0</td>
+            <td>15%</td>
+            <td><span class="badge" style="background:#f59e0b">65%</span></td>
+            <td class="dim-detail">DXY 99.86，接近MA200(99.15)，美元中性</td>
+        </tr>
+        <tr>
+            <td class="dim-name">实际利率趋势</td>
+            <td style="color:#ef4444;font-weight:700">&#9660; 利空</td>
+            <td>-1</td>
+            <td>15%</td>
+            <td><span class="badge" style="background:#f59e0b">60%</span></td>
+            <td class="dim-detail">TIPS 2.43%，高于3月均线(2.22%)，实际利率上行利空黄金</td>
+        </tr>
+        <tr>
+            <td class="dim-name">美国财政赤字</td>
+            <td style="color:#22c55e;font-weight:700">&#9650; 利多</td>
+            <td>+1</td>
+            <td>10%</td>
+            <td><span class="badge" style="background:#ef4444">40%</span></td>
+            <td class="dim-detail">美国财政赤字率约6%，远高于疫情前~3%中枢，债务扩张支撑黄金长期逻辑</td>
+        </tr>
+        <tr>
+            <td class="dim-name">央行购金</td>
+            <td style="color:#22c55e;font-weight:700">&#9650; 利多</td>
+            <td>+1</td>
+            <td>10%</td>
+            <td><span class="badge" style="background:#ef4444">40%</span></td>
+            <td class="dim-detail">全球央行持续净购金（年均>1000吨），结构性去美元化支撑黄金</td>
+        </tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>Quantitative (Trend Following v2)</span>
+                <span class="score-summary" style="color:#f59e0b">
+                    中性 -3%
+                </span>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead><tr><th>Dimension</th><th>Direction</th><th>Score</th><th>Weight</th><th></th><th>Detail</th></tr></thead>
+                    <tbody>
+        <tr>
+            <td class="dim-name">MA20趋势线</td>
+            <td style="color:#22c55e;font-weight:700">&#9650; 看多</td>
+            <td>+1.0</td>
+            <td>30%</td>
+            <td class="dim-meta"></td>
+            <td class="dim-detail">金价$4,222 站上MA20($4,066)，比率1.038(>1.02)，短期趋势向上，可以持仓/做多</td>
+        </tr>
+        <tr>
+            <td class="dim-name">MA50/200交叉</td>
+            <td style="color:#ef4444;font-weight:700">&#9660; 看空</td>
+            <td>-0.5</td>
+            <td>25%</td>
+            <td class="dim-meta"></td>
+            <td class="dim-detail">死叉但差距收窄(MA50 $4,176 < MA200 $4,478, -6.7%)，可能筑底，观望</td>
+        </tr>
+        <tr>
+            <td class="dim-name">最大回撤</td>
+            <td style="color:#ef4444;font-weight:700">&#9660; 看空</td>
+            <td>-1.0</td>
+            <td>20%</td>
+            <td class="dim-meta"></td>
+            <td class="dim-detail">距1年高$5,318 回撤-20.6%(15-25%)，深度回调，趋势严重受损，不建议做多</td>
+        </tr>
+        <tr>
+            <td class="dim-name">定价框架有效性</td>
+            <td style="color:#f59e0b;font-weight:700">&#8212; 中性</td>
+            <td>+0.0</td>
+            <td>15%</td>
+            <td class="dim-meta"></td>
+            <td class="dim-detail">金价与利率同向变动48%交易日(45-55%)，关系不稳定</td>
+        </tr>
+        <tr>
+            <td class="dim-name">上海金溢价</td>
+            <td style="color:#f59e0b;font-weight:700">&#8212; 中性</td>
+            <td>+0.0</td>
+            <td>10%</td>
+            <td class="dim-meta"></td>
+            <td class="dim-detail">上海金数据暂缺</td>
+        </tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史回测 -->
+    <div class="backtest-section">
+        <div class="panel">
+            <div class="panel-header">
+                <span>Backtest (48 months, v2 framework)</span>
+                <span class="score-summary" style="color:#94a3b8">3M forward return stats</span>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead><tr><th>Signal</th><th>Probability</th><th>Count</th><th>Avg 3M Return</th><th>Win Rate</th></tr></thead>
+                    <tbody>
+            <tr style="background:#0f2b1a">
+                <td class="dim-name">看多</td>
+                <td>52.1%</td>
+                <td>25个月</td>
+                <td style="color:#22c55e">+5.38%</td>
+                <td>76%</td>
+            </tr>
+            <tr style="background:#1e1e0f">
+                <td class="dim-name">中性</td>
+                <td>39.6%</td>
+                <td>19个月</td>
+                <td style="color:#22c55e">+6.58%</td>
+                <td>79%</td>
+            </tr>
+            <tr style="background:#2b0f0f">
+                <td class="dim-name">看空</td>
+                <td>8.3%</td>
+                <td>4个月</td>
+                <td style="color:#22c55e">+8.39%</td>
+                <td>100%</td>
+            </tr></tbody>
+                </table>
+                <div style="padding:12px 20px">
+                    <div style="color:#94a3b8;font-size:0.82em;margin-bottom:6px">Signal Periods:</div>
+                    <div class="periods"><span class="period-tag" style="border-color:#f59e0b;color:#f59e0b">中性: 2025-03-10 ~ 2025-06-09</span><span class="period-tag" style="border-color:#22c55e;color:#22c55e">看多: 2025-06-09 ~ 2025-07-09</span><span class="period-tag" style="border-color:#f59e0b;color:#f59e0b">中性: 2025-07-09 ~ 2025-08-07</span><span class="period-tag" style="border-color:#22c55e;color:#22c55e">看多: 2025-08-07 ~ 2025-11-05</span><span class="period-tag" style="border-color:#f59e0b;color:#f59e0b">中性: 2025-11-05 ~ 2025-12-05</span><span class="period-tag" style="border-color:#22c55e;color:#22c55e">看多: 2025-12-05 ~ 2026-06-09</span><span class="period-tag" style="border-color:#f59e0b;color:#f59e0b">中性: 2026-06-09 ~ 2026-07-10</span><span class="period-tag" style="border-color:#ef4444;color:#ef4444">看空: 2026-07-10 ~ 2026-07-10</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- v1 vs v2 对比 -->
+    <div class="model-note">
+        <h3>v1 (Mean-Reversion) vs v2 (Trend-Following) Comparison</h3>
+        <table class="compare-table">
+            <thead><tr><th>Metric</th><th>v1 (MA200 Percentile)</th><th>v2 (Trend Following)</th><th>Improvement</th></tr></thead>
+            <tbody>
+                <tr><td>Bullish %</td><td style="color:#22c55e">10.4%</td><td style="color:#22c55e">52.1%</td><td style="color:#22c55e">+5x</td></tr>
+                <tr><td>Neutral %</td><td>25.0%</td><td>39.6%</td><td>+58%</td></tr>
+                <tr><td>Bearish %</td><td style="color:#ef4444">64.6%</td><td style="color:#22c55e">8.3%</td><td style="color:#22c55e">-87%</td></tr>
+                <tr><td>Bull 3M return</td><td>+6.5%</td><td>+5.4%</td><td>broadly consistent</td></tr>
+                <tr><td>Core problem</td><td style="color:#ef4444">Screamed SELL through entire 2025 rally</td><td style="color:#22c55e">Correctly stayed bullish during uptrend</td><td style="color:#22c55e">Fixed</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        Gold Trading Dashboard v2 · Li Zhao CICC Framework + Trend Following · Prototype<br>
+        Data: Yahoo Finance / FRED | Updated: 2026-08-06T10:58:15<br>
+        <span style="color:#475569">Not financial advice. Gold investment carries risk.</span>
+    </div>
+
+</div>
+</body>
+</html>
