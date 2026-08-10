@@ -2,13 +2,23 @@
  "current": {
   "score": 63.6857142857143,
   "rating": "greed",
-  "timestamp": "2026-08-07T23:59:47+00:00"
+  "timestamp": "2026-08-07T23:42:09+00:00"
  },
  "previous_close": 59.7142857142857,
  "previous_1_week": 45.2285714285714,
  "previous_1_month": 39.771428571428565,
  "previous_1_year": 54.71428571428572,
  "history": [
+  {
+   "date": "2025-08-07",
+   "score": 54.71428571428572,
+   "rating": "neutral"
+  },
+  {
+   "date": "2025-08-08",
+   "score": 58.37142857142857,
+   "rating": "greed"
+  },
   {
    "date": "2025-08-11",
    "score": 57.628571428571426,

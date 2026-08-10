@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-10 11:11:59",
+ "generated_at": "2026-08-08 00:02:17",
  "last_trading_day": "2026-08-07",
  "is_trading_day": true,
  "ndx": 29722.3,
@@ -14,7 +14,7 @@
  "score_vix": 0,
  "score_cnn": 0,
  "pct_vix": 31.3,
- "pct_cnn": 61.4,
+ "pct_cnn": 61.5,
  "composite_score": 1,
  "valuation_level": "mildly_overvalued",
  "valuation_label": "轻度高估",
