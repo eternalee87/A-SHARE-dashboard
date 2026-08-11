@@ -1,13 +1,13 @@
 {
  "current": {
-  "score": 64.4,
+  "score": 64.3714285714286,
   "rating": "greed",
-  "timestamp": "2026-08-10T23:59:53+00:00"
+  "timestamp": "2026-08-11T00:00:00+00:00"
  },
- "previous_close": 63.6857142857143,
- "previous_1_week": 50.7428571428571,
+ "previous_close": 64.3714285714286,
+ "previous_1_week": 59.9714285714286,
  "previous_1_month": 46.82857142857143,
- "previous_1_year": 58.37142857142857,
+ "previous_1_year": 57.628571428571426,
  "history": [
   {
    "date": "2025-08-11",
@@ -1251,12 +1251,17 @@
   },
   {
    "date": "2026-08-10",
-   "score": 64.4,
+   "score": 64.3714285714286,
    "rating": "greed"
   },
   {
-   "date": "2026-08-10",
-   "score": 64.4,
+   "date": "2026-08-11",
+   "score": 64.3714285714286,
+   "rating": "greed"
+  },
+  {
+   "date": "2026-08-11",
+   "score": 64.3714285714286,
    "rating": "greed"
   }
  ]
