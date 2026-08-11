@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-10 23:05:26",
+ "generated_at": "2026-08-11 02:36:02",
  "last_trading_day": "2026-08-10",
  "is_trading_day": true,
  "ndx": 29621.8,
@@ -28,8 +28,8 @@
  "start_date": "2026-07-10",
  "total_invested": 147000.0,
  "total_shares": 5.126174,
- "current_value": 151846.0,
- "pnl": 4846.0,
+ "current_value": 151847.0,
+ "pnl": 4847.0,
  "return_rate": 3.3,
  "ndx_return_since_start": -0.68,
  "ndx_start_value": 29825.11,
@@ -1903,6 +1903,6 @@
   125220.72589311999,
   134234.67880683,
   142829.4426472,
-  151846.49351519998
+  151846.5009932
  ]
 }
