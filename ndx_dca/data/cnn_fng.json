@@ -1,8 +1,8 @@
 {
  "current": {
-  "score": 54.9714285714286,
-  "rating": "neutral",
-  "timestamp": "2026-08-25T00:00:00+00:00"
+  "score": 58.8,
+  "rating": "greed",
+  "timestamp": "2026-08-25T22:36:21+00:00"
  },
  "previous_close": 55.0285714285714,
  "previous_1_week": 55.0857142857143,
@@ -1251,18 +1251,18 @@
   },
   {
    "date": "2026-08-24",
-   "score": 54.9714285714286,
-   "rating": "neutral"
+   "score": 56.0857142857143,
+   "rating": "greed"
   },
   {
    "date": "2026-08-25",
-   "score": 54.9714285714286,
-   "rating": "neutral"
+   "score": 58.8,
+   "rating": "greed"
   },
   {
    "date": "2026-08-25",
-   "score": 54.9714285714286,
-   "rating": "neutral"
+   "score": 58.8,
+   "rating": "greed"
   }
  ]
 }
