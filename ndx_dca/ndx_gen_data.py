@@ -49,13 +49,14 @@ with open(CNN_JSON, 'r', encoding='utf-8') as f:
 ndx = ndx_df['close']
 vix = vix_df['close']
 
-# Align dates - use NDX dates as primary
-common_dates = ndx.index.intersection(vix.index)
-ndx = ndx[common_dates]
-vix = vix[common_dates]
+# NDX 为主序列，VIX 仅作参考（缺失时用 NaN/上一个有效值）
+ndx = ndx_df['close']
+vix_full = vix_df['close']
+vix = vix_full.reindex(ndx.index).ffill()  # 前向填充，保持参考显示连续
+vix_last_valid = vix_full.index[-1].strftime('%Y-%m-%d')
 
 print(f"NDX: {len(ndx)} rows, {ndx.index[0].strftime('%Y-%m-%d')} ~ {ndx.index[-1].strftime('%Y-%m-%d')}")
-print(f"VIX: {len(vix)} rows")
+print(f"VIX: 最新 {vix_last_valid}" + (" ⚠️ 滞后于NDX" if vix_full.index[-1] < ndx.index[-1] else ""))
 print(f"Latest NDX: {ndx.iloc[-1]:.2f}")
 print(f"Latest VIX: {vix.iloc[-1]:.2f}")
 
@@ -71,7 +72,7 @@ print(f"NDX MA200: {ndx_ma200.iloc[-1]:.2f}, Ratio: {ndx_ma200_ratio:.4f}")
 
 # Build MA200 ratio history for percentile baseline
 all_ma_ratio = []
-for dt in common_dates:
+for dt in ndx.index:
     mr = float(ndx.loc[dt] / ndx_ma200.loc[dt]) if dt in ndx_ma200.index and not np.isnan(ndx_ma200.loc[dt]) else 1.0
     all_ma_ratio.append(mr)
 all_ma_ratio = np.array(all_ma_ratio)
@@ -98,17 +99,17 @@ for h in cnn_data.get('history', []):
 
 all_vix = []
 all_cnn = []
-for dt in common_dates:
+for dt in ndx.index:
     ds = dt.strftime('%Y-%m-%d')
     c = cnn_hist_lookup.get(ds)
     if c is None:
         c = vix_to_cnn(vix.loc[dt] if dt in vix.index else None)
-    all_vix.append(float(vix.loc[dt]) if dt in vix.index else 20.0)
+    all_vix.append(float(vix.loc[dt]) if dt in vix.index and not np.isnan(vix.loc[dt]) else 20.0)
     all_cnn.append(float(c))
 all_vix = np.array(all_vix)
 all_cnn = np.array(all_cnn)
 
-print(f"MA200 percentile baseline: {len(all_ma_ratio)} data points from {common_dates[0].strftime('%Y-%m-%d')} to {common_dates[-1].strftime('%Y-%m-%d')}")
+print(f"MA200 percentile baseline: {len(all_ma_ratio)} data points from {ndx.index[0].strftime('%Y-%m-%d')} to {ndx.index[-1].strftime('%Y-%m-%d')}")
 
 def score_from_percentile(pct):
     """Percentile (0-100) → score (-3 to +3)"""
@@ -222,7 +223,7 @@ print(f"Start date: {START_DATE}, Started: {today_date >= start_dt}")
 # ==================== RECORD WEEKLY INVESTMENTS ====================
 # Only invest on the LAST trading day of each ISO week
 from collections import OrderedDict
-all_dates_raw = common_dates[common_dates >= START_DATE]
+all_dates_raw = ndx.index[ndx.index >= START_DATE]
 week_map = OrderedDict()
 for dt in all_dates_raw:
     iso = dt.isocalendar()

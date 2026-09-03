@@ -73,6 +73,25 @@ def fetch_yahoo_chart(symbol, period1, period2=None):
     return df
 
 
+def fetch_tencent_ndx():
+    """腾讯实时行情兜底 — 返回最新交易日 close"""
+    try:
+        r = requests.get('https://qt.gtimg.cn/q=usNDX', headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
+        if not r.ok: return None
+        # v_usNDX="200~纳斯达克100~.NDX~29143.33~29077.22~29016.00~...~2026-09-02 17:15:59~..."
+        parts = r.text.split('~')
+        if len(parts) < 33: return None
+        cur = float(parts[3])
+        ts = parts[30]  # 2026-09-02 17:15:59
+        date_str = ts.split(' ')[0]
+        dt = datetime.strptime(date_str, '%Y-%m-%d')
+        print(f"  Tencent fallback: {date_str} close={cur:.2f}")
+        return pd.DataFrame({'close': [cur]}, index=[dt])
+    except Exception as e:
+        print(f"  Tencent fallback failed: {e}")
+        return None
+
+
 def update_csv_from_api(symbol, csv_path, label, lookback_years=40):
     """
     Fetch and update CSV data for a symbol using Yahoo Finance API.
@@ -98,22 +117,36 @@ def update_csv_from_api(symbol, csv_path, label, lookback_years=40):
         df_new = fetch_yahoo_chart(symbol, fetch_start)
 
     if df_new is None or len(df_new) == 0:
-        print(f"  ERROR: No data fetched")
-        return existing if existing is not None else None
+        # Yahoo 失败 → 腾讯实时行情兜底 (仅NDX)
+        if symbol == '%5ENDX':
+            df_new = fetch_tencent_ndx()
+        if df_new is None or len(df_new) == 0:
+            print(f"  ERROR: No data fetched")
+            return existing if existing is not None else None
 
     # Remove timezone info if present
     if df_new.index.tz is not None:
         df_new.index = df_new.index.tz_localize(None)
 
+    # DROP nulls from NEW data FIRST — 否则 null 会覆盖已有好数据
+    df_new = df_new.dropna()
+
     if existing is not None:
         combined = pd.concat([existing, df_new])
         combined = combined[~combined.index.duplicated(keep='last')]
         combined = combined.sort_index()
+        # 最后再 dropna，删除任何残留 null（如盘中未收盘的当日行）
+        combined = combined.dropna()
+        # 关键修复：合并后最后一行必须是有效数据
+        if pd.isna(combined.iloc[-1, 0]):
+            combined = combined.iloc[:-1]
+        # 防回退：新数据最新日期不能早于已有数据
+        if len(combined) > 0 and combined.index[-1] < existing.index[-1]:
+            print(f"  ⚠️ 检测到数据回退，保留旧数据最新日 {existing.index[-1].strftime('%Y-%m-%d')}")
+            combined = existing
         result = combined
     else:
-        result = df_new
-
-    result = result.dropna()
+        result = df_new.dropna()
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     result.to_csv(csv_path, float_format='%.2f')
     print(f"  保存: {csv_path}")

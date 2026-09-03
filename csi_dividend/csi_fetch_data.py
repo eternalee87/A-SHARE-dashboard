@@ -36,6 +36,10 @@ try:
             df_old = pd.read_csv(PRICE_CSV, index_col=0, parse_dates=True)
             df_price = pd.concat([df_old, df_new])
             df_price = df_price[~df_price.index.duplicated(keep='last')].sort_index()
+            # 防回退：新数据最新日期不能早于已有数据
+            if df_price.index[-1] < df_old.index[-1]:
+                print(f"  ⚠️ 检测到数据回退，保留旧数据最新日 {df_old.index[-1].date()}")
+                df_price = df_old
         else:
             df_price = df_new
         
