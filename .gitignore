@@ -20,6 +20,26 @@ ndx_dca/data/yfcache/
 .DS_Store
 Thumbs.db
 
+# Reasonix internal (session state, attachments — NOT part of the project)
+.reasonix/
+.codegraph/
+reasonix.toml
+
+# Scratch/temp analysis files (from ad-hoc tasks)
+checklist_out.txt
+ff_out.txt
+nest_out.txt
+classify_strategy.py
+fill_futures.py
+fill_nest.py
+fill_reply.py
+value_top20.py
+value_top20_detail.py
+data/em_probe.py
+data/sina_spot.csv
+data/value_top20.json
+changjiang_dcf.py
+
 # Old analysis outputs
 charts_v2/*.png
 *.png
