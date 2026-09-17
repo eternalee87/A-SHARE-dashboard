@@ -1,13 +1,13 @@
 {
  "current": {
-  "score": 26.4857142857143,
+  "score": 26.4,
   "rating": "fear",
-  "timestamp": "2026-09-16T23:59:59+00:00"
+  "timestamp": "2026-09-17T00:00:00+00:00"
  },
- "previous_close": 28.6571428571429,
- "previous_1_week": 38.2,
- "previous_1_month": 64.31428571428572,
- "previous_1_year": 64.37142857142858,
+ "previous_close": 26.4857142857143,
+ "previous_1_week": 32.2,
+ "previous_1_month": 59.142857142857146,
+ "previous_1_year": 63.77142857142858,
  "history": [
   {
    "date": "2025-09-17",
@@ -1256,12 +1256,17 @@
   },
   {
    "date": "2026-09-16",
-   "score": 26.4857142857143,
+   "score": 26.4,
    "rating": "fear"
   },
   {
-   "date": "2026-09-16",
-   "score": 26.4857142857143,
+   "date": "2026-09-17",
+   "score": 26.4,
+   "rating": "fear"
+  },
+  {
+   "date": "2026-09-17",
+   "score": 26.4,
    "rating": "fear"
   }
  ]
