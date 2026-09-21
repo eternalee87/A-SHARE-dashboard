@@ -111,12 +111,12 @@ canvas { max-height: 280px; }
     <div class="sub">历史最大回撤 -52.3%</div>
   </div>
   <div class="card kpi">
-    <div class="label">最强风格(60日)</div>
+    <div class="label">最强风格(20日)</div>
     <div class="value green" id="kpiBest"></div>
     <div class="sub" id="kpiBestV"></div>
   </div>
   <div class="card kpi">
-    <div class="label">最弱风格(60日)</div>
+    <div class="label">最弱风格(20日)</div>
     <div class="value red" id="kpiWorst"></div>
     <div class="sub" id="kpiWorstV"></div>
   </div>
@@ -181,7 +181,7 @@ canvas { max-height: 280px; }
     <div id="benchTable"></div>
   </div>
   <div class="card">
-    <h3>风格近60日滚动20日收益 (%)</h3>
+    <h3>最近60日累计收益 (%)</h3>
     <canvas id="chartRoll" style="height:220px;"></canvas>
   </div>
 </div>

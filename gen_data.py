@@ -46,19 +46,19 @@ ls=ls_ratio.iloc[-720:]
 ls_base=ls.iloc[0]
 ls_data={'ts':[str(d)[:10] for d in ls.index],'vals':[round(v/ls_base,4) for v in ls.values]}
 
-# Rolling 20d (60d)
+# 最近60日累计收益曲线 (从60日前=0%)
 r60=df.iloc[-60:]
 roll_data={}
 for st in STYLES:
-    rr=r60[st].pct_change(20)*100
-    valid=rr.dropna()
-    roll_data[st]={'ts':[str(d)[:10] for d in valid.index],'vals':[round(v,2) for v in valid.values]}
+    base=r60[st].iloc[0]
+    vals=[(r60[st].iloc[i]/base-1)*100 for i in range(len(r60))]
+    roll_data[st]={'ts':[str(d)[:10] for d in r60.index],'vals':[round(v,2) for v in vals]}
 
 # Signals
 lv_vs_lg=round(r180['大盘价值'].iloc[-1]/r180['大盘价值'].iloc[-60]-1-(r180['大盘成长'].iloc[-1]/r180['大盘成长'].iloc[-60]-1),4)
 rets_60={st:round(r180[st].iloc[-1]/r180[st].iloc[-60]-1,4) for st in STYLES}
 rets_20={st:round(r180[st].iloc[-1]/r180[st].iloc[-20]-1,4) for st in STYLES}
-best_60=max(rets_60,key=rets_60.get); worst_60=min(rets_60,key=rets_60.get)
+best_60=max(rets_20,key=rets_20.get); worst_60=min(rets_20,key=rets_20.get)
 
 # Risk flags (内生风险信号，不含国家队)
 risk_flags=[]
@@ -264,7 +264,7 @@ data={
     'above_ma20':to_py(sz_cur>sz_ma20),'ma_bull':to_py(sz_ma60>sz_ma120>sz_ma250),
     'bdd_count':bd,'risk_flags':risk_flags,'rf_count':rf_count,
     'overall':overall,'overall_label':status_labels[overall],'overall_desc':status_desc[overall],
-    'best_60':best_60,'worst_60':worst_60,'best_60_val':rets_60[best_60],'worst_60_val':rets_60[worst_60],
+    'best_60':best_60,'worst_60':worst_60,'best_60_val':rets_20[best_60],'worst_60_val':rets_20[worst_60],
     'lv_vs_lg':lv_vs_lg,
     'benchmarks':{k:round(last[k],0) for k in BENCHMARKS},
     'ytd':ytd,'vg_data':vg_data,'ls_data':ls_data,'roll_data':roll_data,
