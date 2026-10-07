@@ -1,13 +1,13 @@
 {
  "current": {
-  "score": 47.3714285714286,
+  "score": 47.2,
   "rating": "neutral",
-  "timestamp": "2026-10-06T23:59:49+00:00"
+  "timestamp": "2026-10-07T00:00:00+00:00"
  },
- "previous_close": 43.0285714285714,
- "previous_1_week": 28.8571428571429,
+ "previous_close": 47.2,
+ "previous_1_week": 30.2571428571429,
  "previous_1_month": 45.228571428571435,
- "previous_1_year": 53.971428571428575,
+ "previous_1_year": 51.857142857142854,
  "history": [
   {
    "date": "2025-10-07",
@@ -1256,12 +1256,17 @@
   },
   {
    "date": "2026-10-06",
-   "score": 47.3714285714286,
+   "score": 47.2,
    "rating": "neutral"
   },
   {
-   "date": "2026-10-06",
-   "score": 47.3714285714286,
+   "date": "2026-10-07",
+   "score": 47.2,
+   "rating": "neutral"
+  },
+  {
+   "date": "2026-10-07",
+   "score": 47.2,
    "rating": "neutral"
   }
  ]
