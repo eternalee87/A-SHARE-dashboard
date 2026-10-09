@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js?v=20261009053515"></script>
+<script src="dashboard_data.js?v=20261009071000"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -96,12 +96,12 @@ canvas { max-height: 280px; }
     <div class="sub">历史最大回撤 -52.3%</div>
   </div>
   <div class="card kpi">
-    <div class="label">最强风格(60日)</div>
+    <div class="label">最强风格(20日)</div>
     <div class="value green" id="kpiBest"></div>
     <div class="sub" id="kpiBestV"></div>
   </div>
   <div class="card kpi">
-    <div class="label">最弱风格(60日)</div>
+    <div class="label">最弱风格(20日)</div>
     <div class="value red" id="kpiWorst"></div>
     <div class="sub" id="kpiWorstV"></div>
   </div>
@@ -166,7 +166,7 @@ canvas { max-height: 280px; }
     <div id="benchTable"></div>
   </div>
   <div class="card">
-    <h3>风格近60日滚动20日收益 (%)</h3>
+    <h3>最近60日累计收益 (%)</h3>
     <canvas id="chartRoll" style="height:220px;"></canvas>
   </div>
 </div>
@@ -466,10 +466,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '10-09 05:35';
+var BUILD_TIME = '10-09 07:10';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '10-09 05:35') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '10-09 07:10') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
