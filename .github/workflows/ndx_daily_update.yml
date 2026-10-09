@@ -14,6 +14,7 @@ on:
       - 'ndx_dca/ndx_fetch_data.py'
       - 'ndx_dca/ndx_gen_data.py'
       - 'ndx_dca/ndx_build_html.py'
+      - 'csi_dividend/*.py'
       - '.github/workflows/ndx_daily_update.yml'
 
 concurrency:
@@ -30,8 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -41,66 +40,55 @@ jobs:
       - name: Install dependencies
         run: pip install pandas numpy requests akshare
 
-      - name: Fetch data (with retry)
-        id: fetch
-        run: |
-          for i in 1 2 3; do
-            echo "Attempt $i..."
-            if python ndx_dca/ndx_fetch_data.py; then
-              echo "FETCH_OK=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-            echo "Attempt $i failed, waiting 10s..."
-            sleep 10
-          done
-          echo "FETCH_OK=false" >> $GITHUB_OUTPUT
-          echo "All 3 fetch attempts failed" >&2
+      # NDX 和 CSI 独立抓取，互不阻断
+      - name: Fetch NDX data
+        continue-on-error: true
+        run: python ndx_dca/ndx_fetch_data.py
 
-      - name: Generate valuation & DCA signal
-        if: steps.fetch.outputs.FETCH_OK == 'true'
+      - name: Fetch CSI data
+        continue-on-error: true
+        run: python csi_dividend/csi_fetch_data.py
+
+      # gen/build 无条件执行（脚本内部有防回退逻辑，数据没变化则无副作用）
+      - name: Generate NDX signal
+        continue-on-error: true
         run: python ndx_dca/ndx_gen_data.py
 
-      - name: Build HTML dashboard
-        if: steps.fetch.outputs.FETCH_OK == 'true'
+      - name: Build NDX HTML
+        continue-on-error: true
         run: python ndx_dca/ndx_build_html.py
 
       - name: Build family guide
-        if: steps.fetch.outputs.FETCH_OK == 'true'
+        continue-on-error: true
         run: python ndx_dca/build_family_guide.py
 
-      - name: Fetch CSI data
-        run: python csi_dividend/csi_fetch_data.py
-
       - name: Generate CSI signal
+        continue-on-error: true
         run: python csi_dividend/csi_gen_data.py
 
       - name: Build CSI HTML
+        continue-on-error: true
         run: python csi_dividend/csi_build_html.py
 
-      - name: Update version
-        if: steps.fetch.outputs.FETCH_OK == 'true'
-        run: |
-          echo '{"version":"'"$(date -u +%Y%m%d-%H%M%S)"'","updated":"'"$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')"'"}' > ndx_dca/version.json
-
+      # 提交推送：无条件执行，只要有任何数据变化就提交
       - name: Commit and push
-        if: steps.fetch.outputs.FETCH_OK == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git stash
-          git pull --rebase origin main || true
-          git stash pop || true
-          git add ndx_dca/data/ ndx_dca/ndx_dashboard.html ndx_dca/index.html ndx_dca/version.json ndx_dca/family_guide.html csi_dividend/data/ csi_dividend/csi_dashboard.html csi_dividend/index.html
+          git add -A ndx_dca/ csi_dividend/
           if git diff --staged --quiet; then
-            echo "No changes"
-          else
-            git commit -m "NDX DCA Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-            for i in 1 2 3; do
-              if git push; then exit 0; fi
-              echo "Push attempt $i failed, retrying..."
-              sleep 5
-              git pull --rebase origin main || true
-            done
-            echo "Push failed after 3 attempts" >&2
-            exit 1
+            echo "No changes to commit"
+            exit 0
           fi
+          git commit -m "Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+          # 推送：最多重试 3 次，每次先 rebase
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              echo "Pushed successfully"
+              exit 0
+            fi
+            echo "Push attempt $i failed, retrying..."
+            sleep 5
+          done
+          echo "Push failed after 3 attempts" >&2
+          exit 1
