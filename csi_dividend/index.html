@@ -57,7 +57,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
         <h1>🏦 中证红利 定投指示板</h1>
         <div class="subtitle">指数 000922 · ETF 159209 · 目标 100万 · 2年 · 起始 2026-07-10</div>
     </div>
-    <div class="update">最后交易日: 2026-10-09<br>生成: 2026-10-12 09:41:34</div>
+    <div class="update">最后交易日: 2026-10-09<br>生成: 2026-10-13 11:35:27</div>
 </div>
 
 <div class="container">
@@ -107,17 +107,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
     <h2>📋 投资汇总 · 自 2026-07-10 起 (含底仓80万)</h2>
     <div class="summary-grid">
         <div class="summary-item"><div class="s-label">📅 起始日期</div><div class="s-value" style="font-size:0.9rem;">2026-07-10</div></div>
-        <div class="summary-item"><div class="s-label">💰 总投入(含底仓)</div><div class="s-value" style="color:#60a5fa;">946,500</div><div class="s-sub">DCA 14.7万 + 底仓80万</div></div>
-        <div class="summary-item"><div class="s-label">📊 市值</div><div class="s-value" style="color:#a78bfa;">1,013,725</div><div class="s-sub">180.9790 份</div></div>
-        <div class="summary-item"><div class="s-label">📈 盈亏</div><div class="s-value" style="color:#22c55e;">67,225</div></div>
-        <div class="summary-item"><div class="s-label">📊 总收益率</div><div class="s-value" style="color:#22c55e;">+7.10%</div></div>
+        <div class="summary-item"><div class="s-label">💰 总投入(含底仓)</div><div class="s-value" style="color:#60a5fa;">933,000</div><div class="s-sub">DCA 13.3万 + 底仓80万</div></div>
+        <div class="summary-item"><div class="s-label">📊 市值</div><div class="s-value" style="color:#a78bfa;">1,000,007</div><div class="s-sub">178.5299 份</div></div>
+        <div class="summary-item"><div class="s-label">📈 盈亏</div><div class="s-value" style="color:#22c55e;">67,007</div></div>
+        <div class="summary-item"><div class="s-label">📊 总收益率</div><div class="s-value" style="color:#22c55e;">+7.18%</div></div>
         <div class="summary-item"><div class="s-label">📉 指数收益率</div><div class="s-value" style="color:#22c55e;">+8.05%</div></div>
         <div class="summary-item"><div class="s-label">⚠️ 组合回撤</div><div class="s-value" style="color:#ef4444;">+0.00%</div></div>
         <div class="summary-item"><div class="s-label">⚠️ 指数回撤</div><div class="s-value" style="color:#ef4444;">-5.08%</div></div>
     </div>
 </div>
 
-<div class="footer">中证红利定投 · ETF 159209 · 2026-10-12 09:41:34 · Powered by akshare</div>
+<div class="footer">中证红利定投 · ETF 159209 · 2026-10-13 11:35:27 · Powered by akshare</div>
 
 </div>
 
@@ -138,7 +138,7 @@ new Chart(document.getElementById('chRatio'),{
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:8}},y:{ticks:{callback:v=>v.toFixed(2)}}}}
 });
 
-const hts=["2026-07-10", "2026-07-17", "2026-07-24", "2026-07-31", "2026-08-07", "2026-08-14", "2026-08-21", "2026-08-28", "2026-09-04", "2026-09-11", "2026-09-18", "2026-09-24", "2026-09-30", "2026-10-09"],hvs=[9499.998036600002, 19179.054945120002, 29123.76219704, 44013.649308089996, 57518.46081025, 66722.23765791001, 77451.72277986, 88508.99257408001, 97336.56636396, 105664.72788667999, 117420.50485632001, 127084.7523542, 137141.0133664, 149337.23051722],his=[9500.0, 19000.0, 28500.0, 42500.0, 56500.0, 66000.0, 75500.0, 85000.0, 94500.0, 104000.0, 118000.0, 127500.0, 137000.0, 146500.0];
+const hts=["2026-07-10", "2026-07-17", "2026-07-24", "2026-07-31", "2026-08-07", "2026-08-14", "2026-08-21", "2026-08-28", "2026-09-04", "2026-09-11", "2026-09-18", "2026-09-24", "2026-09-30", "2026-10-09"],hvs=[9500.0, 19179.056152466193, 29123.763365901083, 39513.651943956116, 48569.09400499879, 57818.96107614208, 68384.38798452876, 79259.34642837776, 88157.1919705944, 96595.86196322925, 104044.25495428313, 113689.79377470927, 123687.4230691413, 135619.13887254454],his=[9500.0, 19000.0, 28500.0, 38000.0, 47500.0, 57000.0, 66500.0, 76000.0, 85500.0, 95000.0, 104500.0, 114000.0, 123500.0, 133000.0];
 if(hts.length>0){
     new Chart(document.getElementById('chPerf'),{
         type:'line',data:{labels:hts,datasets:[
