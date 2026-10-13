@@ -91,6 +91,20 @@ print(f"  公式: NDX收盘价/{ma200_cur:.0f}(MA200) = {csi_cur:.0f}/{ma200_cur
 if pe_cur:
     print(f"PE: {pe_cur:.2f} (10yr P{pe_pct:.1f}) | 股息率≈{dy_cur*100:.2f}% (10yr P{dy_pct:.1f})")
 
+
+def calc_amount_at(dt):
+    """计算历史日期 dt 当时的定投金额（用当时估值，无未来函数）"""
+    if dt not in ma200.index or np.isnan(ma200.loc[dt]):
+        return f500(BASE_WEEKLY)  # 数据不足，用基础金额
+    ratio_dt = float(csi.loc[dt] / ma200.loc[dt])
+    # 10年滚动分位：只用 dt 之前近10年的比率分布（不含未来）
+    cutoff = dt - pd.DateOffset(years=10)
+    hist_ratios = ma_ratios[(ma_ratios.index >= cutoff) & (ma_ratios.index <= dt)]
+    if len(hist_ratios) < 100:
+        return f500(BASE_WEEKLY)
+    p_dt = (hist_ratios < ratio_dt).sum() / len(hist_ratios) * 100
+    return f500(BASE_WEEKLY * mc(int(sc(p_dt))))
+
 # History
 if os.path.exists(HISTORY_CSV):
     hist = pd.read_csv(HISTORY_CSV, index_col=0, parse_dates=True)
@@ -107,8 +121,10 @@ missed = [(dt, dt.strftime('%Y-%m-%d')) for dt in wd if dt.strftime('%Y-%m-%d') 
 if missed:
     new_rows = []; ci=hist['dca_amount'].sum() if len(hist)>0 else 0; cs=hist['shares_bought'].sum() if len(hist)>0 else 0
     for dt,ds in missed:
-        nc=float(csi.loc[dt]); shares=dca_amount/nc; ci+=dca_amount; cs+=shares
-        new_rows.append({'csi_close':nc,'dca_amount':dca_amount,'shares_bought':shares,
+        nc=float(csi.loc[dt])
+        amt_dt = calc_amount_at(dt)  # 用当时估值，而非当前估值
+        shares=amt_dt/nc; ci+=amt_dt; cs+=shares
+        new_rows.append({'csi_close':nc,'dca_amount':amt_dt,'shares_bought':shares,
                          'cum_invested':ci,'cum_shares':cs,'market_value':cs*nc,'pnl':cs*nc-ci,'return_rate':(cs*nc/ci-1)*100 if ci>0 else 0})
     ndf=pd.DataFrame(new_rows, index=[pd.Timestamp(ds) for _,ds in missed])
     hist=pd.concat([hist,ndf]).sort_index(); hist.index.name='date'

@@ -76,6 +76,7 @@ for dt in ndx.index:
     mr = float(ndx.loc[dt] / ndx_ma200.loc[dt]) if dt in ndx_ma200.index and not np.isnan(ndx_ma200.loc[dt]) else 1.0
     all_ma_ratio.append(mr)
 all_ma_ratio = np.array(all_ma_ratio)
+ma_ratio_series = pd.Series(all_ma_ratio, index=ndx.index)  # 按日期索引，用于历史分位
 
 # VIX/CNN baselines for display (not used in MA200 decision)
 def vix_to_cnn(v):
@@ -237,6 +238,29 @@ for dt in weekly_dates:
     if ds not in existing_dates:
         missed_dates.append((dt, ds))
 
+def mult_from_score(s):
+    """评分 → 定投倍数（NDX 标准映射）"""
+    if s < -2.0: return 2.5
+    if s < -1.0: return 2.0
+    if s < -0.3: return 1.5
+    if s <= 0.3: return 1.0
+    if s <= 1.0: return 0.75
+    if s <= 2.0: return 0.5
+    return 0.25
+
+
+def calc_amount_at(dt):
+    """计算历史日期 dt 当时的定投金额（用当时估值，无未来函数）"""
+    if dt not in ndx_ma200.index or np.isnan(ndx_ma200.loc[dt]):
+        return floor_to_unit(BASE_WEEKLY)
+    ratio_dt = float(ndx.loc[dt] / ndx_ma200.loc[dt])
+    hist = ma_ratio_series[ma_ratio_series.index <= dt]  # 只用 dt 之前数据
+    if len(hist) < 200:
+        return floor_to_unit(BASE_WEEKLY)
+    p_dt = (hist < ratio_dt).sum() / len(hist) * 100
+    return floor_to_unit(BASE_WEEKLY * mult_from_score(score_from_percentile(p_dt)))
+
+
 if missed_dates:
     print(f"\n📋 发现 {len(missed_dates)} 个未记录的交易日，正在补录...")
     
@@ -246,8 +270,9 @@ if missed_dates:
     
     for dt, ds in missed_dates:
         ndx_val = float(ndx.loc[dt])
-        shares = dca_amount / ndx_val
-        prev_invested += dca_amount
+        amt_dt = calc_amount_at(dt)  # 用当时估值，而非当前估值
+        shares = amt_dt / ndx_val
+        prev_invested += amt_dt
         prev_shares += shares
         
         cum_shares = prev_shares
@@ -255,7 +280,7 @@ if missed_dates:
         
         new_rows.append({
             'ndx_close': ndx_val,
-            'dca_amount': dca_amount,
+            'dca_amount': amt_dt,
             'shares_bought': shares,
             'cumulative_invested': cum_invested,
             'cumulative_shares': cum_shares,
