@@ -123,6 +123,9 @@ def fetch_all(start='20130101', end='20260710'):
             print(f"  {name} FAILED!")
         time.sleep(SLEEP_SEC)
 
+    if len(series_list) == 0:
+        print("  ⚠ 所有数据源均失败，返回空数据（保留现有CSV）")
+        return None
     df = pd.concat(series_list, axis=1).sort_index().ffill()
     style_cols = [n for n, _ in STYLE_INDICES]
     df = df.dropna(subset=style_cols, how='all')
@@ -150,6 +153,10 @@ if __name__ == '__main__':
 
     print("\n抓取中 (策略: Sina→TX)...")
     df_new = fetch_all(start=fetch_start, end=today_str)
+
+    if df_new is None or len(df_new) == 0:
+        print("\u26a0 \u672c\u6b21\u6293\u53d6\u65e0\u65b0\u6570\u636e\uff0c\u4fdd\u7559\u73b0\u6709CSV\uff0c\u9000\u51fa(\u6210\u529f)")
+        sys.exit(0)
 
     if existing is not None and len(df_new) > 0:
         # Keep existing historical data, fill with new where available
